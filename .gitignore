@@ -1,0 +1,9 @@
+# binaries
+zappy
+zappy_ai
+
+# rust obj files
+*lock
+*.json
+target/
+*.TAG
