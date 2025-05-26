@@ -1,0 +1,17 @@
+# binaries
+zappy_server
+zappy_ai
+zappy_gui
+
+# rust obj files
+*lock
+*.json
+target/
+*.TAG
+
+# C / CPP obj files
+build/
+*.o
+
+# ide
+.vscode
