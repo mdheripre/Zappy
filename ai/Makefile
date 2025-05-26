@@ -1,0 +1,24 @@
+##
+## EPITECH PROJECT, 2025
+## B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
+## File description:
+## Makefile
+##
+
+# Project and crate names
+DEBUG_BIN := target/debug/$(PROJECT_NAME)
+RELEASE_BIN := target/release/$(PROJECT_NAME)
+
+all: release
+
+release:
+	cargo build --workspace --release
+	cp $(RELEASE_BIN) ./zappy_ai
+
+debug:
+	cargo build --workspace
+	cp $(DEBUG_BIN) ./zappy_ai_debug
+
+clean:
+	cargo clean
+	rm -f ./zappy_ai ./zappy_ai_debug

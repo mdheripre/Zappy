@@ -7,3 +7,6 @@ zappy_ai
 *.json
 target/
 *.TAG
+
+# ide
+.vscode
