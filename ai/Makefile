@@ -5,7 +5,8 @@
 ## Makefile
 ##
 
-# Project and crate names
+PROJECT_NAME := zappy_ai
+
 DEBUG_BIN := target/debug/$(PROJECT_NAME)
 RELEASE_BIN := target/release/$(PROJECT_NAME)
 
@@ -22,3 +23,4 @@ debug:
 clean:
 	cargo clean
 	rm -f ./zappy_ai ./zappy_ai_debug
+
