@@ -43,6 +43,7 @@ void accept_client(server_t *self)
     }
     client = &self->clients[self->client_count];
     client->fd = client_fd;
+    client->type = CLIENT_UNDEFINED;
     client->connected = true;
     self->client_count++;
     EMIT(self->dispatcher, "client_connected", client);

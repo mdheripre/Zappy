@@ -32,10 +32,14 @@ SRCS = \
 	$(SRC_SERV_METHODS_NET)/server_run.c \
 	$(SRC_SERV_METHODS_NET)/setup_poll.c \
 	$(SRC_SERV_METHODS_EVT)/on_client_connected.c \
+	$(SRC_SERV_METHODS_EVT)/on_tick.c \
 	$(SRC_SERV_METHODS_CMDS)/command_manager.c \
 	$(SRC_SERV_METHODS_CMDS)/forward.c \
+	$(SRC_SERV_METHODS_CMDS)/get_delay.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS)/print_log.c \
+	$(SRC_UTILS)/strip_linefeed.c \
+	$(SRC_UTILS)/Queu/handle_queu.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
 	$(SRC_DISP_METHODS)/dispatcher_emit.c \

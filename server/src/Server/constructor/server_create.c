@@ -17,7 +17,8 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .setup_poll = setup_server_poll,
     .handle_poll = handle_server_poll,
     .accept_client = accept_client,
-    .remove_client = remove_client
+    .remove_client = remove_client,
+    .get_command_delay = get_command_delay
 };
 
 static bool create_socket(server_t *self)
@@ -82,6 +83,8 @@ static void register_core_events(server_t *server)
 {
     REGISTER(server->dispatcher, "client_connected",
         on_client_connected, NULL);
+    REGISTER(server->dispatcher, "server_tick",
+        on_tick, server);
 }
 
 bool server_init(server_t *server, int port)

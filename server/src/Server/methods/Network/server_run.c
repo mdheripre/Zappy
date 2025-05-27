@@ -15,6 +15,7 @@ void run_server(server_t *self)
     nfds_t nfds = 0;
     int ret;
 
+    memset(fds, 0, sizeof(fds));
     console_log(LOG_INFO, "Starting server loop");
     while (1) {
         self->vtable->setup_poll(self, fds, &nfds);
@@ -24,5 +25,6 @@ void run_server(server_t *self)
             break;
         }
         self->vtable->handle_poll(self, fds);
+        command_process_all(self);
     }
 }

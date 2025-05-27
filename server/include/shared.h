@@ -16,7 +16,6 @@
     #define DELETE() gc_cleanup()
     #define REGISTER(d, n, cb, ctx) (d)->vtable->register_event(d, n, cb, ctx)
     #define EMIT(d, n, data) (d)->vtable->emit(d, n, data)
-    #define COMMAND(buf, cmd) snprintf(buf, 64, "command_%s", cmd)
 
 
 typedef void (*destructor_fn_t)(void *);
