@@ -1,9 +1,9 @@
 use crate::ServerInfos;
+use lib_tcp::tcp_client::AsyncTcpClient;
 
-pub fn init_client(infos: &ServerInfos) -> lib_tcp::Result<()> {
-    let mut client = lib_tcp::W::connect(&infos.ip, infos.port)?;
+pub async fn init_client(infos: &ServerInfos) -> lib_tcp::Result<()> {
+    let mut client = AsyncTcpClient::new(&infos.ip, infos.port).await?;
 
-    client.send(&infos.name)?;
-    client.recv()?;
+    client.send(&infos.name).await?;
     Ok(())
 }
