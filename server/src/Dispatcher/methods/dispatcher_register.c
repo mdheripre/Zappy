@@ -7,6 +7,21 @@
 
 #include "dispatcher.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            PUBLIC METHODS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Registers an event handler in the dispatcher.
+ *
+ * @param self Pointer to the dispatcher instance.
+ * @param event Name of the event to handle.
+ * @param callback Function to call when the event occurs.
+ * @param ctx User-defined context passed to the callback.
+ * @return true on success, false if registration failed.
+ */
 bool dispatcher_register(dispatcher_t *self,
     const char *event, event_callback_t callback, void *ctx)
 {

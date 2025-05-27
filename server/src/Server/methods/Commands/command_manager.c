@@ -10,13 +10,37 @@
 #include "shared.h"
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                          REGISTER COMMAND                                */
+/*                                                                          */
+/****************************************************************************/
 
+/**
+ * @brief Registers all available commands with the server's dispatcher.
+ *
+ * @param server Pointer to the server structure.
+ */
 void command_manager_register_all(server_t *server)
 {
     REGISTER(server->dispatcher, "command_ia_Forward",
         handle_command_forward, NULL);
 }
 
+/****************************************************************************/
+/*                                                                          */
+/*                         FORMAT COMMAND                                   */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Builds a full command string with a prefix based on client type.
+ *
+ * @param dest Destination buffer for the resulting command string.
+ * @param size Size of the destination buffer.
+ * @param type Type of the client (CLIENT_GUI or other).
+ * @param cmd  Command name to append.
+ */
 static void build_full_command(char *dest,
     size_t size, client_type_t type, const char *cmd)
 {
@@ -26,6 +50,20 @@ static void build_full_command(char *dest,
     dest[size - 1] = '\0';
 }
 
+/****************************************************************************/
+/*                                                                          */
+/*                        PROCESS IDENTIFY                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Processes identification for all undefined clients.
+ *
+ * Iterates through all connected clients with undefined type,
+ * checks if they have a queued command, and emits a "client_identify" event.
+ *
+ * @param server Pointer to the server structure.
+ */
 void command_process_identify(server_t *server)
 {
     client_t *client = NULL;
@@ -43,7 +81,26 @@ void command_process_identify(server_t *server)
     }
 }
 
-static void execute_command_if_ready(server_t *server,
+/****************************************************************************/
+/*                                                                          */
+/*                       MANAGE AND EXECUTE COMMAND                         */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * @brief Executes a queued command for a client if its timer has expired.
+ *
+ * Decrements the command's remaining time by delta. If the timer reaches
+ * zero, builds the full command, emits it to the dispatcher,
+ * and dequeues the command.
+ *
+ * @param server Pointer to the server structure.
+ * @param client Pointer to the client structure.
+ * @param cmd Pointer to the queued command.
+ * @param delta Time elapsed since last call (in seconds).
+ */
+static void execute_command(server_t *server,
     client_t *client, queued_command_t *cmd, float delta)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
@@ -58,6 +115,13 @@ static void execute_command_if_ready(server_t *server,
     client_dequeue_command(client, NULL);
 }
 
+/**
+ * @brief Processes and executes the next queued command for all connected
+ * IA clients.
+ *
+ * @param server Pointer to the server structure.
+ * @param delta Time elapsed since last update, used for command execution.
+ */
 void command_process_all(server_t *server, float delta)
 {
     int i = 0;
@@ -73,6 +137,6 @@ void command_process_all(server_t *server, float delta)
         cmd = client_peek_command(client);
         if (!cmd)
             continue;
-        execute_command_if_ready(server, client, cmd, delta);
+        execute_command(server, client, cmd, delta);
     }
 }

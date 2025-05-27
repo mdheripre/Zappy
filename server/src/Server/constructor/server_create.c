@@ -10,6 +10,19 @@
 #include "server.h"
 #include "shared.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                        METHODS DECLARATION                               */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Default method table for the server object.
+ *
+ * Contains function pointers for server operations such as construction,
+ * running, destruction, polling, client management, and command delay
+ * retrieval.
+ */
 static const server_methods_t DEFAULT_SERVER_METHODS = {
     .constructor = init_socket,
     .run = run_server,
@@ -21,6 +34,17 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .get_command_delay = get_command_delay
 };
 
+/****************************************************************************/
+/*                                                                          */
+/*                      EVENT GLOBAL DECLARATION                            */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Registers core event handlers to the server's dispatcher.
+ *
+ * @param server Pointer to the server instance.
+ */
 static void register_core_events(server_t *server)
 {
     REGISTER(server->dispatcher, "client_connected",
@@ -29,6 +53,18 @@ static void register_core_events(server_t *server)
         on_client_identify, server);
 }
 
+/****************************************************************************/
+/*                                                                          */
+/*                            CONSTRUCTOR                                   */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Creates a TCP socket for the server.
+ *
+ * @param self Pointer to the server structure.
+ * @return true if the socket was created successfully, false otherwise.
+ */
 static bool create_socket(server_t *self)
 {
     self->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,6 +75,14 @@ static bool create_socket(server_t *self)
     return true;
 }
 
+/**
+ * @brief Sets socket options for the server socket.
+ *
+ * Enables the SO_REUSEADDR option on the server's socket file descriptor.
+ *
+ * @param self Pointer to the server structure.
+ * @return true on success, false on failure.
+ */
 static bool set_socket_options(server_t *self)
 {
     int opt = 1;
@@ -51,6 +95,11 @@ static bool set_socket_options(server_t *self)
     return true;
 }
 
+/**
+ * @brief Initializes the server address structure with family, IP, and port.
+ *
+ * @param self Pointer to the server structure to configure.
+*/
 static void setup_address(server_t *self)
 {
     self->address.sin_family = AF_INET;
@@ -58,6 +107,12 @@ static void setup_address(server_t *self)
     self->address.sin_port = htons(self->port);
 }
 
+/**
+ * @brief Binds the server socket to the specified address and port.
+ *
+ * @param self Pointer to the server structure.
+ * @return true if binding was successful, false otherwise.
+ */
 static bool bind_socket(server_t *self)
 {
     if (bind(self->socket_fd, (struct sockaddr *)&self->address,
@@ -68,6 +123,14 @@ static bool bind_socket(server_t *self)
     return true;
 }
 
+/**
+ * @brief Listens for incoming connections on the server socket.
+ *
+ * Configures the server socket to listen for incoming client connections.
+ *
+ * @param self Pointer to the server structure.
+ * @return true if listening was successful, false otherwise.
+ */
 static bool listen_socket(server_t *self)
 {
     if (listen(self->socket_fd, MAX_CLIENTS) == -1) {
@@ -78,12 +141,32 @@ static bool listen_socket(server_t *self)
     return true;
 }
 
+/**
+ * @brief Initializes the server socket and prepares it for accepting
+ * connections.
+ *
+ * This function creates a socket, sets options, binds it to an address,
+ * and starts listening for incoming connections.
+ *
+ * @param self Pointer to the server structure.
+ * @return true if all operations were successful, false otherwise.
+ */
 bool init_socket(server_t *self)
 {
     return create_socket(self) && set_socket_options(self) &&
     (setup_address(self), true) && bind_socket(self) && listen_socket(self);
 }
 
+/**
+ * @brief Initializes the server structure with default values and methods.
+ *
+ * This function sets up the server's port, frequency, and dispatcher,
+ * and registers core events and commands.
+ *
+ * @param server Pointer to the server structure to initialize.
+ * @param port The port number for the server to listen on.
+ * @return true if initialization was successful, false otherwise.
+ */
 bool server_init(server_t *server, int port)
 {
     if (!server)
@@ -106,6 +189,21 @@ bool server_init(server_t *server, int port)
     return true;
 }
 
+/****************************************************************************/
+/*                                                                          */
+/*                        PUBLIC CONSTRUCTOR                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Creates a new server instance and initializes it.
+ *
+ * Allocates memory for a server_t structure, initializes it with the specified
+ * port, and returns a pointer to the newly created server instance.
+ *
+ * @param port The port number for the server to listen on.
+ * @return Pointer to the newly created server_t instance, or NULL on failure.
+ */
 server_t *server_create(int port)
 {
     server_t *server = malloc(sizeof(server_t));
