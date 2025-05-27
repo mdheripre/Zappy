@@ -37,10 +37,4 @@ typedef struct client_s {
     size_t buffer_len;
 } client_t;
 
-
-
-bool client_enqueue_command(client_t *client,
-    const char *cmd, float delay);
-bool client_dequeue_command(client_t *client, queued_command_t *out);
-queued_command_t *client_peek_command(client_t *client);
 #endif /* CLIENT_H_ */

@@ -10,21 +10,25 @@
 #include "utils.h"
 
 
-static void process_command_line(client_t *client, const char *line)
+static void process_command_line(server_t *server,
+    client_t *client, const char *line)
 {
     char clean_line[BUFFER_COMMAND_SIZE] = {0};
+    float delay = 0.0f;
 
     strncpy(clean_line, line, BUFFER_COMMAND_SIZE - 1);
     clean_line[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(clean_line);
-    if (!client_enqueue_command(client, clean_line, 0.0f)) {
+    delay = server->vtable->get_command_delay(server, clean_line);
+    if (!client_enqueue_command(client, clean_line, delay)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
             client->fd, clean_line);
     }
 }
 
-static void extract_commands_from_buffer(client_t *client)
+static void extract_commands_from_buffer(server_t *server,
+    client_t *client)
 {
     char *newline = NULL;
     size_t line_len = 0;
@@ -39,7 +43,7 @@ static void extract_commands_from_buffer(client_t *client)
         memset(line, 0, sizeof(line));
         memcpy(line, client->read_buffer, line_len);
         line[line_len] = '\0';
-        process_command_line(client, line);
+        process_command_line(server, client, line);
         remaining = client->buffer_len - line_len;
         memmove(client->read_buffer,
             client->read_buffer + line_len, remaining);
@@ -76,7 +80,7 @@ void read_from_client(server_t *server, int index)
         return;
     }
     append_to_read_buffer(client, buf, bytes);
-    extract_commands_from_buffer(client);
+    extract_commands_from_buffer(server, client);
 }
 
 void handle_server_poll(server_t *self, struct pollfd *fds)

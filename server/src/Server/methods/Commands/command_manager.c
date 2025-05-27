@@ -26,58 +26,53 @@ static void build_full_command(char *dest,
     dest[size - 1] = '\0';
 }
 
-static bool queue_command(client_t *client, const char *full_cmd, float delay)
-{
-    int tail = client->command_tail;
-    queued_command_t *slot = &client->commands[tail];
-
-    memset(slot, 0, sizeof(queued_command_t));
-    strncpy(slot->content, full_cmd, BUFFER_COMMAND_SIZE - 1);
-    slot->content[BUFFER_COMMAND_SIZE - 1] = '\0';
-    slot->time_remaining = delay;
-    client->command_tail = (tail + 1) % MAX_COMMANDS;
-    client->command_count++;
-    return true;
-}
-
-void command_manager_handle(server_t *server,
-    client_t *client, const char *command)
-{
-    char full_command[BUFFER_COMMAND_SIZE] = {0};
-    float delay = 0.0f;
-
-    if (!server || !client || !command)
-        return;
-    if (client->command_count >= MAX_COMMANDS) {
-        write(client->fd, "ko\n", 3);
-        return;
-    }
-    build_full_command(full_command,
-        sizeof(full_command), client->type, command);
-    delay = server->vtable->get_command_delay(server, command);
-    queue_command(client, full_command, delay);
-}
-
-void command_process_all(server_t *server)
+void command_process_identify(server_t *server)
 {
     client_t *client = NULL;
+    queued_command_t *cmd = NULL;
     int i = 0;
-    int pos = 0;
-    int index = 0;
-    queued_command_t *cmd;
 
     for (i = 0; i < server->client_count; i++) {
         client = &server->clients[i];
-        if (!client->connected || client->command_count == 0)
+        if (!client->connected || client->type != CLIENT_UNDEFINED)
             continue;
-        console_log(LOG_INFO, "Client %d has %d command(s):",
-            client->fd, client->command_count);
-        pos = client->command_head;
-        for (index = 0; index < client->command_count; index++) {
-            cmd = &client->commands[pos];
-            console_log(LOG_INFO, " -> [%d] \"%s\" (%.2fs)",
-                index, cmd->content, cmd->time_remaining);
-            pos = (pos + 1) % MAX_COMMANDS;
-        }
+        cmd = client_peek_command(client);
+        if (!cmd)
+            continue;
+        EMIT(server->dispatcher, "client_identify", client);
+    }
+}
+
+static void execute_command_if_ready(server_t *server,
+    client_t *client, queued_command_t *cmd, float delta)
+{
+    char built[BUFFER_COMMAND_SIZE] = {0};
+
+    cmd->time_remaining -= delta;
+    console_log(LOG_INFO, "Client %d command: \"%s\" (%.2fs left)",
+    client->fd, cmd->content, cmd->time_remaining);
+    if (cmd->time_remaining > 0.0f)
+        return;
+    build_full_command(built, sizeof(built), client->type, cmd->content);
+    EMIT(server->dispatcher, built, client);
+    client_dequeue_command(client, NULL);
+}
+
+void command_process_all(server_t *server, float delta)
+{
+    int i = 0;
+    client_t *client = NULL;
+    queued_command_t *cmd = NULL;
+
+    for (i = 0; i < server->client_count; i++) {
+        client = &server->clients[i];
+        if (!client || !client->connected)
+            continue;
+        if (client->type != CLIENT_IA)
+            continue;
+        cmd = client_peek_command(client);
+        if (!cmd)
+            continue;
+        execute_command_if_ready(server, client, cmd, delta);
     }
 }

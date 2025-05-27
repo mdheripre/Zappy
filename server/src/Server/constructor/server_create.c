@@ -21,6 +21,14 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .get_command_delay = get_command_delay
 };
 
+static void register_core_events(server_t *server)
+{
+    REGISTER(server->dispatcher, "client_connected",
+        on_client_connected, NULL);
+    REGISTER(server->dispatcher, "client_identify",
+        on_client_identify, server);
+}
+
 static bool create_socket(server_t *self)
 {
     self->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -72,19 +80,8 @@ static bool listen_socket(server_t *self)
 
 bool init_socket(server_t *self)
 {
-    return create_socket(self)
-        && set_socket_options(self)
-        && (setup_address(self), true)
-        && bind_socket(self)
-        && listen_socket(self);
-}
-
-static void register_core_events(server_t *server)
-{
-    REGISTER(server->dispatcher, "client_connected",
-        on_client_connected, NULL);
-    REGISTER(server->dispatcher, "server_tick",
-        on_tick, server);
+    return create_socket(self) && set_socket_options(self) &&
+    (setup_address(self), true) && bind_socket(self) && listen_socket(self);
 }
 
 bool server_init(server_t *server, int port)
@@ -94,6 +91,7 @@ bool server_init(server_t *server, int port)
     memset(server, 0, sizeof(server_t));
     server->port = port;
     server->vtable = &DEFAULT_SERVER_METHODS;
+    server->frequency = 1.0f;
     if (!server->vtable->constructor(server)) {
         console_log(LOG_ERROR, "Failed to initialize server");
         return false;

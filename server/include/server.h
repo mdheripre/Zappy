@@ -17,6 +17,7 @@
     #include <poll.h>
     #include <signal.h>
     #include <stdlib.h>
+    #include <sys/time.h>
     #include "client.h"
     #include "shared.h"
     #include "dispatcher.h"
@@ -62,16 +63,13 @@ void server_destroy(server_t *self);
 void run_server(server_t *self);
 
 /* Command */
-void command_process_all(server_t *server);
-void command_router(server_t *server, client_t *client);
-void command_manager_handle(server_t *server, client_t *client,
-    const char *command);
+void command_process_all(server_t *server, float delta_time);
 void command_manager_register_all(server_t *server);
 void handle_command_forward(void *ctx, void *data);
 float get_command_delay(server_t *server, const char *command);
+void command_process_identify(server_t *server);
 
 /* Event */
-void on_tick(void *ctx, void *data);
 void on_client_connected(void *ctx, void *event_data);
 void on_client_identify(void *ctx, void *data);
 
