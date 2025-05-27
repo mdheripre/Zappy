@@ -21,10 +21,9 @@ fn main() -> Result<()>
         return Ok(());
     }
     if args.len() != 4 {
-        return Err(CoreError::InvalidArgs("USAGE: ./zappy_ai -p port -n name -h machine".into()));
+        return Err(CoreError::InvalidArgs);
     }
     init();
     lib_tcp::connect();
-    println!("Hello, world!");
     Ok(())
 }

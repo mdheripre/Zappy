@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub enum CoreError
 {
-    InvalidArgs(String),
+    InvalidArgs,
     Io(std::io::Error),
 }
 
@@ -13,7 +13,7 @@ impl std::fmt::Display for CoreError
     {
         match self
         {
-            CoreError::InvalidArgs(msg) => write!(f, "{}", msg),
+            CoreError::InvalidArgs => write!(f, ""),
             CoreError::Io(e) => write!(f, "Io error: {}", e),
         }
     }
