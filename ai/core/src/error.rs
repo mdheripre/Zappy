@@ -1,21 +1,19 @@
-use std::fmt::{self};
-
 #[derive(Debug)]
 pub enum CoreError
 {
-    InvalidArgs,
+    InvalidArgs(String),
     Io(std::io::Error),
 }
 
 impl std::error::Error for CoreError {}
 
-impl fmt::Display for CoreError
+impl std::fmt::Display for CoreError
 {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
     {
         match self
         {
-            CoreError::InvalidArgs => write!(f, "USAGE: ./zappy_ai -p port -n name -h machine"),
+            CoreError::InvalidArgs(msg) => write!(f, "{}", msg),
             CoreError::Io(e) => write!(f, "Io error: {}", e),
         }
     }

@@ -16,12 +16,12 @@ fn main() -> Result<()>
 {
     let args : Vec<String> = env::args().collect();
 
-    if args.len() == 2 && &args[1] == "--help" {
+    if args.len() == 2 && &args[1] == "-help" {
         print_usage();
         return Ok(());
     }
     if args.len() != 4 {
-        return Err(CoreError::InvalidArgs);
+        return Err(CoreError::InvalidArgs("USAGE: ./zappy_ai -p port -n name -h machine".into()));
     }
     init();
     lib_tcp::connect();
