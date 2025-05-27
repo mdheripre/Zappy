@@ -60,20 +60,19 @@ void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void server_destroy(server_t *self);
 void run_server(server_t *self);
+
+/* Command */
 void command_process_all(server_t *server);
-void on_client_connected(void *ctx, void *event_data);
-void on_client_identify(void *ctx, void *data);
 void command_router(server_t *server, client_t *client);
 void command_manager_handle(server_t *server, client_t *client,
     const char *command);
 void command_manager_register_all(server_t *server);
 void handle_command_forward(void *ctx, void *data);
-void on_tick(void *ctx, void *data);
 float get_command_delay(server_t *server, const char *command);
-void strip_linefeed(char *line);
-void on_gui_connected(void *ctx, void *data);
-void on_gui_command(void *ctx, void *data);
-void on_ia_command(void *ctx, void *data);
-void on_ia_connected(void *ctx, void *data);
+
+/* Event */
+void on_tick(void *ctx, void *data);
+void on_client_connected(void *ctx, void *event_data);
+void on_client_identify(void *ctx, void *data);
 
 #endif /* SERVER_H_ */

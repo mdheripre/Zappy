@@ -26,8 +26,7 @@ static void build_full_command(char *dest,
     dest[size - 1] = '\0';
 }
 
-static bool queue_command(server_t *server,
-    client_t *client, const char *full_cmd, float delay)
+static bool queue_command(client_t *client, const char *full_cmd, float delay)
 {
     int tail = client->command_tail;
     queued_command_t *slot = &client->commands[tail];
@@ -56,7 +55,7 @@ void command_manager_handle(server_t *server,
     build_full_command(full_command,
         sizeof(full_command), client->type, command);
     delay = server->vtable->get_command_delay(server, command);
-    queue_command(server, client, full_command, delay);
+    queue_command(client, full_command, delay);
 }
 
 void command_process_all(server_t *server)
