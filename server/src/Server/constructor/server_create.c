@@ -179,7 +179,7 @@ bool server_init(server_t *server, int port)
         console_log(LOG_ERROR, "Failed to initialize server");
         return false;
     }
-    server->dispatcher = NEW(dispatcher);
+    server->dispatcher = NEW(dispatcher, on_event_not_found);
     if (!server->dispatcher) {
         console_log(LOG_ERROR, "Failed to create dispatcher");
         return false;

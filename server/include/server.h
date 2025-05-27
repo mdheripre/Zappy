@@ -72,5 +72,5 @@ void command_process_identify(server_t *server);
 /* Event */
 void on_client_connected(void *ctx, void *event_data);
 void on_client_identify(void *ctx, void *data);
-
+void on_event_not_found(dispatcher_t *self, const char *event, void *data);
 #endif /* SERVER_H_ */

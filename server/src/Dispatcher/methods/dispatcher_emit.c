@@ -15,17 +15,15 @@
 /****************************************************************************/
 
 /**
- * @brief Emits an event with the given name and data to all registered
- * handlers.
+ * @brief Emits an event to all registered handlers matching the event name.
  *
- * This function iterates through all registered event handlers in the
- * dispatcher and calls the callback function for each handler that
- * matches the event name. If no handler is found for the event, an
- * error message is logged.
+ * Calls the callback functions of handlers whose event name matches the given
+ * event. If no handler is found and an on_not_found callback is set,
+ * it is called instead.
  *
  * @param self Pointer to the dispatcher instance.
- * @param event The name of the event to emit.
- * @param data Pointer to the data to pass to the event handlers.
+ * @param event Name of the event to emit.
+ * @param data Pointer to data to pass to the handler callbacks.
  */
 void dispatcher_emit(dispatcher_t *self, const char *event, void *data)
 {
@@ -40,7 +38,6 @@ void dispatcher_emit(dispatcher_t *self, const char *event, void *data)
             found = true;
         }
     }
-    if (!found)
-        console_log(LOG_ERROR,
-            "Event \"%s\" not handled by dispatcher", event);
+    if (!found && self->on_not_found)
+        self->on_not_found(self, event, data);
 }
