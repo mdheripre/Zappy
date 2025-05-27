@@ -9,6 +9,7 @@
 #include "Tools/MessageQueue/MessageQueue.hpp"
 #include "Tools/CommandManager/CommandManager.hpp"
 #include "Game/GameState/GameState.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include <sstream>
 #include <thread>
 #include <vector>
@@ -36,5 +37,6 @@ namespace game
             GameState _gm;
             bool _running = true;
             tools::CommandManager _cm;
+            std::unique_ptr<gui::Renderer3D> _renderer;
     };
 } // namespace Game
