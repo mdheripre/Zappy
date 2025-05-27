@@ -3,9 +3,51 @@ mod utils;
 mod prelude;
 mod init;
 
-use init::{init};
-use std::env;
 use crate::prelude::*;
+use std::env;
+use init::{init_client};
+
+#[derive(Debug)]
+struct ServerInfos
+{
+    ip: String,
+    port: u16,
+    name: String,
+} 
+
+fn parse_args(args:  Vec<String>) -> Result<ServerInfos>
+{
+    let mut ip = None;
+    let mut port = None;
+    let mut name = None;
+
+    let mut iter = args.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "-p" => {
+                if let Some(val) = iter.next() {
+                    port = Some(val.parse().map_err(|_| CoreError::InvalidArgs)?);
+                }
+            }
+            "-h" => {
+                if let Some(val) = iter.next() {
+                    ip = Some(val.parse().map_err(|_| CoreError::InvalidArgs)?);
+                }
+            }
+            "-n" => {
+                if let Some(val) = iter.next() {
+                    name = Some(val.parse().map_err(|_| CoreError::InvalidArgs)?);
+                }
+            }
+            _ => continue,
+        }
+    }
+
+    match (ip, port, name) {
+        (Some(ip), Some(port), Some(name)) => Ok(ServerInfos {ip, port, name}),
+        _ => Err(CoreError::InvalidArgs),
+    }
+}
 
 fn print_usage()
 {
@@ -20,10 +62,8 @@ fn main() -> Result<()>
         print_usage();
         return Ok(());
     }
-    if args.len() != 4 {
-        return Err(CoreError::InvalidArgs);
-    }
-    init();
-    lib_tcp::connect();
+    let infos = parse_args(args)?;
+    println!("{:?}", infos);
+    init_client(&infos)?;
     Ok(())
 }
