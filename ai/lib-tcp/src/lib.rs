@@ -3,7 +3,6 @@ pub use crate::error::{Result, TcpError};
 use std::io::{Read, Write};
 use std::net::TcpStream;
 
-// Generic wrapper struct for Newtype pattern
 pub struct W<T>(T);
 
 impl W<TcpStream>
@@ -28,7 +27,6 @@ impl W<TcpStream>
     }
 }
 
-// old but maybe usefull functions
 pub fn connect(ip: &str, port: u16) -> Result<TcpStream>
 {
     let addr = format!("{}:{}", ip, port);

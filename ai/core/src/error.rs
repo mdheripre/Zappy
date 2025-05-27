@@ -1,3 +1,7 @@
+use std::error;
+use std::io;
+use std::fmt;
+
 #[derive(Debug)]
 pub enum CoreError
 {
@@ -6,11 +10,11 @@ pub enum CoreError
     Tcp(lib_tcp::TcpError),
 }
 
-impl std::error::Error for CoreError {}
+impl error::Error for CoreError {}
 
-impl std::fmt::Display for CoreError
+impl fmt::Display for CoreError
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result
     {
         match self
         {
@@ -21,9 +25,9 @@ impl std::fmt::Display for CoreError
     }
 }
 
-impl From<std::io::Error> for CoreError
+impl From<io::Error> for CoreError
 {
-    fn from(err: std::io::Error) -> Self
+    fn from(err: io::Error) -> Self
     {
         CoreError::Io(err)
     }
