@@ -2,8 +2,9 @@ use crate::ServerInfos;
 
 pub fn init_client(infos: &ServerInfos) -> lib_tcp::Result<()> 
 {
-    let stream = lib_tcp::connect(&infos.ip, infos.port)?;
+    let mut client = lib_tcp::W::connect(&infos.ip, infos.port)?;
 
-    lib_tcp::send(stream, &infos.name)?;
+    client.send(&infos.name)?;
+    client.recv()?;
     Ok(())
 }
