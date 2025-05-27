@@ -7,49 +7,47 @@
 
 #pragma once
 #include "Game/Map/Tile/Tile.hpp"
-#include "array"
+#include <vector>
 #include <tuple>
 #include <stdexcept>
 
-namespace game
-{
-    template <int w, int h>
-    class Map
-    {
-    private:
-        std::array<std::array<Tile, w>, h> _map;
-        std::tuple<int, int> _dim = std::make_tuple(w, h);
+namespace game {
 
-    public:
-        Map() = default;
-        explicit Map(const std::array<std::array<Tile, w>, h> &map) : _map(map) {}
-        ~Map() = default;
+class Map {
+private:
+    int _width;
+    int _height;
+    std::vector<std::vector<Tile>> _map;
 
-        const std::array<std::array<Tile, w>, h> &getMap() const { return _map; }
-        void setMap(const std::array<std::array<Tile, w>, h> &map) { _map = map; }
-        void setTile(const Tile &tile, std::tuple<int, int> position)
-        {
-            int x;
-            int y;
-            std::tie(x, y) = position;
+public:
+    Map(int width, int height)
+        : _width(width), _height(height), _map(height, std::vector<Tile>(width)) {}
 
-            if (x < 0 || x >= w || y < 0 || y >= h)
-                throw std::runtime_error("Error: Invalid tile position");
+    void setTile(const Tile& tile, std::tuple<int, int> pos) {
+        int x, y;
+        std::tie(x, y) = pos;
+        if (x < 0 || x >= _width || y < 0 || y >= _height)
+            throw std::runtime_error("Invalid tile position");
+        _map[y][x] = tile;
+    }
 
-            _map[y][x] = tile;
-        }
-        const Tile &getTile(std::tuple<int, int> position) const
-        {
-            int x;
-            int y;
-            std::tie(x, y) = position;
+    const Tile& getTile(std::tuple<int, int> pos) const {
+        int x, y;
+        std::tie(x, y) = pos;
+        if (x < 0 || x >= _width || y < 0 || y >= _height)
+            throw std::runtime_error("Invalid tile position");
+        return _map[y][x];
+    }
 
-            if (x < 0 || x >= w || y < 0 || y >= h)
-                throw std::runtime_error("Error: Invalid tile position");
-            return _map[y][x];
-        }
-        std::tuple<int, int> getDim() const {return _dim;}
-    };
+    std::tuple<int, int> getDim() const {
+        return { _width, _height };
+    }
+
+    const std::vector<std::vector<Tile>>& getMap() const {
+        return _map;
+    }
+};
+
 } // namespace game
 
 
