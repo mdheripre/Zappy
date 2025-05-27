@@ -9,6 +9,12 @@
 #include "utils.h"
 
 
+/****************************************************************************/
+/*                                                                          */
+/*                        IDENTIFY CLIENT                                   */
+/*                                                                          */
+/****************************************************************************/
+
 static void dispatch_type(client_t *client, char *cleaned)
 {
     if (strcmp(cleaned, "GRAPHIC") == 0) {
@@ -21,6 +27,16 @@ static void dispatch_type(client_t *client, char *cleaned)
     }
 }
 
+/**
+ * @brief Handles the client identification event.
+ *
+ * This function is called when a client sends an identification command.
+ * It checks if the client is undefined, processes the command, and
+ * identifies the client type based on the command content.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the client instance.
+ */
 void on_client_identify(void *ctx, void *data)
 {
     server_t *server = ctx;

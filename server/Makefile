@@ -33,6 +33,7 @@ SRCS = \
 	$(SRC_SERV_METHODS_NET)/setup_poll.c \
 	$(SRC_SERV_METHODS_EVT)/on_client_connected.c \
 	$(SRC_SERV_METHODS_EVT)/on_identify_client.c \
+	$(SRC_SERV_METHODS_EVT)/on_event_not_found.c \
 	$(SRC_SERV_METHODS_CMDS)/command_manager.c \
 	$(SRC_SERV_METHODS_CMDS)/forward.c \
 	$(SRC_SERV_METHODS_CMDS)/get_delay.c \

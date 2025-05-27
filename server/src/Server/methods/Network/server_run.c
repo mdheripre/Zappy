@@ -9,7 +9,23 @@
 #include "server.h"
 #include "utils.h"
 
-float get_delta_time(struct timeval *last_time)
+/****************************************************************************/
+/*                                                                          */
+/*                                SERVER LOOP                               */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * @brief Calculates the time elapsed since the last call in seconds.
+ *
+ * Updates the provided timeval structure to the current time.
+ *
+ * @param last_time Pointer to the previous timeval structure
+ *                  (updated in-place).
+ * @return Elapsed time in seconds as a float.
+ */
+static float get_delta_time(struct timeval *last_time)
 {
     struct timeval now;
     float delta = 0.0f;
@@ -21,6 +37,14 @@ float get_delta_time(struct timeval *last_time)
     return delta;
 }
 
+/**
+ * @brief Runs the main server loop, handling client events and commands.
+ *
+ * Sets up polling for client connections, processes incoming events,
+ * and executes server commands in a continuous loop.
+ *
+ * @param self Pointer to the server instance.
+ */
 void run_server(server_t *self)
 {
     struct pollfd fds[MAX_CLIENTS + 1];

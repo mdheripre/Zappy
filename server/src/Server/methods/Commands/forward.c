@@ -8,6 +8,13 @@
 #include "server.h"
 #include "utils.h"
 
+
+/****************************************************************************/
+/*                                                                          */
+/*                        COMMAND PRIVATE                                   */
+/*                                                                          */
+/****************************************************************************/
+
 void handle_command_forward(void *ctx, void *data)
 {
     client_t *client = data;

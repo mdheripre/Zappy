@@ -9,7 +9,22 @@
 #include "server.h"
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              POLLING SYSTEM                              */
+/*                                                                          */
+/****************************************************************************/
 
+/**
+ * @brief Processes a command line from the client.
+ *
+ * This function cleans the command line, retrieves the delay for the command,
+ * and enqueues it into the client's command queue.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client instance.
+ * @param line The command line to process.
+ */
 static void process_command_line(server_t *server,
     client_t *client, const char *line)
 {
@@ -27,6 +42,15 @@ static void process_command_line(server_t *server,
     }
 }
 
+/**
+ * @brief Extracts commands from the client's read buffer and processes them.
+ *
+ * This function searches for newline characters in the client's read buffer,
+ * extracts complete command lines, and processes each command line.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client instance.
+ */
 static void extract_commands_from_buffer(server_t *server,
     client_t *client)
 {
@@ -52,6 +76,16 @@ static void extract_commands_from_buffer(server_t *server,
     }
 }
 
+/**
+ * @brief Appends data to the client's read buffer.
+ *
+ * This function copies the specified number of bytes from the provided buffer
+ * to the client's read buffer, updating the buffer length accordingly.
+ *
+ * @param client Pointer to the client instance.
+ * @param buf Pointer to the data buffer to append.
+ * @param bytes Number of bytes to append.
+ */
 static void append_to_read_buffer(client_t *client,
     const char *buf, ssize_t bytes)
 {
@@ -60,6 +94,16 @@ static void append_to_read_buffer(client_t *client,
     client->read_buffer[client->buffer_len] = '\0';
 }
 
+/**
+ * @brief Reads data from a client socket and processes it.
+ *
+ * This function reads data from the specified client socket, appends it to
+ * the client's read buffer, and extracts commands from the buffer.
+ * If the read operation fails or the buffer overflows, it removes the client.
+ *
+ * @param server Pointer to the server instance.
+ * @param index Index of the client in the server's client array.
+ */
 void read_from_client(server_t *server, int index)
 {
     client_t *client = &server->clients[index];
@@ -83,6 +127,16 @@ void read_from_client(server_t *server, int index)
     extract_commands_from_buffer(server, client);
 }
 
+/**
+ * @brief Sets up the poll file descriptors for the server and its clients.
+ *
+ * This function initializes the poll file descriptors for the server socket
+ * and all connected clients, preparing them for polling events.
+ *
+ * @param self Pointer to the server instance.
+ * @param fds Array of poll file descriptors to populate.
+ * @param nfds Pointer to the number of file descriptors in the array.
+ */
 void handle_server_poll(server_t *self, struct pollfd *fds)
 {
     int client_index = 0;
