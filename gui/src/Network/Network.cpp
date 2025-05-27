@@ -33,8 +33,9 @@ void net::Network::startLoop()
             if (_client->readCommand())
                 _incoming->push(_client->getCommand());
 
-            if (!allMessage.empty())
+            if (!allMessage.empty()) {
                 _client->sendMessage(allMessage);
+            }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(15));
         }

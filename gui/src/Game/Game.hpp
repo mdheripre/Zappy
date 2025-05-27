@@ -9,6 +9,10 @@
 #include "Tools/MessageQueue/MessageQueue.hpp"
 #include "Tools/CommandManager/CommandManager.hpp"
 #include "Game/GameState/GameState.hpp"
+#include <sstream>
+#include <thread>
+#include <vector>
+#include <string>
 
 namespace game
 {
@@ -17,7 +21,9 @@ namespace game
         public:
             Game(std::shared_ptr<tools::MessageQueue> _incoming,
                 std::shared_ptr<tools::MessageQueue> _outgoing);
-            ~Game();
+            ~Game() = default;
+            void gameLoop();
+            void stopLoop() {_running = false;};
         private:
             std::shared_ptr<tools::MessageQueue> _incoming;
             std::shared_ptr<tools::MessageQueue> _outgoing;
@@ -26,7 +32,9 @@ namespace game
             void bctCommand(const std::vector<std::string> &token);
             void tnaCommand(const std::vector<std::string> &token);
             void printErrorCommand(const std::string &cm, const std::vector<std::string> &token);
+            void manageCommand(const std::string &command);
             GameState _gm;
+            bool _running = true;
             tools::CommandManager _cm;
     };
 } // namespace Game

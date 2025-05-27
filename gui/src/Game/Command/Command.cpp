@@ -13,6 +13,7 @@ void game::Game::welcomeCm(const std::vector<std::string> &token)
         printErrorCommand("WELCOME", token);
     _outgoing->push("GRAPHIC\n");
     _gm.connected = true;
+    std::cout << "Connected" << std::endl;
 }
 
 void game::Game::mszCommand(const std::vector<std::string> &token)

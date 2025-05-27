@@ -9,19 +9,13 @@
 
 bool tools::CommandManager::handleCommand(const std::vector<std::string> &args)
 {
-    std::vector<std::string> lowArgs;
-
-    for (auto &i : args) {
-        std::string lowArg = i;
-        std::transform(lowArg.begin(), lowArg.end(), lowArg.begin(),
-        [](unsigned char c) { return std::tolower(c); });
-        lowArgs.push_back(lowArg);
-    }
     if (args.empty())
         return false;
-    auto it = _commands.find(lowArgs[0]);
+
+    auto it = _commands.find(args[0]);
     if (it != _commands.end()) {
-        it->second(lowArgs);
+        std::vector<std::string> subargs(args.begin() + 1, args.end());
+        it->second(subargs);
         return true;
     }
     return false;

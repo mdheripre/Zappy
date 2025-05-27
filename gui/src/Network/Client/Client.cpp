@@ -27,7 +27,7 @@ bool net::Client::readCommand()
     char buffer[1024];
     size_t pos;
 
-    if (poll(&pfd, 1, -1) < 0)
+    if (poll(&pfd, 1, 100) < 0)
         throw std::runtime_error("Error during readCommand call (poll failed)");
     if (pfd.revents & POLLIN) {
         ssize_t bytes_read = read(this->_sock->getFd(), buffer, sizeof(buffer) - 1);
@@ -38,7 +38,7 @@ bool net::Client::readCommand()
         pos = this->_commandBuffer.find("\n");
         if (pos != std::string::npos) {
             this->_command = this->_commandBuffer.substr(0, pos);
-            this->_commandBuffer.erase(0, pos + 2);
+            this->_commandBuffer.erase(0, pos + 1);
             return true;
         }
     }

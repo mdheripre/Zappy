@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Network/Network.hpp"
+#include "Game/Game.hpp"
 #include <memory>
 #include <vector>
 #include <string>
@@ -26,6 +27,7 @@ namespace gui
             std::shared_ptr<tools::MessageQueue> _incoming;
             std::shared_ptr<tools::MessageQueue> _outgoing;
             std::unique_ptr<net::Network> _net;
+            std::unique_ptr<game::Game> _game;
             bool isEnvGraphics(char **env);
     };
 } // namespace gui
