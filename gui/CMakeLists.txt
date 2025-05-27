@@ -4,9 +4,10 @@ project(zappy_gui)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES
-    src/main.cpp
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    src/*.cpp
 )
 
-include_directories(include)
+include_directories(src)
+
 add_executable(zappy_gui ${SOURCES})

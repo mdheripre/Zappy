@@ -5,7 +5,23 @@
 ** main
 */
 
-int main()
+#include "Core/Core.hpp"
+
+int main(int, char **av, char **env)
 {
-    return 1;
+    std::vector<std::string> args;
+
+    for (int i = 1; av[i]; i++)
+        args.push_back(av[i]);
+    try
+    {
+        gui::Core core(args, env);
+        core.run();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return 84;
+    }
+    return 0;
 }
