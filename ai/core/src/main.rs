@@ -21,6 +21,9 @@ fn parse_args(args:  Vec<String>) -> Result<ServerInfos>
     let mut port = None;
     let mut name = None;
 
+    if args.len() != 7 {
+        return Err(CoreError::InvalidArgs);
+    }
     let mut iter = args.into_iter();
     while let Some(arg) = iter.next() {
         match arg.as_str() {
