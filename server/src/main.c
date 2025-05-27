@@ -5,7 +5,24 @@
 ** main
 */
 
-int main()
+#include "server.h"
+#include "shared.h"
+
+static void handle_sigint(int sig)
 {
-    return 1;
+    (void)sig;
+    DELETE();
+    exit(0);
+}
+
+int main(void)
+{
+    server_t *server = NEW(server, 1234);
+
+    signal(SIGINT, handle_sigint);
+    if (!server)
+        return 84;
+    server->vtable->run(server);
+    DELETE();
+    return 0;
 }
