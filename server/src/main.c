@@ -17,7 +17,7 @@ static void handle_sigint(int sig)
 
 int main(void)
 {
-    server_t *server = NEW(server, 1234);
+    server_t *server = NEW(server, 1234, 800, 600, 1.0f);
 
     signal(SIGINT, handle_sigint);
     if (!server)

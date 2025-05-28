@@ -195,16 +195,7 @@ bool server_init(server_t *server, int port)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Creates a new server instance and initializes it.
- *
- * Allocates memory for a server_t structure, initializes it with the specified
- * port, and returns a pointer to the newly created server instance.
- *
- * @param port The port number for the server to listen on.
- * @return Pointer to the newly created server_t instance, or NULL on failure.
- */
-server_t *server_create(int port)
+server_t *server_create(int port, int width, int height, float frequency)
 {
     server_t *server = malloc(sizeof(server_t));
 
@@ -212,6 +203,10 @@ server_t *server_create(int port)
         return NULL;
     if (!server_init(server, port)) {
         free(server);
+        return NULL;
+    }
+    server->game = NEW(game, width, height, frequency);
+    if (!server->game) {
         return NULL;
     }
     return server;
