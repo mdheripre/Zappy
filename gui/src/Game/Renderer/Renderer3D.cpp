@@ -41,23 +41,48 @@ void gui::Renderer3D::handleCameraInput()
     if (IsKeyDown(KEY_S))     _camera.position.y -= 0.2f;
 }
 
+static const std::map<int, Color> &getResourceColors() 
+{
+    static const std::map<int, Color> resourceColors = {
+        {0, GREEN},    // food
+        {1, ORANGE},   // linemate
+        {2, BLUE},     // deraumere
+        {3, PURPLE},   // sibur
+        {4, RED},      // mendiane
+        {5, GOLD},     // phiras
+        {6, VIOLET}    // thystame
+    };
+    return resourceColors;
+}
+
+// Les deux fonctions getResourseColor(s) sont ammenées à disparaitre a l'avenir
+// TODO : CHANGER POUR UTILISER DES SPRITES
+
 Color gui::Renderer3D::getResourceColor(int id)
 {
-    switch (id) {
-        case 0: return GREEN;      // food
-        case 1: return ORANGE;     // linemate
-        case 2: return BLUE;       // deraumere
-        case 3: return PURPLE;     // sibur
-        case 4: return RED;        // mendiane
-        case 5: return GOLD;       // phiras
-        case 6: return VIOLET;     // thystame
-        default: return GRAY;
-    }
+    const auto &colors = getResourceColors();
+    auto it = colors.find(id);
+    return it != colors.end() ? it->second : GRAY;
 }
 
 void gui::Renderer3D::update()
 {
     handleCameraInput();
+}
+
+void gui::Renderer3D::drawTileResources(const Vector3& tilePos, const std::array<int, 7>& resources)
+{
+    for (int type = 0; type < static_cast<int>(resources.size()); ++type) {
+        int count = resources[type];
+        for (int i = 0; i < count; ++i) {
+            Vector3 resPos = {
+                tilePos.x + 0.2f * type,
+                0.15f + i * 0.15f,
+                tilePos.z
+            };
+            DrawCube(resPos, 0.15f, 0.15f, 0.15f, getResourceColor(type));
+        }
+    }
 }
 
 void gui::Renderer3D::render(const game::Map &map)
@@ -77,19 +102,10 @@ void gui::Renderer3D::render(const game::Map &map)
             DrawCubeWires(tilePos, 1.0f, 0.1f, 1.0f, DARKGRAY);
 
             const auto &resources = map.getTile({x, y}).getResources();
-
-            for (size_t i = 0; i < resources.size(); ++i) {
-                for (int j = 0; j < resources[i]; ++j) {
-                    Vector3 resPos = {
-                        tilePos.x + 0.2f * i,
-                        0.15f + j * 0.15f,
-                        tilePos.z
-                    };
-                    DrawCube(resPos, 0.15f, 0.15f, 0.15f, getResourceColor(i));
-                }
-            }
+            drawTileResources(tilePos, resources);
         }
     }
+
     EndMode3D();
     DrawText("Zappy 3D Viewer - Fleches pour naviguer", 10, 10, 20, DARKGRAY);
     EndDrawing();

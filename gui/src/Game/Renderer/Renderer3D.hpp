@@ -10,6 +10,7 @@
 #include "Game/Map/Map.hpp"
 #include "raylib.h"
 #include <memory>
+#include <map>
 
 namespace gui {
     class Renderer3D {
@@ -19,6 +20,7 @@ namespace gui {
 
         void init();
         void update();
+        void drawTileResources(const Vector3& tilePos, const std::array<int, 7>& resources);
         void render(const game::Map &map);
         bool shouldClose() const;
 
