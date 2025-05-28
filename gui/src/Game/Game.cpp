@@ -1,4 +1,3 @@
-#include "Game.hpp"
 /*
 ** EPITECH PROJECT, 2025
 ** Projet
@@ -6,13 +5,19 @@
 ** Game.cpp
 */
 
+#include "Game.hpp"
+
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
-    std::shared_ptr<tools::MessageQueue> outgoing) : _incoming(incoming), _outgoing(outgoing)
+    std::shared_ptr<tools::MessageQueue> outgoing)
+    : _incoming(incoming), _outgoing(outgoing)
 {
     _cm.addCommand("WELCOME", std::bind(&Game::welcomeCm, this, std::placeholders::_1));
     _cm.addCommand("msz", std::bind(&Game::mszCommand, this, std::placeholders::_1));
     _cm.addCommand("tna", std::bind(&Game::tnaCommand, this, std::placeholders::_1));
     _cm.addCommand("bct", std::bind(&Game::bctCommand, this, std::placeholders::_1));
+
+    _renderer = std::make_unique<gui::Renderer3D>();
+    _renderer->init();
 }
 
 void game::Game::manageCommand(const std::string &command)
@@ -29,18 +34,24 @@ void game::Game::manageCommand(const std::string &command)
 
 void game::Game::gameLoop()
 {
-    while (_running) {
+    bool errorCaught = false;
+    std::string errorMessage;
+
+    while (!_renderer->shouldClose()) {
         try {
-            std::string allMessage;
-            while (true) {
+            if (!errorCaught) {
                 std::string message;
-                if (_incoming->tryPop(message)) {
+                while (_incoming->tryPop(message))
                     manageCommand(message);
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
+            _renderer->update();
+            if (_gm.map)
+                _renderer->render(*_gm.map);
+
         } catch (const std::exception& e) {
             std::cerr << "Game " << e.what() << std::endl;
+            errorCaught = true;
+            errorMessage = e.what();
             _running = false;
         }
     }
