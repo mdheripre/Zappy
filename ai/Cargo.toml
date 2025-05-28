@@ -1,3 +1,12 @@
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unused_variables = "allow"
+unused_imports = "allow"
+dead_code = "allow"
+
 [workspace]
-resolver = "3"
-members = ["core", "tcp"]
+resolver = "2"
+members = [
+    "core",
+    "lib-tcp"
+]

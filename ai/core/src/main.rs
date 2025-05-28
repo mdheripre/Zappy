@@ -1,23 +1,28 @@
+mod error;
 mod init;
+mod prelude;
+mod utils;
 
-use init::{init};
+use crate::prelude::*;
+use clap::Parser;
+use init::init_client;
+use tokio::runtime::Runtime;
 
-use std::env;
-
-fn print_usage()
-{
-    println!("USAGE: ./zappy_ai -p port -n name -h machine");
+#[derive(Parser, Debug)]
+#[command(name = "zappy_ai", disable_help_flag = true)]
+struct ServerInfos {
+    #[arg(short = 'h', long)]
+    ip: String,
+    #[arg(short = 'p', long)]
+    port: u16,
+    #[arg(short = 'n', long)]
+    name: String,
 }
 
-fn main()
-{
-    let args : Vec<String> = env::args().collect();
+fn main() -> Result<()> {
+    let infos = ServerInfos::parse();
 
-    if (args.len()) != 4{
-        print_usage();
-        return;
-    }
-    init();
-    tcp::connect();
-    println!("Hello, world!");
+    let rt = Runtime::new()?;
+    rt.block_on(async { init_client(&infos).await })?;
+    Ok(())
 }

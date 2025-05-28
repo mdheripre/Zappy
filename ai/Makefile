@@ -14,7 +14,7 @@ all: release
 
 release:
 	cargo build --workspace --release
-	cp $(RELEASE_BIN) ./zappy_ai
+	cp $(RELEASE_BIN) ./bin/
 
 debug:
 	cargo build --workspace

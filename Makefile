@@ -11,7 +11,7 @@ NAME_AI = zappy_ai
 
 DIR_SERVER = server
 DIR_GUI = gui
-DIR_AI = ai
+DIR_AI = ai/bin
 
 all: $(NAME_SERVER) $(NAME_GUI) $(NAME_AI)
 
