@@ -21,6 +21,10 @@ SRC_DISPATCHER = $(SRC_DIR)/Dispatcher
 SRC_DISP_CTOR = $(SRC_DISPATCHER)/constructor
 SRC_DISP_DTOR = $(SRC_DISPATCHER)/destructor
 SRC_DISP_METHODS = $(SRC_DISPATCHER)/methods
+SRC_LIST = $(SRC_DIR)/List
+SRC_LIST_CTOR = $(SRC_LIST)/constructor
+SRC_LIST_DTOR = $(SRC_LIST)/destructor
+SRC_LIST_METHODS = $(SRC_LIST)/methods
 
 SRCS = \
 	$(SRC_DIR)/main.c \
@@ -44,7 +48,13 @@ SRCS = \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
 	$(SRC_DISP_METHODS)/dispatcher_emit.c \
-	$(SRC_DISP_METHODS)/dispatcher_register.c
+	$(SRC_DISP_METHODS)/dispatcher_register.c \
+	$(SRC_LIST_CTOR)/list_create.c \
+	$(SRC_LIST_DTOR)/list_destroy.c \
+	$(SRC_LIST_METHODS)/list_clear.c \
+	$(SRC_LIST_METHODS)/list_pop_front.c \
+	$(SRC_LIST_METHODS)/list_push_back.c \
+	$(SRC_LIST_METHODS)/list_size.c \
 
 OBJS = $(SRCS:.c=.o)
 
