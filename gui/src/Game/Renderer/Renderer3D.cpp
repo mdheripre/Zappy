@@ -85,7 +85,7 @@ void gui::Renderer3D::drawTileResources(const Vector3& tilePos, const std::array
     }
 }
 
-void gui::Renderer3D::render(const game::Map &map)
+void gui::Renderer3D::render(const game::Map &map, const std::unordered_map<int, game::Player> &players)
 {
     auto [width, height] = map.getDim();
     float offsetX = width / 2.0f;
@@ -106,7 +106,20 @@ void gui::Renderer3D::render(const game::Map &map)
         }
     }
 
+    // TODO : Changer ça en bas pour utiliser des sprites plus tard
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    for (const auto& [id, player] : players) {
+        Vector3 pos = {
+            player.x - offsetX,
+            0.25f,
+            player.y - offsetY
+        };
+        DrawSphere(pos, 0.3f, SKYBLUE);
+    }
+
     EndMode3D();
     DrawText("Zappy 3D Viewer - Fleches pour naviguer", 10, 10, 20, DARKGRAY);
     EndDrawing();
 }
+
