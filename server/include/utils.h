@@ -27,7 +27,7 @@ typedef enum log_level_e {
 
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
-
+long get_ms_time(void);
 bool client_enqueue_command(client_t *client,
     const char *cmd, float delay);
 bool client_dequeue_command(client_t *client, queued_command_t *out);

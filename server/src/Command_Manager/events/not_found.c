@@ -2,33 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** on_event_not_found
+** not_found
 */
 
-#include "server.h"
+#include "command_manager.h"
 #include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                               EVENT GLOBAL                               */
+/*                      CALLBACK FUNCTION                                   */
 /*                                                                          */
 /****************************************************************************/
-
-
 /**
- * @brief Handles events that are not found in the dispatcher.
+ * @brief Handles unknown commands received from clients.
  *
- * Logs a warning and notifies the client if the unknown event is a command,
- * otherwise logs the event as ignored.
+ * Logs a warning and sends a "ko" response to the client if the event
+ * corresponds to an unrecognized IA or GUI command.
  *
- * @param self Pointer to the dispatcher instance.
- * @param event Name of the event that was not found.
- * @param data Pointer to the client structure (client_t *).
+ * @param self    Pointer to the dispatcher instance (unused).
+ * @param event   The event string representing the command.
+ * @param data    Pointer to the client_t structure.
  */
-void on_event_not_found(dispatcher_t *, const char *event, void *data)
+void on_command_not_found(dispatcher_t *self, const char *event, void *data)
 {
-    client_t *client = data;
+    client_t *client = (client_t *)data;
 
+    (void)self;
     if (!event || !client)
         return;
     if (strncmp(event, "command_ia_", 11) == 0 ||
@@ -36,6 +35,5 @@ void on_event_not_found(dispatcher_t *, const char *event, void *data)
         console_log(LOG_WARNING,
             "Unknown command \"%s\" from client fd=%d", event, client->fd);
         write(client->fd, "ko\n", 3);
-    } else
-        console_log(LOG_INFO, "Ignored unknown event \"%s\"", event);
+    }
 }

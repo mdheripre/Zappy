@@ -51,6 +51,7 @@ static void register_core_events(server_t *server)
         on_client_connected, NULL);
     REGISTER(server->dispatcher, "client_identify",
         on_client_identify, server);
+    REGISTER(server->dispatcher, "send_response", on_send_response, NULL);
 }
 
 /****************************************************************************/
@@ -185,7 +186,6 @@ bool server_init(server_t *server, int port)
         return false;
     }
     register_core_events(server);
-    command_manager_register_all(server);
     return true;
 }
 
@@ -196,15 +196,18 @@ bool server_init(server_t *server, int port)
 /****************************************************************************/
 
 /**
- * @brief Creates a new server instance and initializes it.
+ * @brief Creates and initializes a new server instance.
  *
- * Allocates memory for a server_t structure, initializes it with the specified
- * port, and returns a pointer to the newly created server instance.
+ * Allocates memory for a server, initializes it with the given port,
+ * creates the game and command manager, and registers all commands.
  *
  * @param port The port number for the server to listen on.
- * @return Pointer to the newly created server_t instance, or NULL on failure.
+ * @param width The width of the game map.
+ * @param height The height of the game map.
+ * @param frequency The frequency for the game loop.
+ * @return Pointer to the created server_t, or NULL on failure.
  */
-server_t *server_create(int port)
+server_t *server_create(int port, int width, int height, float frequency)
 {
     server_t *server = malloc(sizeof(server_t));
 
@@ -214,5 +217,15 @@ server_t *server_create(int port)
         free(server);
         return NULL;
     }
+    server->game = NEW(game, width, height, frequency);
+    if (!server->game) {
+        return NULL;
+    }
+    server->command_manager = NEW(command_manager);
+    if (!server->command_manager) {
+        console_log(LOG_ERROR, "Failed to create command manager");
+        return NULL;
+    }
+    server->command_manager->methods->register_all(server->command_manager);
     return server;
 }
