@@ -12,7 +12,7 @@ void game::Game::welcomeCm(const std::vector<std::string> &token)
     if (!token.empty())
         printErrorCommand("WELCOME", token);
     _outgoing->push("GRAPHIC\n");
-    _gm.connected = true;
+    _gm.state = GameState::State::CONNECTED;
     std::cout << "Connected" << std::endl;
 }
 
@@ -53,6 +53,135 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
         _gm.teams.emplace(tokens, game::Team(tokens));
         std::cout << "Team added: " << tokens << std::endl;
     }
+}
+
+void game::Game::plvCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PLV not implemented" << std::endl;
+}
+
+void game::Game::pinCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PIN not implemented" << std::endl;
+}
+
+void game::Game::plnCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PLN not implemented" << std::endl;
+}
+
+void game::Game::pexCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PEX not implemented" << std::endl;
+}
+
+void game::Game::pbcCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PBC not implemented" << std::endl;
+}
+
+void game::Game::picCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PIC not implemented" << std::endl;
+}
+
+void game::Game::pieCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PIE not implemented" << std::endl;
+}
+
+void game::Game::pfkCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PFK not implemented" << std::endl;
+}
+
+void game::Game::pdrCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PDR not implemented" << std::endl;
+}
+
+void game::Game::pgtCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PGT not implemented" << std::endl;
+}
+
+void game::Game::pdiCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "PDI not implemented" << std::endl;
+}
+
+void game::Game::enwCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "ENW not implemented" << std::endl;
+}
+
+void game::Game::eboCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "EBO not implemented" << std::endl;
+}
+
+void game::Game::ediCommand(const std::vector<std::string> &token)
+{
+    std::cerr << "EDI not implemented" << std::endl;
+}
+
+void game::Game::sgtCommand(const std::vector<std::string> &token)
+{
+    if (token.size() != 1)
+        printErrorCommand("sgt", token);
+
+    try
+    {
+        _gm.time_unit = std::stof(token[0]);
+    }
+    catch(const std::exception& e)
+    {
+        printErrorCommand(e.what(), token);
+    }
+}
+
+void game::Game::sstCommand(const std::vector<std::string> &token)
+{
+    if (token.size() != 1)
+        printErrorCommand("sst", token);
+
+    try
+    {
+        _gm.time_unit = std::stof(token[0]);
+    }
+    catch(const std::exception& e)
+    {
+        printErrorCommand(e.what(), token);
+    }
+}
+
+void game::Game::segCommand(const std::vector<std::string> &token)
+{
+    if (!token.empty())
+        printErrorCommand("seg", token);
+    _gm.state = GameState::State::END;
+    std::cout << "Game end;" << std::endl;
+}
+
+void game::Game::smgCommand(const std::vector<std::string> &token)
+{
+    std::string tokens;
+
+    for (auto &i : token) {
+        tokens += " ";
+        tokens += i;
+    }
+    std::cout << "Message from server:" << tokens << std::endl;
+}
+
+void game::Game::sucCommand(const std::vector<std::string> &token)
+{
+    std::cout << "Server don't know the last command" << std::endl;
+}
+
+void game::Game::sbpCommand(const std::vector<std::string> &token)
+{
+    std::cout << "Server don't accept params of the last command" << std::endl;
 }
 
 void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)

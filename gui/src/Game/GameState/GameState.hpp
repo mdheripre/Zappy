@@ -16,10 +16,15 @@ namespace game
     class GameState
     {
     public:
+        enum class State {
+            NOT_CONNECTED = 0,
+            CONNECTED,
+            END
+        };
         GameState() = default;
         ~GameState() = default;
-        bool start = false;
-        bool connected = false;
+        State state;
+        float time_unit = 0;
         std::unique_ptr<Map> map;
         std::unordered_map<std::string, Team> teams;
     };
