@@ -57,6 +57,7 @@ game_t *game_create(int width, int height, double frequency)
     game->frequency = frequency;
     game->last_tick_time = 0;
     game->methods = &GAME_METHODS;
+    game->dispatcher = NEW(dispatcher, NULL);
     if (!game_init_map(game))
         return NULL;
     if (!game_init_lists(game))

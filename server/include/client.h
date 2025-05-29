@@ -23,8 +23,6 @@ typedef struct queued_command_s {
     float time_remaining;
 } queued_command_t;
 
-
-
 typedef struct client_s {
     int fd;
     bool connected;

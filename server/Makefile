@@ -8,16 +8,23 @@
 NAME = zappy_server
 
 SRC_DIR = src
+
 SRC_SERVER = $(SRC_DIR)/Server
 SRC_SERV_CTOR = $(SRC_SERVER)/constructor
 SRC_SERV_DTOR = $(SRC_SERVER)/destructor
 SRC_SERV_METHODS = $(SRC_SERVER)/methods
-SRC_SERV_METHODS_NET = $(SRC_SERV_METHODS)/Network
-SRC_SERV_METHODS_EVT = $(SRC_SERV_METHODS)/Event
-SRC_SERV_METHODS_CMDS = $(SRC_SERV_METHODS)/Commands
+SRC_SERV_EVENT = $(SRC_SERVER)/events
+
+SRC_CMD_MANAGER = $(SRC_DIR)/Command_Manager
+SRC_CMD_MANAGER_CTOR = $(SRC_CMD_MANAGER)/constructor
+SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
+SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
+SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
+
+
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
-SRC_UTILS_QUEU = $(SRC_UTILS)/Queu
+SRC_UTILS_QUEUE = $(SRC_UTILS)/Queue
 SRC_UTILS_LOG = $(SRC_UTILS)/Log
 SRC_UTILS_HELPERS = $(SRC_UTILS)/Helper
 SRC_DISPATCHER = $(SRC_DIR)/Dispatcher
@@ -37,22 +44,28 @@ SRCS = \
 	$(SRC_DIR)/main.c \
 	$(SRC_SERV_CTOR)/server_create.c \
 	$(SRC_SERV_DTOR)/server_destroy.c \
-	$(SRC_SERV_METHODS_NET)/accept_client.c \
-	$(SRC_SERV_METHODS_NET)/handle_poll.c \
-	$(SRC_SERV_METHODS_NET)/remove_client.c \
-	$(SRC_SERV_METHODS_NET)/server_run.c \
-	$(SRC_SERV_METHODS_NET)/setup_poll.c \
-	$(SRC_SERV_METHODS_EVT)/on_client_connected.c \
-	$(SRC_SERV_METHODS_EVT)/on_identify_client.c \
-	$(SRC_SERV_METHODS_EVT)/on_event_not_found.c \
-	$(SRC_SERV_METHODS_CMDS)/command_manager.c \
-	$(SRC_SERV_METHODS_CMDS)/forward.c \
-	$(SRC_SERV_METHODS_CMDS)/get_delay.c \
+	$(SRC_SERV_EVENT)/on_client_connected.c \
+	$(SRC_SERV_EVENT)/on_event_not_found.c \
+	$(SRC_SERV_EVENT)/on_identify_client.c \
+	$(SRC_SERV_EVENT)/on_send_response.c \
+	$(SRC_SERV_METHODS)/accept_client.c \
+	$(SRC_SERV_METHODS)/get_delay.c \
+	$(SRC_SERV_METHODS)/handle_poll.c \
+	$(SRC_SERV_METHODS)/remove_client.c \
+	$(SRC_SERV_METHODS)/server_run.c \
+	$(SRC_SERV_METHODS)/setup_poll.c \
+	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
+	$(SRC_CMD_MANAGER_DTOR)/command_manager_destroy.c \
+	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
+	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
+	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
+	$(SRC_CMD_MANAGER_EVENTS)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
-	$(SRC_UTILS_QUEU)/handle_queu.c \
+	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
 	$(SRC_DISP_METHODS)/dispatcher_emit.c \
@@ -68,6 +81,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_add_event.c \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/game_tick.c \
+	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 
 OBJS = $(SRCS:.c=.o)
 

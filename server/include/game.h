@@ -10,6 +10,7 @@
     #include "list.h"
     #include <stdbool.h>
     #include <stdlib.h>
+    #include "dispatcher.h"
     #define RESOURCE_COUNT 7
 
 typedef struct game_s game_t;
@@ -73,6 +74,21 @@ typedef struct {
     } data;
 } game_event_t;
 
+typedef struct {
+    game_event_type_t type;
+    const char *name;
+} event_type_entry_t;
+
+static const event_type_entry_t EVENT_TYPE_MAP[] = {
+    { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
+    { GAME_EVENT_PLAYER_DIED, "PLAYER_DIED" },
+    { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
+    { GAME_EVENT_PLAYER_LEVEL_UP, "PLAYER_LEVEL_UP" },
+    { GAME_EVENT_EGG_LAID, "EGG_LAID" },
+    { GAME_EVENT_INCANTATION_STARTED, "INCANTATION_STARTED" },
+    { GAME_EVENT_INCANTATION_ENDED, "INCANTATION_ENDED" },
+};
+
 struct game_methods_s {
     void (*tick)(game_t *self, long current_time);
     void (*add_event)(game_t *self, game_event_t event);
@@ -89,6 +105,7 @@ struct game_s {
     list_t *players;
     list_t *eggs;
     list_t *event_queue;
+    dispatcher_t *dispatcher;
     const game_methods_t *methods;
 };
 
