@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <unordered_map>
+#include "Game/GameState/GameState.hpp"
 #include "Game/Map/Map.hpp"
 #include "raylib.h"
 #include <memory>
@@ -21,7 +23,7 @@ namespace gui {
         void init();
         void update();
         void drawTileResources(const Vector3& tilePos, const std::array<int, 7>& resources);
-        void render(const game::Map &map);
+        void render(const game::Map &map, const std::unordered_map<int, game::Player> &players);
         bool shouldClose() const;
 
     private:
