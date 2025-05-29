@@ -32,6 +32,8 @@ namespace game
             void mszCommand(const std::vector<std::string> &token);
             void bctCommand(const std::vector<std::string> &token);
             void tnaCommand(const std::vector<std::string> &token);
+            void pnwCommand(const std::vector<std::string> &token);
+            void ppoCommand(const std::vector<std::string> &token);
             void plvCommand(const std::vector<std::string> &token);
             void pinCommand(const std::vector<std::string> &token);
             void plnCommand(const std::vector<std::string> &token);

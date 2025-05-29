@@ -55,6 +55,44 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
     }
 }
 
+void game::Game::pnwCommand(const std::vector<std::string> &token)
+{
+    if (token.size() != 6)
+        printErrorCommand("pnw", token);
+
+    int id = std::stoi(token[0].substr(1));
+    int x = std::stoi(token[1]);
+    int y = std::stoi(token[2]);
+    int orientation = std::stoi(token[3]);
+
+    game::Player player{id, x, y, orientation};
+    _gm.players[id] = player;
+
+    std::cout << "New player #" << id << " spawned at (" << x << ", " << y << ")\n";
+}
+
+void game::Game::ppoCommand(const std::vector<std::string> &token)
+{
+    if (token.size() != 4)
+        printErrorCommand("ppo", token);
+
+    int id = std::stoi(token[0].substr(1));
+    int x = std::stoi(token[1]);
+    int y = std::stoi(token[2]);
+    int orientation = std::stoi(token[3]);
+
+    if (_gm.players.find(id) == _gm.players.end())
+        return;
+
+    _gm.players[id].x = x;
+    _gm.players[id].y = y;
+    _gm.players[id].orientation = orientation;
+
+    std::cout << "Player #" << id << " moved to (" << x << ", " << y << ")\n";
+}
+
+
+
 void game::Game::plvCommand(const std::vector<std::string> &token)
 {
     std::cerr << "PLV not implemented" << std::endl;

@@ -15,6 +15,8 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     _cm.addCommand("msz", std::bind(&Game::mszCommand, this, std::placeholders::_1));
     _cm.addCommand("tna", std::bind(&Game::tnaCommand, this, std::placeholders::_1));
     _cm.addCommand("bct", std::bind(&Game::bctCommand, this, std::placeholders::_1));
+    _cm.addCommand("pnw", std::bind(&Game::pnwCommand, this, std::placeholders::_1));
+    _cm.addCommand("ppo", std::bind(&Game::ppoCommand, this, std::placeholders::_1));
     _cm.addCommand("plv", std::bind(&Game::plvCommand, this, std::placeholders::_1));
     _cm.addCommand("pin", std::bind(&Game::pinCommand, this, std::placeholders::_1));
     _cm.addCommand("pex", std::bind(&Game::pexCommand, this, std::placeholders::_1));
@@ -65,8 +67,7 @@ void game::Game::gameLoop()
             }
             _renderer->update();
             if (_gm.map)
-                _renderer->render(*_gm.map);
-
+                _renderer->render(*_gm.map, _gm.players);
         } catch (const std::exception& e) {
             std::cerr << "Game " << e.what() << std::endl;
             errorCaught = true;

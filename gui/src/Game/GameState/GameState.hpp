@@ -1,9 +1,4 @@
-/*
-** EPITECH PROJECT, 2025
-** Projet
-** File description:
-** GameState.hpp
-*/
+// GameState.hpp
 
 #pragma once
 #include "Game/Map/Map.hpp"
@@ -13,6 +8,13 @@
 
 namespace game
 {
+    struct Player {
+        int id;
+        int x;
+        int y;
+        int orientation;
+    };
+
     class GameState
     {
     public:
@@ -27,5 +29,6 @@ namespace game
         float time_unit = 0;
         std::unique_ptr<Map> map;
         std::unordered_map<std::string, Team> teams;
+        std::unordered_map<int, Player> players;
     };
-} // namespace game
+}
