@@ -6,6 +6,7 @@ use std::io;
 pub enum CoreError {
     Io(std::io::Error),
     Tcp(lib_tcp::TcpError),
+    InvalidResponse(String),
 }
 
 impl error::Error for CoreError {}
@@ -15,6 +16,7 @@ impl fmt::Display for CoreError {
         match self {
             CoreError::Io(e) => write!(f, "Io error: {}", e),
             CoreError::Tcp(e) => write!(f, "Tcp error: {}", e),
+            CoreError::InvalidResponse(e) => write!(f, "Invalid Response: {}", e),
         }
     }
 }

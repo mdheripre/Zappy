@@ -56,7 +56,9 @@ impl AsyncW<TcpStream> {
         let mut byte = [0];
 
         loop {
+            println!("Waiting for a byte...");
             let n = self.0.read(&mut byte).await?;
+            println!("Read {} bytes", n);
             if n == 0 {
                 return Err(TcpError::ConnectionClosed);
             }
@@ -83,7 +85,6 @@ impl AsyncW<TcpStream> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use tokio;
 
     #[tokio::test]
     async fn test_wrapper_approach() -> Result<()> {
