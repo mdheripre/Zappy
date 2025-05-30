@@ -1,7 +1,7 @@
+use crate::Result;
+use async_trait::async_trait;
 use core::fmt;
 use lib_tcp::tcp_client::AsyncTcpClient;
-use crate::{Result};
-use async_trait::async_trait;
 
 #[derive(Debug, Clone)]
 pub enum Packet {
@@ -107,7 +107,8 @@ impl PacketSender for AsyncTcpClient {
     }
 
     async fn broadcast_message(&mut self, message: &str) -> Result<()> {
-        self.send_packet(Packet::Broadcast(message.to_string())).await
+        self.send_packet(Packet::Broadcast(message.to_string()))
+            .await
     }
 
     async fn take_item(&mut self, item: &str) -> Result<()> {

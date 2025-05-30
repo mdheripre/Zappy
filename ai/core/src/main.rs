@@ -1,8 +1,8 @@
 mod error;
 mod init;
+mod packet;
 mod prelude;
 mod utils;
-mod packet;
 
 use crate::prelude::*;
 use clap::Parser;
