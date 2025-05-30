@@ -83,7 +83,6 @@ impl AsyncW<TcpStream> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use tokio;
 
     #[tokio::test]
     async fn test_wrapper_approach() -> Result<()> {
