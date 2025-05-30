@@ -26,7 +26,7 @@ namespace game
         };
         Tile() {
             for (auto &i : _resources)
-            i = 0;
+                i = 0;
         };
         Tile(std::array<int, 7> resources) {_resources = resources;};
         ~Tile() = default;

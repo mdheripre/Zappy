@@ -58,8 +58,14 @@ void gui::Core::run()
         return;
     }
     std::thread netThread(&net::Network::startLoop, _net.get());
-    _game->gameLoop();
+    try
+    {
+        _game->gameLoop();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     _net->stopLoop();
     netThread.join();
-    _game->stopLoop();
 }

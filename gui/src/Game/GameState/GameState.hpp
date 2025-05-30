@@ -2,9 +2,13 @@
 
 #pragma once
 #include "Game/Map/Map.hpp"
-#include "Game/Team/Team.hpp"
+#include "Game/Trantorian/Trantorian.hpp"
+#include "Game/Incantation/Incantation.hpp"
+#include "Game/Egg/Egg.hpp"
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
+#include <string>
 
 namespace game
 {
@@ -28,7 +32,10 @@ namespace game
         State state;
         float time_unit = 0;
         std::unique_ptr<Map> map;
-        std::unordered_map<std::string, Team> teams;
+        std::unordered_set<std::string> teams;
         std::unordered_map<int, Player> players;
+        std::unordered_map<int, std::shared_ptr<TrantorianState>> trantorians;
+        std::unordered_map<int, std::shared_ptr<EntityState>> eggs;
+        std::unordered_map<tools::Position<int>, std::shared_ptr<IncantationState>> incantations;
     };
 }

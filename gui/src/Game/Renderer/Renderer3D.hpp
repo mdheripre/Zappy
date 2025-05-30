@@ -25,10 +25,13 @@ namespace gui {
         void drawTileResources(const Vector3& tilePos, const std::array<int, 7>& resources);
         void render(const game::Map &map, const std::unordered_map<int, game::Player> &players);
         bool shouldClose() const;
+        void pushEntity(std::shared_ptr<IRenderEntity> renderEntity) {_entities.push_back(renderEntity);};
 
     private:
         Camera3D _camera;
         void handleCameraInput();
         Color getResourceColor(int resourceId);
+        //Le render draw ces objets
+        std::vector<std::shared_ptr<IRenderEntity>> _entities;
     };
 }
