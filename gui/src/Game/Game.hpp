@@ -9,30 +9,35 @@
 #include "Tools/MessageQueue/MessageQueue.hpp"
 #include "Tools/CommandManager/CommandManager.hpp"
 #include "Game/GameState/GameState.hpp"
-#include "Renderer/Renderer3D.hpp"
+#include "Game/Renderer/IRenderer.hpp"
 #include "Tools/TeamBranding/TeamBrandingManager/TeamBrandingManager.hpp"
+#include "Tools/Input/Input.hpp"
+#include <chrono>
 #include <sstream>
 #include <thread>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace game
 {
     class Game
     {
         public:
-            Game(std::shared_ptr<tools::MessageQueue> _incoming,
-                std::shared_ptr<tools::MessageQueue> _outgoing);
+            Game(std::shared_ptr<tools::MessageQueue> incoming,
+                std::shared_ptr<tools::MessageQueue> outgoing,
+                std::unique_ptr<render::IRenderer> render);
             ~Game() = default;
             void gameLoop();
             void stopLoop() {_running = false;};
         private:
             std::shared_ptr<tools::MessageQueue> _incoming;
             std::shared_ptr<tools::MessageQueue> _outgoing;
-            GameState _gm;
+            state::GameState _gm;
             bool _running = true;
             tools::CommandManager _cm;
-            std::unique_ptr<gui::Renderer3D> _renderer;
+            std::shared_ptr<render::Camera> _cam;
+            std::unique_ptr<render::IRenderer> _renderer;
             tools::TeamBrandingManager _tbManager;
 
             void welcomeCm(const std::vector<std::string> &token);
@@ -90,5 +95,15 @@ namespace game
                 {"suc",     std::bind(&Game::sucCommand, this, std::placeholders::_1)},
                 {"sbp",     std::bind(&Game::sbpCommand, this, std::placeholders::_1)}
             };
+            const std::unordered_map<tools::KeyCode, std::function<void()>> bindings = {
+                { tools::KeyCode::Right, [this]() { _cam->move(0.2f, 0.f, 0.f); }},
+                { tools::KeyCode::Left,  [this]() { _cam->move(-0.2f, 0.f, 0.f); }},
+                { tools::KeyCode::Up,    [this]() { _cam->move(0.f, 0.f, -0.2f); }},
+                { tools::KeyCode::Down,  [this]() { _cam->move(0.f, 0.f, 0.2f); }},
+                { tools::KeyCode::W,     [this]() { _cam->move(0.f, 0.2f, 0.f); }},
+                { tools::KeyCode::S,     [this]() { _cam->move(0.f, -0.2f, 0.f); }},
+            };
+            
+            
     };
 } // namespace Game

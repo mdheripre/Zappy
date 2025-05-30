@@ -6,10 +6,15 @@
 */
 
 #pragma once
+#include "Tools/Position/Position.hpp"
 
-class IRenderEntity {
-    public:
-        virtual ~IRenderEntity() = default;
-        virtual bool update(float dt) = 0;
-        virtual void draw() const = 0;
-    };
+namespace render
+{
+    class IRenderEntity {
+        public:
+            virtual ~IRenderEntity() = default;
+            virtual bool update(float dt) = 0;
+            virtual void draw() const = 0;
+        }; 
+} // namespace render
+

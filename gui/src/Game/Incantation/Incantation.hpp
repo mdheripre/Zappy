@@ -12,7 +12,7 @@
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
 #include <iostream>
 
-namespace game {
+namespace gui {
     class IncantationState {
         public:
             IncantationState(tools::Position<int> pos, int level, const std::vector<int>& playerIds)
@@ -28,7 +28,7 @@ namespace game {
             int _targetLevel;
             std::vector<int> _playerIds;
     };
-    class Incantation : public IRenderEntity, public IncantationState
+    class Incantation : public render::IRenderEntity, public IncantationState
     {
     public:
         Incantation(tools::Position<int> pos, int level, const std::vector<int>& playerIds)

@@ -7,12 +7,12 @@
 
 #include "Trantorian.hpp"
 
-void game::Trantorian::draw() const
+void gui::Trantorian::draw() const
 {
     std::cout << "Draw a Trantorian not implemented" << std::endl;
 }
 
-void game::Trantorian::removeFromInventory(Tile::Resource res)
+void gui::Trantorian::removeFromInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
@@ -23,7 +23,7 @@ void game::Trantorian::removeFromInventory(Tile::Resource res)
         _inventory[index] = 0;
 }
 
-void game::Trantorian::addToInventory(Tile::Resource res)
+void gui::Trantorian::addToInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
@@ -32,7 +32,7 @@ void game::Trantorian::addToInventory(Tile::Resource res)
     _inventory[index]++;
 }
 
-bool game::Trantorian::update(float)
+bool gui::Trantorian::update(float)
 {
     std::cout << "Update a Trantorian not implemented" << std::endl;
     return false;

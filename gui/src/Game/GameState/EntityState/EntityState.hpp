@@ -10,7 +10,7 @@
 #include <memory>
 #include "Tools/TeamBranding/TeamBranding.hpp"
 
-namespace game {
+namespace state {
 
     class EntityState {
     protected:

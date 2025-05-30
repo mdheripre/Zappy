@@ -8,7 +8,7 @@
 #pragma once
 #include <array>
 
-namespace game
+namespace gui
 {
     class Tile
     {

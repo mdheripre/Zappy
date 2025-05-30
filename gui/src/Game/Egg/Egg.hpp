@@ -13,8 +13,8 @@
 #include <memory>
 #include <iostream>
 
-namespace game {
-    class Egg : public EntityState, public IRenderEntity {
+namespace gui {
+    class Egg : public state::EntityState, public render::IRenderEntity {
     public:
         enum class EggAnimation {
             IDLE,

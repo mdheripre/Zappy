@@ -17,8 +17,8 @@
 #include <memory>
 #include <array>
 
-namespace game {
-    class TrantorianState : public EntityState {
+namespace gui {
+    class TrantorianState : public state::EntityState {
         public:
             enum class Orientation {
                 NORTH = 1,
@@ -40,7 +40,7 @@ namespace game {
             int getLevel() const { return _level; }
             const std::array<int, 7>& getInventory() const { return _inventory; }
             virtual void setOrientation(Orientation ori) = 0;
-            virtual void addToInventory(Tile::Resource res) = 0;
+            virtual void addToInventory(gui::Tile::Resource res) = 0;
             virtual void setLevel(int lvl) = 0;
             virtual void setInventory(const std::array<int, 7>& inv) = 0;
             virtual void laidAnEgg() = 0;
@@ -56,7 +56,7 @@ namespace game {
             std::array<int, 7> _inventory;
         };
         
-        class Trantorian : public TrantorianState, public IRenderEntity {
+        class Trantorian : public TrantorianState, public render::IRenderEntity {
             public:
                 enum class TrantorianAnimation {
                     IDLE,
