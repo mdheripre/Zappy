@@ -15,7 +15,7 @@ static void handle_sigint(int sig)
     exit(0);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
     server_t *server = NEW(server, 1234);
 
