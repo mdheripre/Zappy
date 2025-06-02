@@ -18,7 +18,7 @@ typedef struct game_methods_s game_methods_t;
 typedef enum resource_type_e resource_type_t;
 typedef struct tile_s tile_t;
 typedef enum game_event_type_e game_event_type_t;
-
+typedef struct server_s server_t;
 enum resource_type_e {
     RESOURCE_FOOD = 0,
     RESOURCE_LINEMATE,
@@ -93,6 +93,7 @@ struct game_methods_s {
     void (*tick)(game_t *self, long current_time);
     void (*add_event)(game_t *self, game_event_t event);
     game_event_t *(*pop_event)(game_t *self);
+    void (*dispatch_events)(game_t *self);
 };
 
 struct game_s {
@@ -114,4 +115,5 @@ void game_destroy(game_t *game);
 void game_tick(game_t *self, long current_time);
 void game_add_event(game_t *self, game_event_t event);
 game_event_t *game_pop_event(game_t *self);
+void game_dispatch_events(game_t *self);
 #endif /* !GAME_H_ */

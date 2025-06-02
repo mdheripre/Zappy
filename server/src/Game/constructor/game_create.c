@@ -12,7 +12,8 @@
 static const game_methods_t GAME_METHODS = {
     .tick = game_tick,
     .add_event = game_add_event,
-    .pop_event = game_pop_event
+    .pop_event = game_pop_event,
+    .dispatch_events = game_dispatch_events,
 };
 
 static void game_init_tile(tile_t *tile, int x, int y)

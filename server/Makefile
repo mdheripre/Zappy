@@ -14,14 +14,11 @@ SRC_SERV_CTOR = $(SRC_SERVER)/constructor
 SRC_SERV_DTOR = $(SRC_SERVER)/destructor
 SRC_SERV_METHODS = $(SRC_SERVER)/methods
 SRC_SERV_EVENT = $(SRC_SERVER)/events
-
 SRC_CMD_MANAGER = $(SRC_DIR)/Command_Manager
 SRC_CMD_MANAGER_CTOR = $(SRC_CMD_MANAGER)/constructor
 SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
-
-
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
 SRC_UTILS_QUEUE = $(SRC_UTILS)/Queue
@@ -53,6 +50,7 @@ SRCS = \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
+	$(SRC_SERV_METHODS)/broadcast_gui.c \
 	$(SRC_SERV_METHODS)/setup_poll.c \
 	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
 	$(SRC_CMD_MANAGER_DTOR)/command_manager_destroy.c \
