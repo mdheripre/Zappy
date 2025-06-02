@@ -15,37 +15,42 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Assigns the client type based on the provided identifier string.
- *
- * If the identifier is "GRAPHIC", sets the client as GUI; otherwise,
- * sets as IA.
- *
- * @param client Pointer to the client structure.
- * @param cleaned Identifier string to determine client type.
- */
-static void dispatch_type(client_t *client, char *cleaned)
+static bool check_second_gui(server_t *server, client_t *client)
 {
-    if (strcmp(cleaned, "GRAPHIC") == 0) {
-        client->type = CLIENT_GUI;
-        console_log(LOG_SUCCESS, "Client %d is GUI", client->fd);
-    } else {
+    client_t *other = NULL;
+
+    for (int i = 0; i < server->client_count; i++) {
+        other = &server->clients[i];
+        if (other->connected && other != client &&
+            other->type == CLIENT_GUI)
+            return true;
+    }
+    return false;
+}
+
+static void reject_client(server_t *server, client_t *client)
+{
+    write(client->fd, "ko\n", 3);
+    for (int i = 0; i < server->client_count; i++) {
+        if (&server->clients[i] == client) {
+            remove_client(server, i);
+            return;
+        }
+    }
+}
+
+static void dispatch_client_type(client_t *client, const char *cleaned,
+    server_t *server)
+{
+    if (strcmp(cleaned, "GRAPHIC") == 0)
+        EMIT(server->dispatcher, "gui_init", client);
+    else {
         client->type = CLIENT_IA;
         console_log(LOG_SUCCESS, "Client %d is IA (team: \"%s\")",
             client->fd, cleaned);
     }
 }
 
-/**
- * @brief Handles the client identification event.
- *
- * This function is called when a client sends an identification command.
- * It checks if the client is undefined, processes the command, and
- * identifies the client type based on the command content.
- *
- * @param ctx Pointer to the server instance.
- * @param data Pointer to the client instance.
- */
 void on_client_identify(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -61,6 +66,11 @@ void on_client_identify(void *ctx, void *data)
     strncpy(cleaned, cmd->content, BUFFER_COMMAND_SIZE - 1);
     cleaned[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(cleaned);
-    dispatch_type(client, cleaned);
+    if (strcmp(cleaned, "GRAPHIC") == 0 && check_second_gui(server, client)) {
+        console_log(LOG_WARNING, "Rejected GUI: already connected");
+        reject_client(server, client);
+        return;
+    }
+    dispatch_client_type(client, cleaned, server);
     client_dequeue_command(client, NULL);
 }

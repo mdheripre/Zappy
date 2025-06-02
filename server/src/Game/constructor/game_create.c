@@ -14,6 +14,7 @@ static const game_methods_t GAME_METHODS = {
     .add_event = game_add_event,
     .pop_event = game_pop_event,
     .dispatch_events = game_dispatch_events,
+    .update = game_update
 };
 
 static void game_init_tile(tile_t *tile, int x, int y)
@@ -43,8 +44,10 @@ static bool game_init_lists(game_t *game)
 {
     game->players = NEW(list, NULL);
     game->eggs = NEW(list, NULL);
+    game->incantations = NEW(list, NULL);
     game->event_queue = NEW(list, free);
-    return game->players && game->eggs && game->event_queue;
+    return game->players && game->eggs && game->event_queue &&
+    game->incantations;
 }
 
 game_t *game_create(int width, int height, double frequency)
@@ -58,6 +61,7 @@ game_t *game_create(int width, int height, double frequency)
     game->frequency = frequency;
     game->last_tick_time = 0;
     game->methods = &GAME_METHODS;
+    game->started = false;
     game->dispatcher = NEW(dispatcher, NULL);
     if (!game_init_map(game))
         return NULL;

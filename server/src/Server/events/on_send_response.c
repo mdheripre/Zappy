@@ -14,4 +14,7 @@ void on_send_response(void *ctx, void *data)
 
     if (!server || !payload || !payload->client || !payload->message)
         return;
+    write(payload->client->fd, payload->message, strlen(payload->message));
+    free(payload->message);
+    free(payload);
 }

@@ -52,7 +52,9 @@ static void register_core_events(server_t *server)
         on_client_connected, NULL);
     REGISTER(server->dispatcher, "client_identify",
         on_client_identify, server);
-    REGISTER(server->dispatcher, "send_response", on_send_response, NULL);
+    REGISTER(server->dispatcher, "send_response", on_send_response, server);
+    REGISTER(server->dispatcher, "gui_init", on_gui_init, server);
+    REGISTER(server->dispatcher, "send_map_to_gui", on_gui_send_map, server);
 }
 
 /****************************************************************************/
@@ -227,6 +229,7 @@ server_t *server_create(int port, int width, int height, float frequency)
         console_log(LOG_ERROR, "Failed to create command manager");
         return NULL;
     }
-    server->command_manager->methods->register_all(server->command_manager);
+    server->command_manager->methods->register_all(server->command_manager,
+        server);
     return server;
 }

@@ -26,6 +26,8 @@
     #define MAX_CLIENTS 100
     #define TIMEOUT_MS 100
     #define BUFFER_COMMAND_SIZE 128
+    #define BUFFER_SIZE 64
+    #define LONG_BUFFER 256
 
 
 typedef struct server_s server_t;
@@ -80,5 +82,7 @@ void on_client_connected(void *ctx, void *event_data);
 void on_client_identify(void *ctx, void *data);
 void on_event_not_found(dispatcher_t *self, const char *event, void *data);
 void on_send_response(void *ctx, void *data);
+void on_gui_init(void *ctx, void *data);
+void on_gui_send_map(void *ctx, void *data);
 
 #endif /* SERVER_H_ */

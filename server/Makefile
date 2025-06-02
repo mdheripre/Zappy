@@ -19,6 +19,8 @@ SRC_CMD_MANAGER_CTOR = $(SRC_CMD_MANAGER)/constructor
 SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
+SRC_CMD_MANAGER_EVENTS_IA = $(SRC_CMD_MANAGER_EVENTS)/ia
+SRC_CMD_MANAGER_EVENTS_GUI = $(SRC_CMD_MANAGER_EVENTS)/gui
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
 SRC_UTILS_QUEUE = $(SRC_UTILS)/Queue
@@ -45,6 +47,8 @@ SRCS = \
 	$(SRC_SERV_EVENT)/on_event_not_found.c \
 	$(SRC_SERV_EVENT)/on_identify_client.c \
 	$(SRC_SERV_EVENT)/on_send_response.c \
+	$(SRC_SERV_EVENT)/on_gui_init.c \
+	$(SRC_SERV_EVENT)/on_send_map.c \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
@@ -57,7 +61,11 @@ SRCS = \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
-	$(SRC_CMD_MANAGER_EVENTS)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_IA)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
@@ -80,6 +88,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/game_tick.c \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
+	$(SRC_GAME_METHODS)/game_update.c \
 
 OBJS = $(SRCS:.c=.o)
 

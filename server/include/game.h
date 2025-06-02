@@ -94,17 +94,37 @@ struct game_methods_s {
     void (*add_event)(game_t *self, game_event_t event);
     game_event_t *(*pop_event)(game_t *self);
     void (*dispatch_events)(game_t *self);
+    void (*update)(game_t *self);
 };
+
+typedef struct egg_s {
+    int id;
+    int player_id;
+    int x;
+    int y;
+    long hatch_time;
+} egg_t;
+
+typedef struct incantation_s {
+    int x;
+    int y;
+    int target_level;
+    list_t *participants;
+    long end_time;
+    bool started;
+} incantation_t;
 
 struct game_s {
     int width;
     int height;
     double frequency;
     long last_tick_time;
+    bool started;
 
     tile_t **map;
     list_t *players;
     list_t *eggs;
+    list_t *incantations;
     list_t *event_queue;
     dispatcher_t *dispatcher;
     const game_methods_t *methods;
@@ -116,4 +136,5 @@ void game_tick(game_t *self, long current_time);
 void game_add_event(game_t *self, game_event_t event);
 game_event_t *game_pop_event(game_t *self);
 void game_dispatch_events(game_t *self);
+void game_update(game_t *self);
 #endif /* !GAME_H_ */
