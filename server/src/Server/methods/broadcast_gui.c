@@ -20,7 +20,7 @@
  * @param self Pointer to the server instance.
  * @param message The message to broadcast.
  */
-void server_broadcast_gui(server_t *self, const char *message)
+void server_broadcast_gui(server_t *self, char *message)
 {
     response_payload_t *payload = NULL;
     client_t *client = NULL;

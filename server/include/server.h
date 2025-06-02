@@ -43,7 +43,7 @@ typedef struct server_methods_s {
     void (*accept_client)(server_t *self);
     void (*remove_client)(server_t *self, int index);
     float (*get_command_delay)(server_t *self, const char *command);
-    void (*broadcast_gui)(server_t *self, const char *message);
+    void (*broadcast_gui)(server_t *self, char *message);
 } server_methods_t;
 
 struct server_s {
@@ -61,7 +61,7 @@ struct server_s {
 
 struct response_payload_s {
     client_t *client;
-    const char *message;
+    char *message;
 };
 
 /* Object */
@@ -75,7 +75,7 @@ void handle_server_poll(server_t *self, struct pollfd *fds);
 void server_destroy(server_t *self);
 void run_server(server_t *self);
 float get_command_delay(server_t *server, const char *command);
-void server_broadcast_gui(server_t *self, const char *message);
+void server_broadcast_gui(server_t *self, char *message);
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);
@@ -83,6 +83,7 @@ void on_client_identify(void *ctx, void *data);
 void on_event_not_found(dispatcher_t *self, const char *event, void *data);
 void on_send_response(void *ctx, void *data);
 void on_gui_init(void *ctx, void *data);
+void on_ia_init(void *ctx, void *data);
 void on_gui_send_map(void *ctx, void *data);
 
 #endif /* SERVER_H_ */

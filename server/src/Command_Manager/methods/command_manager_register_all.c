@@ -33,4 +33,6 @@ void register_all(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_tna", handle_command_gui_tna,
         server);
+    REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
+        server);
 }

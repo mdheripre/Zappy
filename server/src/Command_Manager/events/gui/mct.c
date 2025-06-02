@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** on_send_map
+** mct
 */
 
 #include "server.h"
@@ -41,7 +41,7 @@ static void send_bct_response(server_t *server, client_t *client,
     EMIT(server->dispatcher, "send_response", payload);
 }
 
-void on_gui_send_map(void *ctx, void *data)
+void handle_command_gui_mct(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;
     client_t *client = (client_t *)data;

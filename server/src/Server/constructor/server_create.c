@@ -54,7 +54,7 @@ static void register_core_events(server_t *server)
         on_client_identify, server);
     REGISTER(server->dispatcher, "send_response", on_send_response, server);
     REGISTER(server->dispatcher, "gui_init", on_gui_init, server);
-    REGISTER(server->dispatcher, "send_map_to_gui", on_gui_send_map, server);
+    REGISTER(server->dispatcher, "ia_init", on_ia_init, server);
 }
 
 /****************************************************************************/

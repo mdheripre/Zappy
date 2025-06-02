@@ -10,6 +10,7 @@
     #include <stdio.h>
     #include <stdarg.h>
     #include <time.h>
+    #include "server.h"
     #include "client.h"
     #define COLOR_INFO "\033[36m"
     #define COLOR_SUCCESS "\033[32m"
@@ -23,7 +24,6 @@ typedef enum log_level_e {
     LOG_WARNING,
     LOG_ERROR
 } log_level_t;
-
 
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);

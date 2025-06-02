@@ -41,8 +41,8 @@ static bool check_format(char *message, int *x, int *y, server_t *server)
         free(message);
         return true;
     }
-    if (x < 0 || x >= server->game->width || y < 0 ||
-        y >= server->game->height) {
+    if (*x < 0 || *x >= server->game->width || *y < 0 ||
+        *y >= server->game->height) {
         free(message);
         return true;
     }

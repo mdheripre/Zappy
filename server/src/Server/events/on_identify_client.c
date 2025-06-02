@@ -39,16 +39,24 @@ static void reject_client(server_t *server, client_t *client)
     }
 }
 
-static void dispatch_client_type(client_t *client, const char *cleaned,
-    server_t *server)
+static void emit_identify_event(server_t *server,
+    client_t *client, const char *message)
 {
-    if (strcmp(cleaned, "GRAPHIC") == 0)
-        EMIT(server->dispatcher, "gui_init", client);
-    else {
-        client->type = CLIENT_IA;
-        console_log(LOG_SUCCESS, "Client %d is IA (team: \"%s\")",
-            client->fd, cleaned);
+    response_payload_t *payload = malloc(sizeof(response_payload_t));
+    const char *event = strcmp(message, "GRAPHIC") == 0 ? "gui_init"
+        : "ia_init";
+
+    if (!payload)
+        return;
+    payload->client = client;
+    payload->message = strdup(message);
+    if (!payload->message) {
+        free(payload);
+        return;
     }
+    EMIT(server->dispatcher, event, payload);
+    free(payload->message);
+    free(payload);
 }
 
 void on_client_identify(void *ctx, void *data)
@@ -58,7 +66,7 @@ void on_client_identify(void *ctx, void *data)
     queued_command_t *cmd = NULL;
     char cleaned[BUFFER_COMMAND_SIZE] = {0};
 
-    if (!client || !server || client->type != CLIENT_UNDEFINED)
+    if (!server || !client || client->type != CLIENT_UNDEFINED)
         return;
     cmd = client_peek_command(client);
     if (!cmd)
@@ -71,6 +79,6 @@ void on_client_identify(void *ctx, void *data)
         reject_client(server, client);
         return;
     }
-    dispatch_client_type(client, cleaned, server);
+    emit_identify_event(server, client, cleaned);
     client_dequeue_command(client, NULL);
 }

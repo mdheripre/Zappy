@@ -48,7 +48,7 @@ SRCS = \
 	$(SRC_SERV_EVENT)/on_identify_client.c \
 	$(SRC_SERV_EVENT)/on_send_response.c \
 	$(SRC_SERV_EVENT)/on_gui_init.c \
-	$(SRC_SERV_EVENT)/on_send_map.c \
+	$(SRC_SERV_EVENT)/on_ia_init.c \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
@@ -66,6 +66,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
