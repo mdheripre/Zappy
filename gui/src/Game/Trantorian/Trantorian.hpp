@@ -92,4 +92,3 @@ namespace gui {
                 void draw() const;
             };         
 } // namespace game
-

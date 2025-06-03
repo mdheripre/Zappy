@@ -1,4 +1,9 @@
-// GameState.hpp
+/*
+** EPITECH PROJECT, 2025
+** Projet
+** File description:
+** GameState.hpp
+*/
 
 #pragma once
 #include "Game/Map/Map.hpp"

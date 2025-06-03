@@ -8,14 +8,13 @@
 #pragma once
 #include <unordered_map>
 
-#pragma once
-#include <cmath>
-
 namespace tools {
 
 template <typename T>
-struct Position {
-    T x, y;
+class Position {
+    public:
+    T x;
+    T y;
 
     Position(T x_ = 0, T y_ = 0) : x(x_), y(y_) {}
 
@@ -25,8 +24,11 @@ struct Position {
 };
 
 template <typename T>
-struct Position3D {
-    T x, y, z;
+class Position3D {
+    public:
+    T x;
+    T y;
+    T z;
 
     Position3D(T x_ = 0, T y_ = 0, T z_ = 0) : x(x_), y(y_), z(z_) {}
 

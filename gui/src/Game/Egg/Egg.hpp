@@ -25,6 +25,7 @@ namespace gui {
             : EntityState(id, pos, teamName) {}
         ~Egg() override = default;
     private:
+        
         void setDead() override;
         void setPosition(tools::Position<int>  pos) override;
         bool update(float dt) override;
