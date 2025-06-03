@@ -270,6 +270,9 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
+        tools::Position<int> pos = it->getPosition();
+
+        _gm.map->popResource(res, pos);
         it->removeFromInventory(res);
     } else {
         printErrorCommand("Unknown id in pdr for trantorian ", token);
@@ -286,7 +289,11 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
+        tools::Position<int> pos = it->getPosition();
+
+        _gm.map->pushResource(res, pos);
         it->addToInventory(res);
+
     } else {
         printErrorCommand("Unknown id in pgt for trantorian ", token);
     }

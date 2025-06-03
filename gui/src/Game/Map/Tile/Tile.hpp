@@ -14,9 +14,10 @@ namespace gui
     {
     private:
         std::array<int, 7> _resources;
+        int _total = 0;
     public:
         enum class Resource {
-            FOOD,
+            FOOD = 0,
             LINEMATE,
             DERAUMERE,
             SIBUR,
@@ -28,9 +29,12 @@ namespace gui
             for (auto &i : _resources)
                 i = 0;
         };
-        Tile(std::array<int, 7> resources) {_resources = resources;};
+        Tile(std::array<int, 7> resources) {setResources(resources);};
         ~Tile() = default;
+        int getTotal() const {return _total;};
         const std::array<int, 7> &getResources() const {return _resources;};
-        void setResources(std::array<int, 7> resources) {_resources = resources;};
+        bool popResource(Resource res);
+        void pushResource(Resource res);
+        void setResources(std::array<int, 7> resources);
     };
 } // namespace game

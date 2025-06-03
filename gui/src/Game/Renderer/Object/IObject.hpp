@@ -6,7 +6,7 @@
 */
 
 #pragma once
-#include "Tools/Position/Position.hpp"
+#include "Tools/BoundingBox/BoundingBox.hpp"
 
 namespace render
 {
@@ -15,8 +15,9 @@ namespace render
         public:
             virtual ~IObject() = default;
             virtual const tools::Position3D<float> &getPosition() const = 0;
+            virtual const tools::BoundingBox &getBoundingBox() const = 0; 
             virtual void setPosition(tools::Position3D<float> pos) = 0;
             virtual void drawObject() const = 0;
-            virtual void updateObject() const = 0;
+            virtual void updateObject(float dt) const = 0;
     };
 } // namespace render
