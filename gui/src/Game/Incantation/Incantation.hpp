@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Game/GameState/EntityState/EntityState.hpp"
+#include "Game/Renderer/Object/IAnimatedObject.hpp"
 #include <vector>
 #include <memory>
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
@@ -15,7 +16,9 @@
 namespace gui {
     class IncantationState {
         public:
-            IncantationState(tools::Position<int> pos, int level, const std::vector<int>& playerIds)
+            IncantationState(tools::Position<int> pos,
+                int level,
+                const std::vector<int>& playerIds)
                 : _position(pos), _targetLevel(level), _playerIds(playerIds) {}
             virtual ~IncantationState() = default;
             const tools::Position<int>& getPosition() const { return _position; }
@@ -30,10 +33,16 @@ namespace gui {
     };
     class Incantation : public render::IRenderEntity, public IncantationState
     {
+
     public:
-        Incantation(tools::Position<int> pos, int level, const std::vector<int>& playerIds)
-            : IncantationState(pos, level, playerIds) {};
+        Incantation(tools::Position<int> pos,
+            int level,
+            const std::vector<int>& playerIds,
+            std::unique_ptr<render::IAnimatedObject> incObject = nullptr)
+            : IncantationState(pos, level, playerIds), _incObject(std::move(incObject)) {};
         ~Incantation() = default;
+    private:
+        std::unique_ptr<render::IAnimatedObject> _incObject;
         void draw() const;
         bool update(float);
         void succeed();

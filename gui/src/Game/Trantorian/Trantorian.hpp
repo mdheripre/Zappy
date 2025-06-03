@@ -9,6 +9,7 @@
 
 #include "Game/GameState/EntityState/EntityState.hpp"
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Object/IAnimatedObject.hpp"
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Map/Tile/Tile.hpp"
 #include "Game/Egg/Egg.hpp"
@@ -70,12 +71,14 @@ namespace gui {
                         tools::Position<int>  pos,
                            const std::string& teamName,
                            Orientation orientation = Orientation::NORTH,
-                           int level = 1)
-                    : TrantorianState(id, pos, teamName, orientation) {
+                           int level = 1,
+                           std::unique_ptr<render::IAnimatedObject> trantorianObject = nullptr)
+                    : TrantorianState(id, pos, teamName, orientation), _trantorianObject(std::move(trantorianObject)) {
                     _level = level;
                 }
                 ~Trantorian() override = default;
             private:
+                std::unique_ptr<render::IAnimatedObject> _trantorianObject;
                 void setDead() override { _alive = false; }
                 void setPosition(tools::Position<int>  pos) override { _pos = pos; }
                 void setOrientation(Orientation ori) override { _orientation = ori; }
