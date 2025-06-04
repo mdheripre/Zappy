@@ -27,7 +27,6 @@
 void on_client_connected(void *ctx, void *event_data)
 {
     client_t *client = event_data;
-    server_t *server = ctx;
     const char *welcome = "WELCOME\n";
 
     (void)ctx;

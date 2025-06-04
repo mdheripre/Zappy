@@ -8,6 +8,20 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                            HELPER METHODS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Checks if a decimal point in a float string is valid.
+ *
+ * @param arg The input string representing the number.
+ * @param has_decimal A pointer to a bool tracking if a decimal has been seen.
+ * @param index The current index in the string being validated.
+ * @return true if the decimal placement is valid, false otherwise.
+ */
 static bool handle_decimal(char *arg, bool *has_decimal, int index)
 {
     if (arg[index] == '.') {
@@ -20,6 +34,14 @@ static bool handle_decimal(char *arg, bool *has_decimal, int index)
     return true;
 }
 
+/**
+ * @brief Verifies whether a given string is a valid float representation.
+ *
+ * Accepts optional sign, digits, and at most one decimal point.
+ *
+ * @param arg The string to validate.
+ * @return true if the string is a valid float, false otherwise.
+ */
 bool is_float(char *arg)
 {
     int index = (arg[0] == '-' || arg[0] == '+') ? 1 : 0;

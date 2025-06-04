@@ -78,7 +78,7 @@ static bool game_init_map(game_t *game)
 /****************************************************************************/
 
 
-static void free_players(void *data)
+static void free_players(void *)
 {
 }
 
@@ -130,6 +130,9 @@ game_t *game_create(config_game_t *config)
     game->last_tick_time = 0;
     game->started = false;
     game->methods = &GAME_METHODS;
+    game->dispatcher = NEW(dispatcher, NULL);
+    if (!game->dispatcher)
+        return NULL;
     if (!game_init_map(game) || !game_init_lists(game))
         return NULL;
     return game;

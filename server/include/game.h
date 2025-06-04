@@ -132,6 +132,7 @@ struct game_s {
     list_t *eggs;
     list_t *incantations;
     list_t *event_queue;
+    dispatcher_t *dispatcher;
     const game_methods_t *methods;
 };
 

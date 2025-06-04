@@ -78,7 +78,6 @@ void on_ia_init(void *ctx, void *data)
     response_payload_t *payload = data;
     client_t *client = payload ? payload->client : NULL;
     const char *team_name = payload ? payload->message : NULL;
-    player_t *player = NULL;
 
     if (!server || !client || !team_name)
         return;

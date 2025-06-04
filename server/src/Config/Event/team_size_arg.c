@@ -9,6 +9,21 @@
 #include "utils.h"
 #include <ctype.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * check_errors - Validate the team size argument from the command line.
+ * Ensures that the team size is defined only once and that the provided
+ * argument exists and is a valid integer.
+ *
+ * @param config: The configuration object being filled.
+ * @param parser: The current parser state, including arguments and index.
+ * @return true if the team size argument is valid and unique, false otherwise.
+ */
 static bool check_errors(config_t *config, parser_t *parser)
 {
     static bool initialized = false;
@@ -31,6 +46,15 @@ static bool check_errors(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handles the "-c" argument to set team size.
+ *
+ * Parses and sets the maximum number of players allowed per team.
+ * The value must be a positive integer. Errors are reported via parser.
+ *
+ * @param ctx Pointer to the config structure.
+ * @param data Pointer to the parser structure.
+ */
 void team_size_arg(void *ctx, void *data)
 {
     config_t *config = ctx;

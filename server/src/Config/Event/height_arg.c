@@ -9,6 +9,24 @@
 #include "utils.h"
 #include <ctype.h>
 
+
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Validates the height argument in the parser context.
+ *
+ * Ensures height is not already defined, that a value follows the flag,
+ * and that the value is a valid integer. If not, sets an error message
+ * in the parser.
+ *
+ * @param config Pointer to the configuration being modified.
+ * @param parser Pointer to the parser context.
+ * @return true if the height argument is valid, false otherwise.
+ */
 static bool check_errors(config_t *config, parser_t *parser)
 {
     static bool initialized = false;
@@ -31,6 +49,15 @@ static bool check_errors(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handler for the "-y" height argument.
+ *
+ * Parses the height value from the command-line and updates the config.
+ * Triggers an error in the parser if the value is missing or invalid.
+ *
+ * @param ctx Pointer to the config instance (cast from void).
+ * @param data Pointer to the parser instance (cast from void).
+ */
 void height_arg(void *ctx, void *data)
 {
     config_t *config = ctx;
