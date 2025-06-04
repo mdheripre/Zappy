@@ -50,22 +50,24 @@ static bool game_init_lists(game_t *game)
     game->incantations;
 }
 
-game_t *game_create(int width, int height, double frequency)
+game_t *game_create(config_game_t *config)
 {
     game_t *game = malloc(sizeof(game_t));
 
-    if (!game)
+    if (!config || !game)
         return NULL;
-    game->width = width;
-    game->height = height;
-    game->frequency = frequency;
+    game->width = config->width;
+    game->height = config->height;
+    game->frequency = config->frequency;
+    game->team_size = config->team_size;
+    game->team_name = config->team_name;
     game->last_tick_time = 0;
-    game->methods = &GAME_METHODS;
     game->started = false;
+    game->methods = &GAME_METHODS;
     game->dispatcher = NEW(dispatcher, NULL);
-    if (!game_init_map(game))
+    if (!game->dispatcher)
         return NULL;
-    if (!game_init_lists(game))
+    if (!game_init_map(game) || !game_init_lists(game))
         return NULL;
     return game;
 }

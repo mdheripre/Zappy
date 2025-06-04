@@ -20,6 +20,7 @@ typedef struct tile_s tile_t;
 typedef enum game_event_type_e game_event_type_t;
 typedef struct server_s server_t;
 typedef struct player_s player_t;
+typedef struct config_game_s config_game_t;
 
 enum resource_type_e {
     RESOURCE_FOOD = 0,
@@ -122,8 +123,10 @@ struct game_s {
     double frequency;
     long last_tick_time;
     bool started;
+    int team_size;
 
     tile_t **map;
+    list_t *team_name;
     list_t *players;
     list_t *eggs;
     list_t *incantations;
@@ -132,7 +135,15 @@ struct game_s {
     const game_methods_t *methods;
 };
 
-game_t *game_create(int width, int height, double frequency);
+struct config_game_s {
+    int width;
+    int height;
+    double frequency;
+    int team_size;
+    list_t *team_name;
+};
+
+game_t *game_create(config_game_t *config);
 void game_destroy(game_t *game);
 void game_tick(game_t *self, long current_time);
 void game_add_event(game_t *self, game_event_t event);

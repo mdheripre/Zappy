@@ -16,7 +16,7 @@ void handle_command_gui_sgt(void *ctx, void *data)
 
     if (!payload)
         return;
-    snprintf(buffer, sizeof(buffer), "sgt %d\n", (int)server->frequency);
+    snprintf(buffer, sizeof(buffer), "sgt %d\n", (int)server->game->frequency);
     payload->client = client;
     payload->message = strdup(buffer);
     if (!payload->message) {

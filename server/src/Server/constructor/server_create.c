@@ -162,34 +162,18 @@ bool init_socket(server_t *self)
     (setup_address(self), true) && bind_socket(self) && listen_socket(self);
 }
 
-/**
- * @brief Initializes the server structure with default values and methods.
- *
- * This function sets up the server's port, frequency, and dispatcher,
- * and registers core events and commands.
- *
- * @param server Pointer to the server structure to initialize.
- * @param config Pointer to a config_t instance containing server settings.
- * @return true if initialization was successful, false otherwise.
- */
 bool server_init(server_t *server, config_t *config)
 {
-    if (!server)
+    if (!server || !config)
         return false;
-    server->config = config;
     memset(server, 0, sizeof(server_t));
     server->port = config->port;
     server->vtable = &DEFAULT_SERVER_METHODS;
-    server->frequency = config->frequency;
-    if (!server->vtable->constructor(server)) {
-        console_log(LOG_ERROR, "Failed to initialize server");
+    if (!server->vtable->constructor(server))
         return false;
-    }
     server->dispatcher = NEW(dispatcher, on_event_not_found);
-    if (!server->dispatcher) {
-        console_log(LOG_ERROR, "Failed to create dispatcher");
+    if (!server->dispatcher)
         return false;
-    }
     register_core_events(server);
     return true;
 }
@@ -200,34 +184,24 @@ bool server_init(server_t *server, config_t *config)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Creates and initializes a new server instance.
- *
- * Allocates memory for a server, initializes it with the given port,
- * creates the game and command manager, and registers all commands.
- *
- * @param config Pointer to a config_t instance containing server settings.
- * @return Pointer to the newly created server_t instance, or NULL on failure.
- */
 server_t *server_create(config_t *config)
 {
     server_t *server = malloc(sizeof(server_t));
+    config_game_t game_cfg = { .width = config->width,
+        .height = config->height, .frequency = config->frequency,
+        .team_size = config->team_size, .team_name = config->team_name
+    };
 
     if (!server)
         return NULL;
-    if (!server_init(server, config)) {
-        free(server);
+    if (!server_init(server, config))
         return NULL;
-    }
-    server->game = NEW(game, config->width, config->height, config->frequency);
-    if (!server->game) {
+    server->game = NEW(game, &game_cfg);
+    if (!server->game)
         return NULL;
-    }
     server->command_manager = NEW(command_manager);
-    if (!server->command_manager) {
-        console_log(LOG_ERROR, "Failed to create command manager");
+    if (!server->command_manager)
         return NULL;
-    }
     server->command_manager->methods->register_all(server->command_manager,
         server);
     return server;

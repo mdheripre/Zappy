@@ -49,17 +49,15 @@ typedef struct server_methods_s {
 } server_methods_t;
 
 struct server_s {
+    int port;
     int socket_fd;
     struct sockaddr_in address;
-    int port;
-    float frequency;
     client_t clients[MAX_CLIENTS];
     int client_count;
+    game_t *game;
     dispatcher_t *dispatcher;
-    config_t *config;
     command_manager_t *command_manager;
     const server_methods_t *vtable;
-    game_t *game;
 };
 
 struct response_payload_s {
@@ -68,14 +66,14 @@ struct response_payload_s {
 };
 
 /* Object */
-bool init_socket(server_t *self);
 server_t *server_create(config_t *config);
+void server_destroy(server_t *self);
+bool init_socket(server_t *self);
 bool server_init(server_t *server, config_t *config);
 void remove_client(server_t *self, int index);
 void accept_client(server_t *self);
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
-void server_destroy(server_t *self);
 void run_server(server_t *self);
 float get_command_delay(server_t *server, const char *command);
 void server_broadcast_gui(server_t *self, char *message);

@@ -36,11 +36,13 @@ SRC_LIST = $(SRC_DIR)/List
 SRC_LIST_CTOR = $(SRC_LIST)/constructor
 SRC_LIST_DTOR = $(SRC_LIST)/destructor
 SRC_LIST_METHODS = $(SRC_LIST)/methods
+
 SRC_CONFIG = $(SRC_DIR)/Config
 SRC_CONFIG_CTOR = $(SRC_CONFIG)/constructor
 SRC_CONFIG_DTOR = $(SRC_CONFIG)/destructor
 SRC_CONFIG_METHODS = $(SRC_CONFIG)/methods
-SRC_CONFIG_METHODS_EVT = $(SRC_CONFIG_METHODS)/Event
+SRC_CONFIG_METHODS_EVT = $(SRC_CONFIG)/Event
+
 SRC_GAME = $(SRC_DIR)/Game
 SRC_GAME_CTOR = $(SRC_GAME)/constructor
 SRC_GAME_DTOR = $(SRC_GAME)/destructor
@@ -111,7 +113,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_add_event.c \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/game_tick.c \
-	$(SRC_GAME_METHODS)/dispatch_game_event.c
+	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \

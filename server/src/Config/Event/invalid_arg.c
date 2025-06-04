@@ -5,9 +5,12 @@
 ** invalid_arg.c
 */
 
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
 #include "config.h"
 #include "dispatcher.h"
-#include <stdio.h>
+
 
 void invalid_arg(dispatcher_t *, const char *event_data, void *data)
 {
