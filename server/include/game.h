@@ -98,6 +98,7 @@ struct game_methods_s {
     game_event_t *(*pop_event)(game_t *self);
     void (*dispatch_events)(game_t *self);
     void (*update)(game_t *self);
+    int (*count_team_members)(game_t *self, const char *team_name);
 };
 
 typedef struct egg_s {
@@ -150,4 +151,5 @@ void game_add_event(game_t *self, game_event_t event);
 game_event_t *game_pop_event(game_t *self);
 void game_dispatch_events(game_t *self);
 void game_update(game_t *self);
+int count_team_members(game_t *self, const char *team_name);
 #endif /* !GAME_H_ */

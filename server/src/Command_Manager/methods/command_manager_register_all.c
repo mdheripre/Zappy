@@ -35,4 +35,6 @@ void register_all(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
         server);
+    REGISTER(self->dispatcher, "command_ia_Connect_nbr",
+        handle_command_connect_nbr, server);
 }

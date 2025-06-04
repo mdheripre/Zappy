@@ -65,12 +65,14 @@ SRCS = \
 	$(SRC_SERV_METHODS)/server_run.c \
 	$(SRC_SERV_METHODS)/broadcast_gui.c \
 	$(SRC_SERV_METHODS)/setup_poll.c \
+	$(SRC_SERV_METHODS)/reject_client.c \
 	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
 	$(SRC_CMD_MANAGER_DTOR)/command_manager_destroy.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
 	$(SRC_CMD_MANAGER_EVENTS_IA)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_IA)/connect_nbr.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -92,6 +94,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_pop_front.c \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \
+	$(SRC_LIST_METHODS)/list_remove.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
@@ -114,13 +117,14 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/game_tick.c \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
+	$(SRC_GAME_METHODS)/count_team_members.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -Wall -Wextra -Iinclude -g
 
 all: $(NAME)
 

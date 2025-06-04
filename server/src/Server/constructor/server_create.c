@@ -34,6 +34,7 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
     .broadcast_gui = server_broadcast_gui,
+    .reject_client = reject_client,
 };
 
 /****************************************************************************/
@@ -50,7 +51,7 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
 static void register_core_events(server_t *server)
 {
     REGISTER(server->dispatcher, "client_connected",
-        on_client_connected, NULL);
+        on_client_connected, server);
     REGISTER(server->dispatcher, "client_identify",
         on_client_identify, server);
     REGISTER(server->dispatcher, "send_response", on_send_response, server);

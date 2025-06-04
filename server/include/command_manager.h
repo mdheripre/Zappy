@@ -36,6 +36,7 @@ void on_command_not_found(dispatcher_t *self, const char *event, void *data);
 
 /* Handlers */
 void handle_command_forward(void *ctx, void *data);
+void handle_command_connect_nbr(void *ctx, void *data);
 void handle_command_gui_msz(void *ctx, void *data);
 void handle_command_gui_sgt(void *ctx, void *data);
 void handle_command_gui_tna(void *ctx, void *data);

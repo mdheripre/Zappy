@@ -14,7 +14,8 @@ static const game_methods_t GAME_METHODS = {
     .add_event = game_add_event,
     .pop_event = game_pop_event,
     .dispatch_events = game_dispatch_events,
-    .update = game_update
+    .update = game_update,
+    .count_team_members = count_team_members,
 };
 
 static void game_init_tile(tile_t *tile, int x, int y)
@@ -40,9 +41,13 @@ static bool game_init_map(game_t *game)
     return true;
 }
 
+static void free_players(void *data)
+{
+}
+
 static bool game_init_lists(game_t *game)
 {
-    game->players = NEW(list, NULL);
+    game->players = NEW(list, free_players);
     game->eggs = NEW(list, NULL);
     game->incantations = NEW(list, NULL);
     game->event_queue = NEW(list, free);

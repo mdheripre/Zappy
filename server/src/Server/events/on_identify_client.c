@@ -28,17 +28,6 @@ static bool check_second_gui(server_t *server, client_t *client)
     return false;
 }
 
-static void reject_client(server_t *server, client_t *client)
-{
-    write(client->fd, "ko\n", 3);
-    for (int i = 0; i < server->client_count; i++) {
-        if (&server->clients[i] == client) {
-            remove_client(server, i);
-            return;
-        }
-    }
-}
-
 static void emit_identify_event(server_t *server,
     client_t *client, const char *message)
 {
@@ -75,8 +64,7 @@ void on_client_identify(void *ctx, void *data)
     cleaned[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(cleaned);
     if (strcmp(cleaned, "GRAPHIC") == 0 && check_second_gui(server, client)) {
-        console_log(LOG_WARNING, "Rejected GUI: already connected");
-        reject_client(server, client);
+        reject_client(server, client, "Rejected GUI: already connected");
         return;
     }
     emit_identify_event(server, client, cleaned);

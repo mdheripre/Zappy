@@ -20,7 +20,8 @@ static const list_methods_t LIST_METHODS = {
     .push_back = list_push_back,
     .pop_front = list_pop_front,
     .size = list_size,
-    .contain = list_contain
+    .contain = list_contain,
+    .remove = list_remove
 };
 
 /**

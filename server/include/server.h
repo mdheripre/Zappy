@@ -46,6 +46,8 @@ typedef struct server_methods_s {
     void (*remove_client)(server_t *self, int index);
     float (*get_command_delay)(server_t *self, const char *command);
     void (*broadcast_gui)(server_t *self, char *message);
+    void (*reject_client)(server_t *self, client_t *client,
+        const char *reason);
 } server_methods_t;
 
 struct server_s {
@@ -77,6 +79,7 @@ void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 float get_command_delay(server_t *server, const char *command);
 void server_broadcast_gui(server_t *self, char *message);
+void reject_client(server_t *server, client_t *client, const char *reason);
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);

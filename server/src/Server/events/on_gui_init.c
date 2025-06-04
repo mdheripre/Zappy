@@ -16,6 +16,7 @@ void on_gui_init(void *ctx, void *data)
     if (!server || !client)
         return;
     client->type = CLIENT_GUI;
+    client->player = NULL;
     console_log(LOG_SUCCESS, "Client %d is GUI", client->fd);
     EMIT(server->command_manager->dispatcher, "command_gui_msz", client);
     EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);
