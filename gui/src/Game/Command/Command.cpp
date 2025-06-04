@@ -20,7 +20,14 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
         printErrorCommand("msz", token);
-    std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(std::stoi(token[0]), std::stoi(token[1]));
+    std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
+        std::stoi(token[0]),
+        std::stoi(token[1]),
+        _objFactory->createCube(
+            tools::Color(0, 255, 0, 255),
+            tools::Position3D<float>(1.0, 1.0, 1.0)
+        )
+    );
     _gm.map = map;
     _renderer->pushEntity(map);
     std::cout << "Map created" << std::endl;

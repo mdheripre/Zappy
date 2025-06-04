@@ -41,13 +41,13 @@ class Map : public MapState, public render::IRenderEntity {
         int _height;
         std::vector<std::vector<Tile>> _map;
     
-        std::unique_ptr<render::IStaticObject> _tileObject;
+        std::unique_ptr<render::IObject> _tileObject;
         std::array<std::unique_ptr<render::IAnimatedObject>, 7> _propsObject;
     
     public:
         Map(int width,
             int height,
-            std::unique_ptr<render::IStaticObject> tileObject = nullptr,
+            std::unique_ptr<render::IObject> tileObject = nullptr,
             std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject = {})
             : MapState(width, height),
               _width(width),

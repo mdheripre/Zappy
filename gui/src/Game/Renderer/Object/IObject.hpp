@@ -16,8 +16,7 @@ namespace render
             virtual ~IObject() = default;
             virtual const tools::Position3D<float> &getPosition() const = 0;
             virtual const tools::BoundingBox &getBoundingBox() const = 0; 
-            virtual void setPosition(tools::Position3D<float> pos) = 0;
+            virtual void setPosition(const tools::Position3D<float> &pos) = 0;
             virtual void drawObject() const = 0;
-            virtual void updateObject(float dt) const = 0;
     };
 } // namespace render

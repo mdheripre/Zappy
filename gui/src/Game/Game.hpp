@@ -11,6 +11,7 @@
 #include "Game/GameState/GameState.hpp"
 #include "Game/Renderer/IRenderer.hpp"
 #include "Tools/TeamBranding/TeamBrandingManager/TeamBrandingManager.hpp"
+#include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Tools/Input/Input.hpp"
 #include <chrono>
 #include <sstream>
@@ -26,13 +27,15 @@ namespace game
         public:
             Game(std::shared_ptr<tools::MessageQueue> incoming,
                 std::shared_ptr<tools::MessageQueue> outgoing,
-                std::unique_ptr<render::IRenderer> render);
+                std::unique_ptr<render::IRenderer> render,
+                std::unique_ptr<render::IObjectFactory> _objFactory);
             ~Game() = default;
             void gameLoop();
             void stopLoop() {_running = false;};
         private:
             std::shared_ptr<tools::MessageQueue> _incoming;
             std::shared_ptr<tools::MessageQueue> _outgoing;
+            std::unique_ptr<render::IObjectFactory> _objFactory;
             state::GameState _gm;
             bool _running = true;
             tools::CommandManager _cm;

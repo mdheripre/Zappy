@@ -55,12 +55,13 @@ void gui::Map::drawProps(const Tile &tile, const tools::Position3D<float> &tileP
 void gui::Map::draw() const
 {
     if (_tileObject != nullptr) {
+        tools::Position3D<float> tileSize = _tileObject->getBoundingBox().getSize();
         for (int i = 0; i < _map.size(); ++i) {
             for (int j = 0; j < _map[i].size(); ++j) {
                 tools::Position3D<float> tilePos(
-                    static_cast<float>(j),
+                    j * tileSize.x,
                     0.0f,
-                    static_cast<float>(i)
+                    i * tileSize.z
                 );
                 _tileObject->setPosition(tilePos);
                 _tileObject->drawObject();

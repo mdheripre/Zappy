@@ -8,6 +8,7 @@
 #pragma once
 #include "Network/Network.hpp"
 #include "Game/Renderer/Raylib/Raylib.hpp"
+#include "Game/Renderer/Raylib/RaylibObjectFactory/RaylibObjectFactory.hpp"
 #include "Game/Game.hpp"
 #include <memory>
 #include <vector>

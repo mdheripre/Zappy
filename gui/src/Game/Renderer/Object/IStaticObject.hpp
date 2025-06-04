@@ -11,7 +11,7 @@
 
 namespace render
 {
-    class IStaticObject : public IObject, public IModel
+    class IStaticObject : public IObject
     {
     public:
         virtual ~IStaticObject() = default;
