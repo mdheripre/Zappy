@@ -3,6 +3,7 @@ use crate::ServerInfos;
 use crate::{CoreError, Result};
 use lib_tcp::tcp_client::AsyncTcpClient;
 
+#[derive(Debug, Clone)]
 pub struct ClientInfos {
     pub client_num: i32,
     pub x: i32,

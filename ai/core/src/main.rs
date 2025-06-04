@@ -3,6 +3,11 @@ mod init;
 mod packet;
 mod prelude;
 mod utils;
+mod tile;
+mod item;
+mod ai_core;
+mod ai;
+mod server_response;
 
 use crate::prelude::*;
 use clap::Parser;
