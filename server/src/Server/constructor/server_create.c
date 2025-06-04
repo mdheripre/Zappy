@@ -6,6 +6,7 @@
 */
 
 
+#include "config.h"
 #include "utils.h"
 #include "server.h"
 #include "shared.h"
@@ -168,17 +169,18 @@ bool init_socket(server_t *self)
  * and registers core events and commands.
  *
  * @param server Pointer to the server structure to initialize.
- * @param port The port number for the server to listen on.
+ * @param config Pointer to a config_t instance containing server settings.
  * @return true if initialization was successful, false otherwise.
  */
-bool server_init(server_t *server, int port)
+bool server_init(server_t *server, config_t *config)
 {
     if (!server)
         return false;
+    server->config = config;
     memset(server, 0, sizeof(server_t));
-    server->port = port;
+    server->port = config->port;
     server->vtable = &DEFAULT_SERVER_METHODS;
-    server->frequency = 1.0f;
+    server->frequency = config->frequency;
     if (!server->vtable->constructor(server)) {
         console_log(LOG_ERROR, "Failed to initialize server");
         return false;
@@ -204,23 +206,20 @@ bool server_init(server_t *server, int port)
  * Allocates memory for a server, initializes it with the given port,
  * creates the game and command manager, and registers all commands.
  *
- * @param port The port number for the server to listen on.
- * @param width The width of the game map.
- * @param height The height of the game map.
- * @param frequency The frequency for the game loop.
- * @return Pointer to the created server_t, or NULL on failure.
+ * @param config Pointer to a config_t instance containing server settings.
+ * @return Pointer to the newly created server_t instance, or NULL on failure.
  */
-server_t *server_create(int port, int width, int height, float frequency)
+server_t *server_create(config_t *config)
 {
     server_t *server = malloc(sizeof(server_t));
 
     if (!server)
         return NULL;
-    if (!server_init(server, port)) {
+    if (!server_init(server, config)) {
         free(server);
         return NULL;
     }
-    server->game = NEW(game, width, height, frequency);
+    server->game = NEW(game, config->width, config->height, config->frequency);
     if (!server->game) {
         return NULL;
     }

@@ -19,6 +19,7 @@
     #include <stdlib.h>
     #include <sys/time.h>
     #include "client.h"
+    #include "config.h"
     #include "shared.h"
     #include "dispatcher.h"
     #include "game.h"
@@ -55,6 +56,7 @@ struct server_s {
     client_t clients[MAX_CLIENTS];
     int client_count;
     dispatcher_t *dispatcher;
+    config_t *config;
     command_manager_t *command_manager;
     const server_methods_t *vtable;
     game_t *game;
@@ -67,8 +69,8 @@ struct response_payload_s {
 
 /* Object */
 bool init_socket(server_t *self);
-server_t *server_create(int port, int width, int height, float frequency);
-bool server_init(server_t *server, int port);
+server_t *server_create(config_t *config);
+bool server_init(server_t *server, config_t *config);
 void remove_client(server_t *self, int index);
 void accept_client(server_t *self);
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
