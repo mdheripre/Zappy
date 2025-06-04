@@ -8,6 +8,19 @@
 #include "config.h"
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * check_errors - Validate the next argument as a team name.
+ * Ensures there is a non-empty value that is not a new flag.
+ *
+ * @param parser: The current parser state.
+ * @return true if valid team name is provided, false otherwise.
+ */
 static bool check_errors(parser_t *parser)
 {
     if (parser->index + 1 >= parser->argc ||
@@ -19,6 +32,15 @@ static bool check_errors(parser_t *parser)
     return true;
 }
 
+/**
+ * add_team - Add a new team name to the config structure.
+ * Verifies uniqueness, allocates memory, and stores the team name.
+ * Logs success or sets an error message on failure.
+ *
+ * @param config: The configuration structure.
+ * @param parser: The current parser state.
+ * @return true if the team was added successfully, false otherwise.
+ */
 static bool add_team(config_t *config, parser_t *parser)
 {
     char *team_name = NULL;
@@ -42,6 +64,16 @@ static bool add_team(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handles the "-n" argument to add team names.
+ *
+ * Reads one or more team names from command-line arguments.
+ * Verifies uniqueness and non-empty values. Stores each team
+ * name in the config's team list.
+ *
+ * @param ctx Pointer to the config structure.
+ * @param data Pointer to the parser structure.
+ */
 void team_name_arg(void *ctx, void *data)
 {
     config_t *config = ctx;

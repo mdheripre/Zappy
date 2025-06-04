@@ -8,19 +8,21 @@
 NAME = zappy_server
 
 SRC_DIR = src
-
+SRC_PLAYER = $(SRC_DIR)/Player
+SRC_PLAYER_CTOR = $(SRC_PLAYER)/constructor
+SRC_PLAYER_DTOR = $(SRC_PLAYER)/destructor
 SRC_SERVER = $(SRC_DIR)/Server
 SRC_SERV_CTOR = $(SRC_SERVER)/constructor
 SRC_SERV_DTOR = $(SRC_SERVER)/destructor
 SRC_SERV_METHODS = $(SRC_SERVER)/methods
 SRC_SERV_EVENT = $(SRC_SERVER)/events
-
 SRC_CMD_MANAGER = $(SRC_DIR)/Command_Manager
 SRC_CMD_MANAGER_CTOR = $(SRC_CMD_MANAGER)/constructor
 SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
-
+SRC_CMD_MANAGER_EVENTS_IA = $(SRC_CMD_MANAGER_EVENTS)/ia
+SRC_CMD_MANAGER_EVENTS_GUI = $(SRC_CMD_MANAGER_EVENTS)/gui
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
 SRC_UTILS_QUEUE = $(SRC_UTILS)/Queue
@@ -34,11 +36,13 @@ SRC_LIST = $(SRC_DIR)/List
 SRC_LIST_CTOR = $(SRC_LIST)/constructor
 SRC_LIST_DTOR = $(SRC_LIST)/destructor
 SRC_LIST_METHODS = $(SRC_LIST)/methods
+
 SRC_CONFIG = $(SRC_DIR)/Config
 SRC_CONFIG_CTOR = $(SRC_CONFIG)/constructor
 SRC_CONFIG_DTOR = $(SRC_CONFIG)/destructor
 SRC_CONFIG_METHODS = $(SRC_CONFIG)/methods
-SRC_CONFIG_METHODS_EVT = $(SRC_CONFIG_METHODS)/Event
+SRC_CONFIG_METHODS_EVT = $(SRC_CONFIG)/Event
+
 SRC_GAME = $(SRC_DIR)/Game
 SRC_GAME_CTOR = $(SRC_GAME)/constructor
 SRC_GAME_DTOR = $(SRC_GAME)/destructor
@@ -52,18 +56,28 @@ SRCS = \
 	$(SRC_SERV_EVENT)/on_event_not_found.c \
 	$(SRC_SERV_EVENT)/on_identify_client.c \
 	$(SRC_SERV_EVENT)/on_send_response.c \
+	$(SRC_SERV_EVENT)/on_gui_init.c \
+	$(SRC_SERV_EVENT)/on_ia_init.c \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
+	$(SRC_SERV_METHODS)/broadcast_gui.c \
 	$(SRC_SERV_METHODS)/setup_poll.c \
+	$(SRC_SERV_METHODS)/reject_client.c \
 	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
 	$(SRC_CMD_MANAGER_DTOR)/command_manager_destroy.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
-	$(SRC_CMD_MANAGER_EVENTS)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_IA)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_IA)/connect_nbr.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
@@ -80,6 +94,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_pop_front.c \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \
+	$(SRC_LIST_METHODS)/list_remove.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
@@ -101,11 +116,15 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_add_event.c \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/game_tick.c \
-	$(SRC_GAME_METHODS)/dispatch_game_event.c
+	$(SRC_GAME_METHODS)/dispatch_game_event.c \
+	$(SRC_GAME_METHODS)/count_team_members.c \
+	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_PLAYER_CTOR)/player_create.c \
+	$(SRC_PLAYER_DTOR)/player_destroy.c \
 
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -Wall -Wextra -Iinclude -g
 
 all: $(NAME)
 

@@ -10,6 +10,7 @@
     #include <stdio.h>
     #include <stdarg.h>
     #include <time.h>
+    #include "server.h"
     #include "client.h"
     #define COLOR_INFO "\033[36m"
     #define COLOR_SUCCESS "\033[32m"
@@ -17,13 +18,15 @@
     #define COLOR_ERROR "\033[31m"
     #define COLOR_RESET "\033[0m"
 
+
+typedef struct client_s client_t;
+typedef struct queued_command_s queued_command_t;
 typedef enum log_level_e {
     LOG_INFO,
     LOG_SUCCESS,
     LOG_WARNING,
     LOG_ERROR
 } log_level_t;
-
 
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);

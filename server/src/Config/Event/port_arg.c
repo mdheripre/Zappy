@@ -9,6 +9,21 @@
 #include "utils.h"
 #include <ctype.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * check_errors - Validate the "-p" argument (server port).
+ * Ensures the port is defined only once, followed by a valid integer.
+ * Returns false and sets error message if the argument is invalid.
+ *
+ * @param config: The configuration structure being filled.
+ * @param parser: The current parser state (argv, argc, index, etc).
+ * @return true if valid, false otherwise.
+ */
 static bool check_errors(config_t *config, parser_t *parser)
 {
     static bool initialized = false;
@@ -31,6 +46,16 @@ static bool check_errors(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handles the "-p" argument to set the server port.
+ *
+ * Parses and validates the given port value from command-line arguments.
+ * Accepts values from 1024 to 65535 (or 0 for random port). Reports
+ * errors if the format is invalid or value is out of range.
+ *
+ * @param ctx Pointer to the config structure.
+ * @param data Pointer to the parser structure.
+ */
 void port_arg(void *ctx, void *data)
 {
     config_t *config = ctx;

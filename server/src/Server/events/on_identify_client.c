@@ -16,35 +16,68 @@
 /****************************************************************************/
 
 /**
- * @brief Assigns the client type based on the provided identifier string.
+ * @brief Checks if another GUI client is already connected.
  *
- * If the identifier is "GRAPHIC", sets the client as GUI; otherwise,
- * sets as IA.
+ * Iterates through the list of connected clients to determine whether
+ * a GUI client other than the given one is already present.
  *
- * @param client Pointer to the client structure.
- * @param cleaned Identifier string to determine client type.
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the current client being verified.
+ * @return true if another GUI is already connected, false otherwise.
  */
-static void dispatch_type(client_t *client, char *cleaned)
+static bool check_second_gui(server_t *server, client_t *client)
 {
-    if (strcmp(cleaned, "GRAPHIC") == 0) {
-        client->type = CLIENT_GUI;
-        console_log(LOG_SUCCESS, "Client %d is GUI", client->fd);
-    } else {
-        client->type = CLIENT_IA;
-        console_log(LOG_SUCCESS, "Client %d is IA (team: \"%s\")",
-            client->fd, cleaned);
+    client_t *other = NULL;
+
+    for (int i = 0; i < server->client_count; i++) {
+        other = &server->clients[i];
+        if (other->connected && other != client &&
+            other->type == CLIENT_GUI)
+            return true;
     }
+    return false;
 }
 
 /**
- * @brief Handles the client identification event.
+ * @brief Emits an identification event based on the message content.
  *
- * This function is called when a client sends an identification command.
- * It checks if the client is undefined, processes the command, and
- * identifies the client type based on the command content.
+ * Determines the correct event type ("gui_init" or "ia_init") based
+ * on the message, wraps the message and client into a payload, and
+ * emits it through the server dispatcher.
  *
- * @param ctx Pointer to the server instance.
- * @param data Pointer to the client instance.
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the identifying client.
+ * @param message Message used to determine the client type.
+ */
+static void emit_identify_event(server_t *server,
+    client_t *client, const char *message)
+{
+    response_payload_t *payload = malloc(sizeof(response_payload_t));
+    const char *event = strcmp(message, "GRAPHIC") == 0 ? "gui_init"
+        : "ia_init";
+
+    if (!payload)
+        return;
+    payload->client = client;
+    payload->message = strdup(message);
+    if (!payload->message) {
+        free(payload);
+        return;
+    }
+    EMIT(server->dispatcher, event, payload);
+    free(payload->message);
+    free(payload);
+}
+
+/**
+ * @brief Handles the first command sent by a client to identify itself.
+ *
+ * Parses the first message sent by the client. If it's "GRAPHIC", ensures
+ * no other GUI is already connected. Then emits the corresponding init
+ * event ("gui_init" or "ia_init") and dequeues the command.
+ *
+ * @param ctx Pointer to the server instance (cast from void).
+ * @param data Pointer to the client (cast from void).
  */
 void on_client_identify(void *ctx, void *data)
 {
@@ -53,7 +86,7 @@ void on_client_identify(void *ctx, void *data)
     queued_command_t *cmd = NULL;
     char cleaned[BUFFER_COMMAND_SIZE] = {0};
 
-    if (!client || !server || client->type != CLIENT_UNDEFINED)
+    if (!server || !client || client->type != CLIENT_UNDEFINED)
         return;
     cmd = client_peek_command(client);
     if (!cmd)
@@ -61,6 +94,10 @@ void on_client_identify(void *ctx, void *data)
     strncpy(cleaned, cmd->content, BUFFER_COMMAND_SIZE - 1);
     cleaned[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(cleaned);
-    dispatch_type(client, cleaned);
+    if (strcmp(cleaned, "GRAPHIC") == 0 && check_second_gui(server, client)) {
+        reject_client(server, client, "Rejected GUI: already connected");
+        return;
+    }
+    emit_identify_event(server, client, cleaned);
     client_dequeue_command(client, NULL);
 }

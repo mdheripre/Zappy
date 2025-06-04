@@ -55,9 +55,10 @@ static void update_commands(server_t *self, float delta)
 
 static void update_game(server_t *self)
 {
-    if (self->game && self->game->methods)
+    if (self->game && self->game->methods) {
         self->game->methods->tick(self->game, get_ms_time());
-    dispatch_game_events(self);
+        self->game->methods->dispatch_events(self->game);
+    }
 }
 
 void run_server(server_t *self)

@@ -9,6 +9,21 @@
 #include "utils.h"
 #include <ctype.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * check_errors - Validate the width argument from the command line.
+ * Ensures that the width is only set once and that the provided
+ * argument exists and is a valid integer.
+ *
+ * @param config: Pointer to the config structure being filled.
+ * @param parser: Pointer to the parser containing arguments and state.
+ * @return true if the width argument is valid and unique, false otherwise.
+ */
 static bool check_errors(config_t *config, parser_t *parser)
 {
     static bool initialized = false;
@@ -31,6 +46,15 @@ static bool check_errors(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handles the "-x" argument to set world width.
+ *
+ * Parses the width value from command-line input and stores
+ * it in the configuration. The value must be strictly positive.
+ *
+ * @param ctx Pointer to the config structure.
+ * @param data Pointer to the parser structure.
+ */
 void width_arg(void *ctx, void *data)
 {
     config_t *config = ctx;

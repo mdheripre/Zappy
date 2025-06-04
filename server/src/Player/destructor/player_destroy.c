@@ -1,28 +1,29 @@
 /*
 ** EPITECH PROJECT, 2025
-** Zappy
+** server
 ** File description:
-** config_destructor.c
+** player_destroy
 */
 
-#include "config.h"
+#include "player.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                                DESTRUCTOR                                */
+/*                              DESTRUCTOR                                 */
 /*                                                                          */
 /****************************************************************************/
 
 /**
- * @brief Frees resources used by the config structure.
+ * @brief Frees the memory used by a player.
  *
- * Currently acts as a placeholder. Frees any allocated memory or
- * internal fields if needed in future expansions.
+ * Frees the team name string associated with the player. Does not
+ * deallocate the player struct itself.
  *
- * @param self Pointer to the config_t instance to destroy.
+ * @param self Pointer to the player to destroy.
  */
-void config_destroy(config_t *self)
+void player_destroy(player_t *self)
 {
     if (!self)
         return;
+    free(self->team_name);
 }

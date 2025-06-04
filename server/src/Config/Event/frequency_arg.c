@@ -9,6 +9,23 @@
 #include "utils.h"
 #include <ctype.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                              EVENTS FLAGS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Validates the frequency argument in the parser context.
+ *
+ * Ensures frequency is not defined multiple times, is provided with a
+ * value, and that the value is a valid float. Updates the parser's error
+ * message on failure.
+ *
+ * @param config Pointer to the config being modified.
+ * @param parser Pointer to the argument parser context.
+ * @return true if the argument is valid, false otherwise.
+ */
 static bool check_errors(config_t *config, parser_t *parser)
 {
     static bool initialized = false;
@@ -31,6 +48,16 @@ static bool check_errors(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Handler for the "-f" frequency argument.
+ *
+ * Parses and validates the frequency value from command-line args.
+ * Stores the result in the config if valid. On failure, sets the
+ * error flag and message in the parser.
+ *
+ * @param ctx Pointer to the config instance (cast from void).
+ * @param data Pointer to the parser instance (cast from void).
+ */
 void frequency_arg(void *ctx, void *data)
 {
     config_t *config = ctx;
