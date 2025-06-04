@@ -7,6 +7,13 @@
 
 #include "list.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              CONSTRUCTOR                                 */
+/*                                                                          */
+/****************************************************************************/
+
+
 /**
  * @brief Static constant structure holding method pointers for list
  * operations.

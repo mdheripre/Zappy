@@ -7,6 +7,22 @@
 
 #include "server.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                         GUI INITIALISATION                               */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Initializes a GUI client after connection.
+ *
+ * Sets the client type to GUI, clears its player pointer, and emits
+ * the MSZ, SGT, and MCT commands to initialize the GUI with map size,
+ * time unit, and full map content.
+ *
+ * @param ctx Pointer to the server instance (cast from void).
+ * @param data Pointer to the response payload containing the client.
+ */
 void on_gui_init(void *ctx, void *data)
 {
     server_t *server = ctx;

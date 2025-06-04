@@ -15,6 +15,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Checks if another GUI client is already connected.
+ *
+ * Iterates through the list of connected clients to determine whether
+ * a GUI client other than the given one is already present.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the current client being verified.
+ * @return true if another GUI is already connected, false otherwise.
+ */
 static bool check_second_gui(server_t *server, client_t *client)
 {
     client_t *other = NULL;
@@ -28,6 +38,17 @@ static bool check_second_gui(server_t *server, client_t *client)
     return false;
 }
 
+/**
+ * @brief Emits an identification event based on the message content.
+ *
+ * Determines the correct event type ("gui_init" or "ia_init") based
+ * on the message, wraps the message and client into a payload, and
+ * emits it through the server dispatcher.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the identifying client.
+ * @param message Message used to determine the client type.
+ */
 static void emit_identify_event(server_t *server,
     client_t *client, const char *message)
 {
@@ -48,6 +69,16 @@ static void emit_identify_event(server_t *server,
     free(payload);
 }
 
+/**
+ * @brief Handles the first command sent by a client to identify itself.
+ *
+ * Parses the first message sent by the client. If it's "GRAPHIC", ensures
+ * no other GUI is already connected. Then emits the corresponding init
+ * event ("gui_init" or "ia_init") and dequeues the command.
+ *
+ * @param ctx Pointer to the server instance (cast from void).
+ * @param data Pointer to the client (cast from void).
+ */
 void on_client_identify(void *ctx, void *data)
 {
     server_t *server = ctx;

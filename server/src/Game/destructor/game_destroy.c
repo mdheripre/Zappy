@@ -7,6 +7,21 @@
 
 #include "game.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              DESTRUCTOR                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Frees the memory allocated for the game map.
+ *
+ * Deallocates all rows of the game's 2D tile map and then frees the map
+ * itself. Does nothing if the game pointer is NULL. Other internal structures
+ * are not freed here and must be handled separately.
+ *
+ * @param game Pointer to the game instance to destroy.
+ */
 void game_destroy(game_t *game)
 {
     if (!game)

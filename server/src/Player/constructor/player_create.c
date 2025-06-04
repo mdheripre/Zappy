@@ -7,6 +7,23 @@
 
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              CONSTRUCTOR                                 */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * @brief Creates a new player based on a given configuration.
+ *
+ * Allocates and initializes a new player structure using values from the
+ * provided configuration. Initializes the inventory to zero and sets the
+ * initial level to 1. The player's team name is duplicated.
+ *
+ * @param config Player configuration structure.
+ * @return Pointer to the new player, or NULL on allocation failure.
+ */
 player_t *player_create(player_config_t config)
 {
     player_t *player = malloc(sizeof(player_t));

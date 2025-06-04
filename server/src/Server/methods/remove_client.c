@@ -14,7 +14,16 @@
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Removes a client from the server's client list.
+ *
+ * Closes the client's socket, removes the associated player if any,
+ * shifts the client array to fill the gap, and decrements the client
+ * count.
+ *
+ * @param self Pointer to the server instance.
+ * @param index Index of the client to remove.
+ */
 void remove_client(server_t *self, int index)
 {
     client_t *client = NULL;

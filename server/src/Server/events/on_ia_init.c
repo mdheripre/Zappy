@@ -8,6 +8,22 @@
 #include "server.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                          AI INITIALISATION                               */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Sends initial information to a newly connected AI client.
+ *
+ * Logs the team and ID assignment, sends map size via dprintf, and
+ * emits the Connect_nbr command to inform the client of available slots.
+ *
+ * @param server Pointer to the server.
+ * @param client Pointer to the newly accepted AI client.
+ * @param team_name Name of the team the client joined.
+ */
 static void send_player_init(server_t *server, client_t *client,
     const char *team_name)
 {
@@ -18,6 +34,16 @@ static void send_player_init(server_t *server, client_t *client,
         client);
 }
 
+/**
+ * @brief Initializes a new player instance and attaches it to a client.
+ *
+ * Creates a new player with a unique ID and starting position, then
+ * adds the player to the game's player list.
+ *
+ * @param server Pointer to the server.
+ * @param client Pointer to the client to bind the player to.
+ * @param team_name Team name assigned to the player.
+ */
 static void init_player(server_t *server, client_t *client,
     const char *team_name)
 {
@@ -36,6 +62,16 @@ static void init_player(server_t *server, client_t *client,
         client->player);
 }
 
+/**
+ * @brief Initializes an AI client after connection.
+ *
+ * Validates the requested team, checks slot availability, creates and
+ * assigns a new player, and sends initialization info. Rejects the client
+ * if validation fails.
+ *
+ * @param ctx Pointer to the server instance (cast from void).
+ * @param data Pointer to the response payload containing client and team name.
+ */
 void on_ia_init(void *ctx, void *data)
 {
     server_t *server = ctx;

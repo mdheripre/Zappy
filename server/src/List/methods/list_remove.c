@@ -7,6 +7,23 @@
 
 #include "list.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                             LIST METHODS                                 */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Removes a node from the list and frees its memory.
+ *
+ * Unlinks the specified node from the list, updates head/tail pointers,
+ * frees its content using the list's free function if available, and
+ * frees the node itself.
+ *
+ * @param self Pointer to the list.
+ * @param node Node to remove.
+ * @param prev Previous node before `node` (can be NULL).
+ */
 static void remove_node(list_t *self, list_node_t *node, list_node_t *prev)
 {
     if (!self || !node || !prev)
@@ -24,6 +41,16 @@ static void remove_node(list_t *self, list_node_t *node, list_node_t *prev)
     return;
 }
 
+/**
+ * @brief Removes the first node in the list that matches the target pointer.
+ *
+ * Traverses the list and removes the node whose data pointer equals
+ * `target`. Uses `remove_node` to handle memory deallocation and
+ * list integrity.
+ *
+ * @param self Pointer to the list.
+ * @param target Pointer to the data to remove.
+ */
 void list_remove(list_t *self, void *target)
 {
     list_node_t *prev = NULL;

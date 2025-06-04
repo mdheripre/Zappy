@@ -163,6 +163,17 @@ bool init_socket(server_t *self)
     (setup_address(self), true) && bind_socket(self) && listen_socket(self);
 }
 
+/**
+ * @brief Initializes the core state of a server instance.
+ *
+ * Sets default values, assigns the method table, constructs the internal
+ * dispatcher, and registers core events. Does not allocate memory for
+ * the server itself.
+ *
+ * @param server Pointer to the server structure to initialize.
+ * @param config Pointer to the configuration used for setup.
+ * @return true if initialization succeeded, false otherwise.
+ */
 bool server_init(server_t *server, config_t *config)
 {
     if (!server || !config)
@@ -185,6 +196,16 @@ bool server_init(server_t *server, config_t *config)
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Creates and initializes a new server instance.
+ *
+ * Allocates the server structure and initializes its core components,
+ * including the game instance and command manager. Fails gracefully on
+ * any allocation or initialization error.
+ *
+ * @param config Pointer to the server configuration structure.
+ * @return Pointer to the newly created server, or NULL on failure.
+ */
 server_t *server_create(config_t *config)
 {
     server_t *server = malloc(sizeof(server_t));
