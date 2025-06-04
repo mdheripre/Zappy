@@ -8,9 +8,11 @@
 #ifndef CLIENT_H_
     #define CLIENT_H_
     #include <stdbool.h>
+    #include "server.h"
     #define CLIENT_BUFFER_SIZE 1024
     #define MAX_COMMANDS 10
 
+typedef struct player_s player_t;
 typedef enum client_type_e {
     CLIENT_UNDEFINED = 0,
     CLIENT_IA,
@@ -26,6 +28,7 @@ typedef struct queued_command_s {
 typedef struct client_s {
     int fd;
     bool connected;
+    player_t *player;
     client_type_t type;
     char read_buffer[CLIENT_BUFFER_SIZE];
     queued_command_t commands[MAX_COMMANDS];

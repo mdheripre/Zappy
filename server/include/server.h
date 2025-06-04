@@ -33,6 +33,7 @@
 typedef struct server_s server_t;
 typedef struct response_payload_s response_payload_t;
 typedef struct command_manager_s command_manager_t;
+typedef struct client_s client_t;
 
 typedef struct server_methods_s {
     bool (*constructor)(server_t *self);

@@ -18,6 +18,9 @@
     #define COLOR_ERROR "\033[31m"
     #define COLOR_RESET "\033[0m"
 
+
+typedef struct client_s client_t;
+typedef struct queued_command_s queued_command_t;
 typedef enum log_level_e {
     LOG_INFO,
     LOG_SUCCESS,

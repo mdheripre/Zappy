@@ -8,7 +8,9 @@
 NAME = zappy_server
 
 SRC_DIR = src
-
+SRC_PLAYER = $(SRC_DIR)/Player
+SRC_PLAYER_CTOR = $(SRC_PLAYER)/constructor
+SRC_PLAYER_DTOR = $(SRC_PLAYER)/destructor
 SRC_SERVER = $(SRC_DIR)/Server
 SRC_SERV_CTOR = $(SRC_SERVER)/constructor
 SRC_SERV_DTOR = $(SRC_SERVER)/destructor
@@ -90,6 +92,8 @@ SRCS = \
 	$(SRC_GAME_METHODS)/game_tick.c \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_PLAYER_CTOR)/player_create.c \
+	$(SRC_PLAYER_DTOR)/player_destroy.c \
 
 OBJS = $(SRCS:.c=.o)
 

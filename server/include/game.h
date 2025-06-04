@@ -19,6 +19,8 @@ typedef enum resource_type_e resource_type_t;
 typedef struct tile_s tile_t;
 typedef enum game_event_type_e game_event_type_t;
 typedef struct server_s server_t;
+typedef struct player_s player_t;
+
 enum resource_type_e {
     RESOURCE_FOOD = 0,
     RESOURCE_LINEMATE,
