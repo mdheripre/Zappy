@@ -8,16 +8,17 @@
 #include "Game.hpp"
 
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
-    std::shared_ptr<tools::MessageQueue> outgoing)
-    : _incoming(incoming), _outgoing(outgoing)
+    std::shared_ptr<tools::MessageQueue> outgoing,
+    std::unique_ptr<render::IRenderer> render)
+    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render))
 {
-    _cm.addCommand("WELCOME", std::bind(&Game::welcomeCm, this, std::placeholders::_1));
-    _cm.addCommand("msz", std::bind(&Game::mszCommand, this, std::placeholders::_1));
-    _cm.addCommand("tna", std::bind(&Game::tnaCommand, this, std::placeholders::_1));
-    _cm.addCommand("bct", std::bind(&Game::bctCommand, this, std::placeholders::_1));
-
-    _renderer = std::make_unique<gui::Renderer3D>();
-    _renderer->init();
+    for (const auto& [name, handler] : commands) {
+        _cm.addCommand(name, handler);
+    }
+    _cam = std::make_shared<render::Camera>();
+    _renderer->init("Zappy", 1920, 1080, 60);
+    _renderer->setCamera(_cam);
+    _renderer->setBindings(bindings);
 }
 
 void game::Game::manageCommand(const std::string &command)
@@ -37,17 +38,24 @@ void game::Game::gameLoop()
     bool errorCaught = false;
     std::string errorMessage;
 
-    while (!_renderer->shouldClose()) {
+    using clock = std::chrono::high_resolution_clock;
+    auto lastTime = clock::now();
+
+    while (!_renderer->isClose()) {
+        auto currentTime = clock::now();
+        std::chrono::duration<float> elapsed = currentTime - lastTime;
+        float dt = elapsed.count();
+        lastTime = currentTime;
         try {
             if (!errorCaught) {
                 std::string message;
                 while (_incoming->tryPop(message))
                     manageCommand(message);
             }
-            _renderer->update();
+            _renderer->poll();
+            _renderer->update(dt);
             if (_gm.map)
-                _renderer->render(*_gm.map);
-
+                _renderer->render();
         } catch (const std::exception& e) {
             std::cerr << "Game " << e.what() << std::endl;
             errorCaught = true;
