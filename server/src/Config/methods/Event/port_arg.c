@@ -6,33 +6,25 @@
 */
 
 #include "config.h"
+#include "utils.h"
 #include <ctype.h>
-
-static bool check_format(char *arg)
-{
-    int index = (arg[0] == '-' || arg[0] == '+') ? 1 : 0;
-
-    for (; arg[index] != '\0'; index++) {
-        if (!isdigit(arg[index])) {
-            return false;
-        }
-    }
-    return true;
-}
 
 static bool check_errors(config_t *config, parser_t *parser)
 {
-    if (config->port != -1) {
+    static bool initialized = false;
+
+    if (initialized || config->port != -1) {
         parser->error_msg = "Multiple port definitions";
         return false;
     }
+    initialized = true;
     if (parser->index + 1 >= parser->argc ||
         (parser->argv[parser->index + 1][0] == '-' &&
         isalpha(parser->argv[parser->index + 1][1]))) {
         parser->error_msg = "Missing port number";
         return false;
     }
-    if (!check_format(parser->argv[parser->index + 1])) {
+    if (!config->methods->is_int(parser->argv[parser->index + 1])) {
         parser->error_msg = "Invalid port number format";
         return false;
     }
@@ -54,4 +46,6 @@ void port_arg(void *ctx, void *data)
         parser->error = true;
         return;
     }
+    parser->index++;
+    console_log(LOG_INFO, "Server port set to %d", config->port);
 }
