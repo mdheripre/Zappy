@@ -17,8 +17,8 @@ async fn handshake(client: &mut AsyncTcpClient, infos: &ServerInfos) -> Result<C
     println!("Received: WELCOME");
     println!("Sending: team name");
     client.send_team_name(&infos.name).await?;
-    let client_num_str = client.recv_until(b'\n').await?;
     let position_str = client.recv_until(b'\n').await?;
+    let client_num_str = client.recv_until(b'\n').await?;
 
     let client_num: i32 = client_num_str
         .trim()
