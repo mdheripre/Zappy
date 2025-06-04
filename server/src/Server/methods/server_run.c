@@ -16,15 +16,7 @@
 /****************************************************************************/
 
 
-/**
- * @brief Calculates the time elapsed since the last call in seconds.
- *
- * Updates the provided timeval structure to the current time.
- *
- * @param last_time Pointer to the previous timeval structure
- *                  (updated in-place).
- * @return Elapsed time in seconds as a float.
- */
+
 static float get_delta_time(struct timeval *last_time)
 {
     struct timeval now;
@@ -37,34 +29,51 @@ static float get_delta_time(struct timeval *last_time)
     return delta;
 }
 
-/**
- * @brief Runs the main server loop, handling client events and commands.
- *
- * Sets up polling for client connections, processes incoming events,
- * and executes server commands in a continuous loop.
- *
- * @param self Pointer to the server instance.
- */
+static bool poll_clients(server_t *self, struct pollfd *fds, nfds_t *nfds)
+{
+    int ret = 0;
+
+    self->vtable->setup_poll(self, fds, nfds);
+    ret = poll(fds, *nfds, TIMEOUT_MS);
+    if (ret < 0) {
+        console_log(LOG_ERROR, "Poll failed: %s", strerror(errno));
+        return false;
+    }
+    self->vtable->handle_poll(self, fds);
+    return true;
+}
+
+static void update_commands(server_t *self, float delta)
+{
+    if (!self->command_manager)
+        return;
+    self->command_manager->methods->process_identify(self->command_manager,
+        self);
+    self->command_manager->methods->process_all(self->command_manager, self,
+        delta);
+}
+
+static void update_game(server_t *self)
+{
+    if (self->game && self->game->methods)
+        self->game->methods->tick(self->game, get_ms_time());
+    dispatch_game_events(self);
+}
+
 void run_server(server_t *self)
 {
     struct pollfd fds[MAX_CLIENTS + 1];
     nfds_t nfds = 0;
-    int ret;
     struct timeval last_tick = {0};
     float delta;
 
     gettimeofday(&last_tick, NULL);
     memset(fds, 0, sizeof(fds));
     while (1) {
-        self->vtable->setup_poll(self, fds, &nfds);
-        ret = poll(fds, nfds, TIMEOUT_MS);
-        if (ret < 0) {
-            console_log(LOG_ERROR, "Poll failed: %s", strerror(errno));
+        if (!poll_clients(self, fds, &nfds))
             break;
-        }
-        self->vtable->handle_poll(self, fds);
         delta = get_delta_time(&last_tick);
-        command_process_identify(self);
-        command_process_all(self, delta);
+        update_commands(self, delta);
+        update_game(self);
     }
 }

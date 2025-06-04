@@ -22,13 +22,16 @@
     #include "config.h"
     #include "shared.h"
     #include "dispatcher.h"
+    #include "game.h"
+    #include "command_manager.h"
     #define MAX_CLIENTS 100
     #define TIMEOUT_MS 100
     #define BUFFER_COMMAND_SIZE 128
 
 
 typedef struct server_s server_t;
-
+typedef struct response_payload_s response_payload_t;
+typedef struct command_manager_s command_manager_t;
 
 typedef struct server_methods_s {
     bool (*constructor)(server_t *self);
@@ -50,10 +53,17 @@ struct server_s {
     int client_count;
     dispatcher_t *dispatcher;
     config_t *config;
+    command_manager_t *command_manager;
     const server_methods_t *vtable;
+    game_t *game;
 };
 
+struct response_payload_s {
+    client_t *client;
+    const char *message;
+};
 
+/* Object */
 bool init_socket(server_t *self);
 server_t *server_create(config_t *config);
 bool server_init(server_t *server, config_t *config);
@@ -63,16 +73,14 @@ void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void server_destroy(server_t *self);
 void run_server(server_t *self);
-
-/* Command */
-void command_process_all(server_t *server, float delta_time);
-void command_manager_register_all(server_t *server);
-void handle_command_forward(void *ctx, void *data);
 float get_command_delay(server_t *server, const char *command);
-void command_process_identify(server_t *server);
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);
 void on_client_identify(void *ctx, void *data);
 void on_event_not_found(dispatcher_t *self, const char *event, void *data);
+void on_send_response(void *ctx, void *data);
+
+/* Game */
+void dispatch_game_events(server_t *server);
 #endif /* SERVER_H_ */

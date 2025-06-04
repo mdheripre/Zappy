@@ -15,6 +15,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Assigns the client type based on the provided identifier string.
+ *
+ * If the identifier is "GRAPHIC", sets the client as GUI; otherwise,
+ * sets as IA.
+ *
+ * @param client Pointer to the client structure.
+ * @param cleaned Identifier string to determine client type.
+ */
 static void dispatch_type(client_t *client, char *cleaned)
 {
     if (strcmp(cleaned, "GRAPHIC") == 0) {

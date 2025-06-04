@@ -52,6 +52,7 @@ static void register_core_events(server_t *server)
         on_client_connected, NULL);
     REGISTER(server->dispatcher, "client_identify",
         on_client_identify, server);
+    REGISTER(server->dispatcher, "send_response", on_send_response, NULL);
 }
 
 /****************************************************************************/
@@ -187,7 +188,6 @@ bool server_init(server_t *server, config_t *config)
         return false;
     }
     register_core_events(server);
-    command_manager_register_all(server);
     return true;
 }
 
@@ -198,10 +198,10 @@ bool server_init(server_t *server, config_t *config)
 /****************************************************************************/
 
 /**
- * @brief Creates a new server instance and initializes it.
+ * @brief Creates and initializes a new server instance.
  *
- * Allocates memory for a server_t structure, initializes it with the specified
- * port, and returns a pointer to the newly created server instance.
+ * Allocates memory for a server, initializes it with the given port,
+ * creates the game and command manager, and registers all commands.
  *
  * @param config Pointer to a config_t instance containing server settings.
  * @return Pointer to the newly created server_t instance, or NULL on failure.
@@ -216,5 +216,15 @@ server_t *server_create(config_t *config)
         free(server);
         return NULL;
     }
+    server->game = NEW(game, config->width, config->height, config->frequency);
+    if (!server->game) {
+        return NULL;
+    }
+    server->command_manager = NEW(command_manager);
+    if (!server->command_manager) {
+        console_log(LOG_ERROR, "Failed to create command manager");
+        return NULL;
+    }
+    server->command_manager->methods->register_all(server->command_manager);
     return server;
 }
