@@ -10,6 +10,7 @@
     #define LIST_H_
 
     #include <stdlib.h>
+    #include <stdbool.h>
 
 typedef struct list_node_s {
     void *data;
@@ -24,6 +25,7 @@ typedef struct list_methods_s {
     void (*push_back)(list_t *self, void *data);
     void *(*pop_front)(list_t *self);
     int (*size)(const list_t *self);
+    bool (*contain)(list_t *self, void *data, bool (*compare)(void *, void *));
 } list_methods_t;
 
 struct list_s {
@@ -40,4 +42,5 @@ void list_clear(list_t *self);
 void list_push_back(list_t *self, void *data);
 void *list_pop_front(list_t *self);
 int list_size(const list_t *self);
+bool list_contain(list_t *self, void *data, bool (*compare)(void *, void *));
 #endif /* !LIST_H_ */
