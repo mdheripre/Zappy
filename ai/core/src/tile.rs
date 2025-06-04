@@ -7,4 +7,3 @@ pub struct Tile {
     pub nb_players: i32,
     pub items: Vec<Item>,
 }
-

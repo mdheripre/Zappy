@@ -1,15 +1,15 @@
+mod ai;
+mod ai_core;
 mod error;
 mod init;
+mod item;
 mod packet;
 mod prelude;
-mod utils;
-mod tile;
-mod item;
-mod ai_core;
-mod ai;
 mod server_response;
+mod tile;
+mod utils;
 
-use crate::prelude::*;
+use crate::{ai_core::AiCore, prelude::*};
 use clap::Parser;
 use init::init_client;
 use tokio::runtime::Runtime;
@@ -27,8 +27,14 @@ struct ServerInfos {
 
 fn main() -> Result<()> {
     let infos = ServerInfos::parse();
-
     let rt = Runtime::new()?;
-    rt.block_on(async { init_client(&infos).await })?;
+
+    rt.block_on(async {
+        let mut ai_core = AiCore::new(&infos).await?;
+        println!("Ai core initialized, starting main loop..");
+        ai_core.run().await?;
+        println!("Simulation finished.");
+        Ok::<(), CoreError>(())
+    })?;
     Ok(())
 }

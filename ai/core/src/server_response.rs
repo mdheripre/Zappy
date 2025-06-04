@@ -22,7 +22,8 @@ impl ServerResponse {
             "dead" => ServerResponse::Dead,
             "WELCOME" => ServerResponse::Welcome,
             s if s.starts_with("[") && s.ends_with("]") => {
-                let items = s[1..s.len() - 1].split(',')
+                let items = s[1..s.len() - 1]
+                    .split(',')
                     .map(|s| s.trim().to_string())
                     .collect();
                 ServerResponse::Look(items)

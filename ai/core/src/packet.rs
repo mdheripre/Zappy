@@ -12,7 +12,7 @@ pub enum Packet {
     Look,
     Inventory,
     Broadcast(String),
-    ConnectNbr(u32),
+    ConnectNbr,
     Fork,
     Eject,
     // Death,
@@ -34,7 +34,7 @@ impl fmt::Display for Packet {
             Packet::Eject => "Eject".to_string(),
             Packet::Incantation => "Incantation".to_string(),
             Packet::Broadcast(msg) => format!("Broadcast {}", msg),
-            Packet::ConnectNbr(n) => format!("Connect_nbr {}", n),
+            Packet::ConnectNbr => "Connect_nbr".to_string(),
             Packet::Take(item) => format!("Take {}", item),
             Packet::Set(item) => format!("Set {}", item),
         };

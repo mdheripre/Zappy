@@ -1,15 +1,16 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use lib_tcp::tcp_client::AsyncTcpClient;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, Mutex};
+use tokio::time::{sleep, Duration};
 
-use crate::server_response::ServerResponse;
-use crate::ai::GameCommand;
-use crate::init::ClientInfos;
-use crate::packet::Packet;
-use crate::tile::Tile;
+use crate::ai::{ai_decision, command_to_packet, AiCommand};
+use crate::init::{init_client, ClientInfos};
 use crate::item::Item;
-use crate::{CoreError, Result};
+use crate::packet::{Packet, PacketSender};
+use crate::server_response::ServerResponse;
+use crate::tile::Tile;
+use crate::{CoreError, Result, ServerInfos};
 
 #[derive(Debug, Clone)]
 pub struct AiState {
@@ -33,9 +34,145 @@ impl AiState {
 }
 
 pub struct AiCore {
-    client: AsyncTcpClient,
+    client: Arc<Mutex<AsyncTcpClient>>,
     state: Arc<Mutex<AiState>>,
     send_queue: mpsc::UnboundedSender<Packet>,
-    receive_queue: mpsc::UnboundedReceiver<ServerResponse>,
-    command_queue: mpsc::UnboundedSender<GameCommand>,
+    recv_queue: mpsc::UnboundedReceiver<ServerResponse>,
+    cmd_queue: mpsc::UnboundedSender<AiCommand>,
+    send_rx: mpsc::UnboundedReceiver<Packet>,
+    recv_tx: mpsc::UnboundedSender<ServerResponse>,
+    cmd_rx: mpsc::UnboundedReceiver<AiCommand>,
+}
+
+impl AiCore {
+    pub async fn new(infos: &ServerInfos) -> Result<Self> {
+        let (client, client_infos) = init_client(infos).await?;
+
+        let (send_tx, send_rx_) = mpsc::unbounded_channel::<Packet>();
+        let (recv_tx_, recv_rx) = mpsc::unbounded_channel::<ServerResponse>();
+        let (cmd_tx, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
+
+        let state = Arc::new(Mutex::new(AiState::new(client_infos)));
+
+        Ok(AiCore {
+            client: Arc::new(Mutex::new(client)),
+            state,
+            send_queue: send_tx,
+            recv_queue: recv_rx,
+            cmd_queue: cmd_tx,
+            send_rx: send_rx_,
+            recv_tx: recv_tx_,
+            cmd_rx: cmd_rx_,
+        })
+    }
+
+    pub async fn run(&mut self) -> Result<()> {
+        let sender_client = Arc::clone(&self.client);
+        let mut send_rx = std::mem::replace(&mut self.send_rx, mpsc::unbounded_channel().1);
+        tokio::spawn(async move {
+            while let Some(packet) = send_rx.recv().await {
+                let mut client = sender_client.lock().await;
+                if let Err(e) = client.send_packet(packet).await {
+                    eprintln!("failed to send packet {}", e);
+                    break;
+                }
+            }
+        });
+
+        let recv_client = Arc::clone(&self.client);
+        let recv_tx = self.recv_tx.clone();
+        tokio::spawn(async move {
+            loop {
+                let mut client = recv_client.lock().await;
+                match client.recv_until(b'\n').await {
+                    Ok(response) => {
+                        let parsed = ServerResponse::from_string(&response);
+                        if recv_tx.send(parsed).is_err() {
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("failed to receive packet {}", e);
+                        break;
+                    }
+                }
+                sleep(Duration::from_millis(10)).await;
+            }
+        });
+
+        let ai_state = Arc::clone(&self.state);
+        let ai_cmd_queue = self.cmd_queue.clone();
+        tokio::spawn(async move {
+            loop {
+                {
+                    let state = ai_state.lock().await;
+                    if !state.is_running {
+                        break;
+                    }
+                }
+                let command = ai_decision(&ai_state).await;
+                if let Some(cmd) = command {
+                    if ai_cmd_queue.send(cmd).is_err() {
+                        break;
+                    }
+                }
+                sleep(Duration::from_millis(10)).await;
+            }
+        });
+        self.core_loop().await
+    }
+
+    async fn core_loop(&mut self) -> Result<()> {
+        let mut cmd_rx = std::mem::replace(&mut self.cmd_rx, mpsc::unbounded_channel().1);
+        loop {
+            {
+                let state = self.state.lock().await;
+                if !state.is_running {
+                    break;
+                }
+            }
+
+            while let Ok(response) = self.recv_queue.try_recv() {
+                self.handle_server_response(response).await;
+            }
+
+            while let Ok(command) = cmd_rx.try_recv() {
+                match command {
+                    AiCommand::Stop => {
+                        let mut state = self.state.lock().await;
+                        state.is_running = false;
+                        break;
+                    }
+                    _ => {
+                        let packet = command_to_packet(command);
+                        self.send_queue.send(packet)?;
+                    }
+                }
+            }
+            self.update_state().await;
+            sleep(Duration::from_millis(50)).await;
+        }
+        println!("Ai loop closing..");
+        Ok(())
+    }
+
+    async fn handle_server_response(&self, response: ServerResponse) {
+        println!("Received: {:?}", response);
+
+        let _state = self.state.lock().await;
+        match response {
+            ServerResponse::Ok => {
+                // command executed succeeded
+            },
+            ServerResponse::Ko => {
+                // command executed failed
+            }
+            _ => {}
+        }
+    }
+
+    async fn update_state(&self) {
+        let _state = self.state.lock().await;
+    }
+
 }

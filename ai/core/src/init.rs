@@ -18,8 +18,8 @@ async fn handshake(client: &mut AsyncTcpClient, infos: &ServerInfos) -> Result<C
     println!("Received: WELCOME");
     println!("Sending: team name");
     client.send_team_name(&infos.name).await?;
-    let client_num_str = client.recv_until(b'\n').await?;
     let position_str = client.recv_until(b'\n').await?;
+    let client_num_str = client.recv_until(b'\n').await?;
 
     let client_num: i32 = client_num_str
         .trim()
@@ -44,13 +44,9 @@ async fn handshake(client: &mut AsyncTcpClient, infos: &ServerInfos) -> Result<C
     Ok(client_infos)
 }
 
-pub async fn init_client(infos: &ServerInfos) -> Result<()> {
+pub async fn init_client(infos: &ServerInfos) -> Result<(AsyncTcpClient, ClientInfos)> {
     let mut client = AsyncTcpClient::new(&infos.ip, infos.port).await?;
 
     let client_infos = handshake(&mut client, infos).await?;
-    println!(
-        "clients infos: {} {} {}",
-        client_infos.client_num, client_infos.x, client_infos.y
-    );
-    Ok(())
+    Ok((client, client_infos))
 }
