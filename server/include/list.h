@@ -27,6 +27,7 @@ typedef struct list_methods_s {
     int (*size)(const list_t *self);
     bool (*contain)(list_t *self, void *data, bool (*compare)(void *, void *));
     void (*remove)(list_t *self, void *target);
+    void *(*consume)(list_t *self, bool (*match)(void *, void *), void *data);
 } list_methods_t;
 
 struct list_s {
@@ -45,4 +46,5 @@ void *list_pop_front(list_t *self);
 int list_size(const list_t *self);
 bool list_contain(list_t *self, void *data, bool (*compare)(void *, void *));
 void list_remove(list_t *self, void *target);
+void *list_consume(list_t *self, bool (*match)(void *, void *), void *data);
 #endif /* !LIST_H_ */

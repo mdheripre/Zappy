@@ -27,6 +27,7 @@ int main(int argc, char **argv)
     server_t *server;
     config_t *config = NEW(config);
 
+    srand(time(NULL));
     signal(SIGINT, handle_sigint);
     if (!config || !config->methods->parse_args(argc, argv, config))
         return terminate(84);

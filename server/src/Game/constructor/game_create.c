@@ -7,6 +7,7 @@
 
 #include "game.h"
 #include "list.h"
+#include "utils.h"
 #include "shared.h"
 
 /****************************************************************************/
@@ -30,15 +31,16 @@ static const game_methods_t GAME_METHODS = {
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Initializes a tile at a given coordinate.
- *
- * Sets the tile's position and initializes all its resources to zero.
- *
- * @param tile Pointer to the tile to initialize.
- * @param x Horizontal coordinate of the tile.
- * @param y Vertical coordinate of the tile.
- */
+static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
+    [RESOURCE_FOOD] = 0.5,
+    [RESOURCE_LINEMATE] = 0.3,
+    [RESOURCE_DERAUMERE] = 0.15,
+    [RESOURCE_SIBUR] = 0.1,
+    [RESOURCE_MENDIANE] = 0.1,
+    [RESOURCE_PHIRAS] = 0.08,
+    [RESOURCE_THYSTAME] = 0.05
+};
+
 static void game_init_tile(tile_t *tile, int x, int y)
 {
     tile->x = x;
@@ -47,15 +49,59 @@ static void game_init_tile(tile_t *tile, int x, int y)
         tile->resources[r] = 0;
 }
 
-/**
- * @brief Allocates and initializes the 2D map of the game.
- *
- * Allocates memory for the map grid and initializes each tile's position
- * and resources using `game_init_tile`.
- *
- * @param game Pointer to the game instance.
- * @return true on success, false on memory allocation failure.
- */
+static void game_spawn_resources(game_t *game)
+{
+    int total_tiles = game->width * game->height;
+    int count[RESOURCE_COUNT];
+    int x;
+    int y;
+
+    for (int r = 0; r < RESOURCE_COUNT; r++) {
+        count[r] = (int)(RESOURCE_DENSITY[r] * total_tiles);
+        if (count[r] == 0)
+            count[r] = 1;
+    }
+    for (int r = 0; r < RESOURCE_COUNT; r++) {
+        for (int i = 0; i < count[r]; i++) {
+            x = rand() % game->width;
+            y = rand() % game->height;
+            game->map[y][x].resources[r]++;
+        }
+    }
+}
+
+static void init_egg(list_node_t *node, int *egg_id, game_t *game)
+{
+    egg_t *egg;
+
+    egg = malloc(sizeof(egg_t));
+    if (!egg)
+        return;
+    egg->id = *egg_id;
+    *egg_id += 1;
+    egg->player_id = -1;
+    egg->team_name = (const char *)node->data;
+    egg->x = rand() % game->width;
+    egg->y = rand() % game->height;
+    list_push_back(game->eggs, egg);
+    console_log(LOG_INFO, "Egg %d spawned for team '%s' at (%d, %d)",
+        egg->id, egg->team_name, egg->x, egg->y);
+}
+
+static void game_init_eggs(game_t *game)
+{
+    int egg_id = 1;
+    list_node_t *node = NULL;
+
+    if (!game || !game->team_name)
+        return;
+    for (node = game->team_name->head; node; node = node->next) {
+        for (int i = 0; i < game->team_size; i++) {
+            init_egg(node, &egg_id, game);
+        }
+    }
+}
+
 static bool game_init_map(game_t *game)
 {
     game->map = malloc(sizeof(tile_t *) * game->height);
@@ -68,6 +114,8 @@ static bool game_init_map(game_t *game)
         for (int x = 0; x < game->width; x++)
             game_init_tile(&game->map[y][x], x, y);
     }
+    game_spawn_resources(game);
+    game_init_eggs(game);
     return true;
 }
 
@@ -78,9 +126,9 @@ static bool game_init_map(game_t *game)
 /****************************************************************************/
 
 
-static void free_players(void *)
-{
-}
+// static void free_players(void *)
+// {
+// }
 
 /**
  * @brief Initializes the internal lists used in the game.
@@ -93,8 +141,8 @@ static void free_players(void *)
  */
 static bool game_init_lists(game_t *game)
 {
-    game->players = NEW(list, free_players);
-    game->eggs = NEW(list, NULL);
+    game->players = NEW(list, NULL);
+    game->eggs = NEW(list, free);
     game->incantations = NEW(list, NULL);
     game->event_queue = NEW(list, free);
     return game->players && game->eggs && game->event_queue &&
@@ -133,7 +181,7 @@ game_t *game_create(config_game_t *config)
     game->dispatcher = NEW(dispatcher, NULL);
     if (!game->dispatcher)
         return NULL;
-    if (!game_init_map(game) || !game_init_lists(game))
+    if (!game_init_lists(game) || !game_init_map(game))
         return NULL;
     return game;
 }

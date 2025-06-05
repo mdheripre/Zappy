@@ -106,7 +106,7 @@ typedef struct egg_s {
     int player_id;
     int x;
     int y;
-    long hatch_time;
+    const char *team_name;
 } egg_t;
 
 typedef struct incantation_s {

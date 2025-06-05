@@ -92,6 +92,7 @@ SRCS = \
 	$(SRC_LIST_DTOR)/list_destroy.c \
 	$(SRC_LIST_METHODS)/list_clear.c \
 	$(SRC_LIST_METHODS)/list_pop_front.c \
+	$(SRC_LIST_METHODS)/list_consume.c \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \
 	$(SRC_LIST_METHODS)/list_remove.c \
