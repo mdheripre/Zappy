@@ -22,10 +22,7 @@ namespace gui {
             HATCH,
             DIE
         };
-        Egg(int id, tools::Position<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedObject> eggObject = nullptr)
-            : EntityState(id, pos, teamName), _eggObject(std::move(eggObject)) {
-                setPosition(pos);
-            }
+        Egg(int id, tools::Position<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedObject> eggObject = nullptr);
         ~Egg() override = default;
     private:
         std::unique_ptr<render::IAnimatedObject> _eggObject;

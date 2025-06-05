@@ -33,6 +33,12 @@ void gui::Egg::setPosition(tools::Position<int> pos)
     _pos = pos;
 }
 
-void gui::Egg::setDead() {
-    _alive = false; 
+gui::Egg::Egg(int id, tools::Position<int> pos, const std::string &teamName, std::unique_ptr<render::IAnimatedObject> eggObject)
+    : EntityState(id, pos, teamName), _eggObject(std::move(eggObject)) {
+    setPosition(pos);
+}
+
+void gui::Egg::setDead()
+{
+    _alive = false;
 }

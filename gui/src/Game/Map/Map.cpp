@@ -7,12 +7,21 @@
 
 #include "Map.hpp"
 
+gui::Map::Map(int width, int height, std::unique_ptr<render::IObject> tileObject, std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject)
+    : MapState(width, height),
+    _width(width),
+    _height(height),
+    _map(width, std::vector<Tile>(height)),
+    _tileObject(std::move(tileObject)),
+    _propsObject(std::move(propsObject)) {}
+
 const gui::Tile& gui::MapState::getTile(const tools::Position<int> &pos) const
 {
     if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height)
         throw std::runtime_error("Invalid tile position");
     return _map[pos.y][pos.x];
 }
+
 
 void gui::Map::setTile(const Tile &tile, const tools::Position<int> &pos)
 {

@@ -34,19 +34,18 @@ namespace gui {
     };
     class Incantation : public render::IRenderEntity, public IncantationState
     {
-
-    public:
-        Incantation(tools::Position<int> pos,
-            int level,
-            const std::vector<int>& playerIds,
-            std::unique_ptr<render::IAnimatedObject> incObject = nullptr);
-        ~Incantation() = default;
-    private:
-        std::unique_ptr<render::IAnimatedObject> _incObject;
-        void draw() const;
-        bool update(float);
-        void succeed();
-        void failed();
+        public:
+            Incantation(tools::Position<int> pos,
+                int level,
+                const std::vector<int>& playerIds,
+                std::unique_ptr<render::IAnimatedObject> incObject = nullptr);
+            ~Incantation() = default;
+        private:
+            std::unique_ptr<render::IAnimatedObject> _incObject;
+            void draw() const;
+            bool update(float);
+            void succeed();
+            void failed();
     };    
 }
     

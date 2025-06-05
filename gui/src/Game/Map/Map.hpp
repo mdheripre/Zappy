@@ -48,15 +48,7 @@ class Map : public MapState, public render::IRenderEntity {
         Map(int width,
             int height,
             std::unique_ptr<render::IObject> tileObject = nullptr,
-            std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject = {})
-            : MapState(width, height),
-              _width(width),
-              _height(height),
-              _map(width, std::vector<Tile>(height)),
-              _tileObject(std::move(tileObject)),
-              _propsObject(std::move(propsObject))
-        {}
-    
+            std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject = {});
         ~Map() override = default;
     
         void setTile(const Tile& tile, const tools::Position<int>& pos);
