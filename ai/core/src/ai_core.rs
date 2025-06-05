@@ -207,7 +207,7 @@ impl AiCore {
         match response {
             ServerResponse::Ok => {
                 // command executed succeeded
-            },
+            }
             ServerResponse::Ko => {
                 // command executed failed
             }
@@ -218,5 +218,4 @@ impl AiCore {
     async fn update_state(&self) {
         let _state = self.state.lock().await;
     }
-
 }

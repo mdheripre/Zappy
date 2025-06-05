@@ -37,7 +37,7 @@ pub fn command_to_packet(command: AiCommand) -> Packet {
     }
 }
 
-pub async  fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
+pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let state = state.lock().await;
 
     if state.inventory.is_empty() {

@@ -32,9 +32,7 @@ impl AsyncW<TcpStream> {
                 buffer.truncate(n);
                 Ok(Some(String::from_utf8_lossy(&buffer[..n]).to_string()))
             }
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                Ok(None)
-            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => Ok(None),
             Err(e) => Err(e.into()),
         }
     }
