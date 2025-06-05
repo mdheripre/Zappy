@@ -12,20 +12,20 @@ use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
 
 /// Zappy game state
-/// 
+///
 /// # Fields
-/// 
+///
 /// - `client_num` (`i32`) - number of available slots.
 /// - `position` (`(i32`) - position on the map.
 /// - `inventory` (`Vec<Item>`) - inventory content.
 /// - `world_map` (`Vec<Vec<Tile>>`) - map empty at start.
 /// - `is_running` (`bool`) - checker.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let s = AiState {
 ///     client_num: value,
 ///     position: value,
@@ -56,9 +56,9 @@ impl AiState {
 }
 
 /// Ai core structure for thread communication and main loop
-/// 
+///
 /// # Fields
-/// 
+///
 /// - `client` (`Arc<Mutex<AsyncTcpClient>>`) - TCP client.
 /// - `state` (`Arc<Mutex<AiState>>`) - zappy game state.
 /// - `send_queue` (`mpsc`) - Packet sender.
@@ -69,12 +69,12 @@ impl AiState {
 /// - `recv_tx` (`mpsc`) - ServerResponse sender.
 /// - `cmd_rx` (`mpsc`) - AiCommand receiver.
 /// - `err_tx` (`mpsc`) - Error sender.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let s = AiCore {
 ///     client: value,
 ///     state: value,
@@ -103,24 +103,24 @@ pub struct AiCore {
 
 impl AiCore {
     /// AiCore constructor
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `infos` (`&ServerInfos`) - infos given by the server.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<Self>` - AiCore struct.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Tcp errors.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = new().await;
     /// };
@@ -150,24 +150,24 @@ impl AiCore {
     }
 
     /// launch threads
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// CoreError.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = run().await;
     /// };
@@ -180,24 +180,24 @@ impl AiCore {
     }
 
     /// thread to send packets to the server
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// CoreError.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = sender_thread().await;
     /// };
@@ -220,24 +220,24 @@ impl AiCore {
     }
 
     /// thread to receive packet from the server
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// CoreError.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = recv_thread().await;
     /// };
@@ -282,24 +282,24 @@ impl AiCore {
     }
 
     /// thread to generate Ai decisions
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// CoreError.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = ai_thread().await;
     /// };
@@ -329,24 +329,24 @@ impl AiCore {
     }
 
     /// main loop that allow communication between threads and update the zappy game state
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// CoreError.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = core_loop().await;
     /// };
@@ -389,17 +389,17 @@ impl AiCore {
     }
 
     /// Handle server responses
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&self` (`undefined`).
     /// - `response` (`ServerResponse`) - ServerResponse to handle.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = handle_server_response().await;
     /// };
@@ -420,16 +420,16 @@ impl AiCore {
     }
 
     /// update the zappy game state
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&self` (`undefined`).
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = update_state().await;
     /// };

@@ -1,4 +1,3 @@
-
 pub mod error;
 pub mod tcp_client;
 pub use crate::error::{Result, TcpError};
@@ -10,25 +9,25 @@ use tokio::net::TcpStream;
 pub struct AsyncW<T>(T);
 
 /// bunch of simple methods to connect / read / write to a socket
-/// 
+///
 /// # Arguments
-/// 
+///
 /// - `ip` (`&str`) - ip address.
 /// - `port` (`u16`) - port.
-/// 
+///
 /// # Returns
-/// 
+///
 /// - `Result<Self>` - Wrapped TcpStream.
-/// 
+///
 /// # Errors
-/// 
+///
 /// Tcp errors.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use crate::...;
-/// 
+///
 /// async {
 ///   let result = connect().await;
 /// };
@@ -49,24 +48,24 @@ impl AsyncW<TcpStream> {
     }
 
     /// non blocking read
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<Option<String>>` - value red from socket.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Tcp error.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = try_recv().await;
     /// };

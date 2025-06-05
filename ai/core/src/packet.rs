@@ -4,9 +4,9 @@ use core::fmt;
 use lib_tcp::tcp_client::AsyncTcpClient;
 
 /// packet enum for zappy client/server communication
-/// 
+///
 /// # Variants
-/// 
+///
 /// - `TeamName(String)` - Team name.
 /// - `Forward` - Move forward (1 tile).
 /// - `Right` - Turn 90° right.
@@ -20,12 +20,12 @@ use lib_tcp::tcp_client::AsyncTcpClient;
 /// - `Take(String)` - Take item on a tile.
 /// - `Set(String)` - Put item on a tile.
 /// - `Incantation` - Start an incantation.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let packet = Packet::TeamName;
 /// match packet {
 ///     Packet::TeamName(v0) => handle_tuple,
@@ -62,21 +62,21 @@ pub enum Packet {
 }
 
 /// Packet into protocol format
-/// 
+///
 /// # Arguments
-/// 
+///
 /// - `&self` (`undefined`).
 /// - `f` (`&mut fmt`) - Formatter.
-/// 
+///
 /// # Returns
-/// 
+///
 /// - `fmt::Result` - Formatted packet.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let _ = fmt();
 /// ```
 impl fmt::Display for Packet {
@@ -127,25 +127,25 @@ pub trait PacketSender {
 #[async_trait]
 impl PacketSender for AsyncTcpClient {
     /// send any packet to the server
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `&mut self` (`undefined`).
     /// - `packet` (`Packet`) - packet to be sent.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Result<()>` - Ok(()).
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Tcp errors.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```no_run
     /// use crate::...;
-    /// 
+    ///
     /// async {
     ///   let result = send_packet().await;
     /// };

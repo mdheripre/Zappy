@@ -4,16 +4,16 @@ use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 
 /// Possible AI command to the server
-/// 
+///
 /// # Variants
-/// 
+///
 /// - see packet enum.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let aicommand = AiCommand::Forward;
 /// match aicommand {
 ///     AiCommand::Forward => handle_unit,
@@ -49,20 +49,20 @@ pub enum AiCommand {
 }
 
 /// Transform AiCommand into Packet
-/// 
+///
 /// # Arguments
-/// 
+///
 /// - `command` (`AiCommand`)
-/// 
+///
 /// # Returns
-/// 
+///
 /// - `Self`.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let command = AiCommand::Forward;
 /// let packet = command.into();
 /// ```
@@ -87,20 +87,20 @@ impl From<AiCommand> for Packet {
 }
 
 /// Ai algorithm enty point
-/// 
+///
 /// # Arguments
-/// 
+///
 /// - `state` (`&Arc<Mutex<AiState>>`) - pointer to zappy game state.
-/// 
+///
 /// # Returns
-/// 
+///
 /// - `Option<AiCommand>` - Return the command to execute.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use crate::...;
-/// 
+///
 /// async {
 ///   let result = ai_decision().await;
 /// };

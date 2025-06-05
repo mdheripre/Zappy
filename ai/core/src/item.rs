@@ -1,9 +1,9 @@
 use crate::{CoreError, Result};
 
 /// All existing items
-/// 
+///
 /// # Variants
-/// 
+///
 /// - `Food` - Unit main ressource.
 /// - `Linemate` - Ressource for incantations.
 /// - `Deraumere` - Ressource for incantations.
@@ -11,12 +11,12 @@ use crate::{CoreError, Result};
 /// - `Mendiane` - Ressource for incantations.
 /// - `Phiras` - Ressource for incantations.
 /// - `Thystame` - Ressource for incantations.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let item = Item::Food;
 /// match item {
 ///     Item::Food => handle_unit,

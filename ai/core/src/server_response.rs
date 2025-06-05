@@ -1,9 +1,9 @@
 use crate::{CoreError, Result};
 
 /// Possible responses from the server.
-/// 
+///
 /// # Variants
-/// 
+///
 /// - `Ok` - command succeed.
 /// - `Ko` - command failed.
 /// - `Dead` - player died.
@@ -13,12 +13,12 @@ use crate::{CoreError, Result};
 /// - `Welcome` - On client connexion.
 /// - `ClientNum(i32)` - Number of client slots remaining for the team.
 /// - `MapSize(i32, i32)` - Size of the map.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use crate::...;
-/// 
+///
 /// let response = ServerResponse::Ok;
 /// match response {
 ///     ServerResponse::Ok => handle_unit,
