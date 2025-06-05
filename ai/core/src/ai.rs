@@ -20,9 +20,9 @@ pub enum AiCommand {
     Stop,
 }
 
-impl Into<Packet> for AiCommand {
-    fn into(self) -> Packet {
-        match self {
+impl From<AiCommand> for Packet {
+    fn from(command: AiCommand) -> Self {
+        match command {
             AiCommand::Forward => Packet::Forward,
             AiCommand::Right => Packet::Right,
             AiCommand::Left => Packet::Left,
