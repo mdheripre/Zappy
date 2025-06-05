@@ -9,21 +9,36 @@
 
 bool gui::Incantation::update(float)
 {
-    std::cout << "Update an Incantation not implemented" << std::endl;
-    return false;
+    if (_finished || !_incObject)
+        return false;
+    return true;
 }
 
 void gui::Incantation::succeed()
 {
-    std::cout << "Succeed an Incantation not implemented" << std::endl;
+    _finished = true;
 }
 
 void gui::Incantation::failed()
 {
-    std::cout << "Failed an Incantation not implemented" << std::endl;
+    _finished = true;
+}
+
+gui::Incantation::Incantation(tools::Position<int> pos, int level, const std::vector<int> &playerIds, std::unique_ptr<render::IAnimatedObject> incObject)
+    : IncantationState(pos, level, playerIds), _incObject(std::move(incObject))
+{
+    tools::Position3D<float> bb = _incObject->getBoundingBox().getSize();
+
+    tools::Position3D<float> dPos(
+        static_cast<float>(pos.x),
+        bb.y,
+        static_cast<float>(pos.y)
+    );
+    _incObject->setPosition(dPos);
+    _position = pos;
 }
 
 void gui::Incantation::draw() const
 {
-    std::cout << "Draw an Incantation not implemented" << std::endl;
+    _incObject->drawObject();
 }

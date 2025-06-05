@@ -9,6 +9,7 @@
 
 #include "Game/Renderer/Object/IAnimatedObject.hpp"
 #include <memory>
+#include <stdexcept>
 
 namespace rl
 {
@@ -16,7 +17,9 @@ namespace rl
     {
         
         public:
-            RaylibAnimatedObject(std::shared_ptr<render::IModel> model, float fps = 24.0);
+            RaylibAnimatedObject(std::shared_ptr<render::IModel> model,
+                std::unordered_map<int, int> animationMap,
+                float fps = 24.0);
             ~RaylibAnimatedObject() override = default;
             
             void setPosition(const tools::Position3D<float>& pos) override;
@@ -24,13 +27,13 @@ namespace rl
             
             const tools::BoundingBox &getBoundingBox() const override;
             void playClip(int clipIndex, bool loop) override;
-            void setFrame(int frameIndex) override;
             
-            void updateObject(float dt) override;
+            bool updateObject(float dt) override;
             void drawObject() const override;
         private:
             std::shared_ptr<render::IModel> _model;
             tools::Position3D<float> _position;
+            std::unordered_map<int, int> _animationMap;
     
             int _currentAnim = 0;
             int _currentFrame = 0;

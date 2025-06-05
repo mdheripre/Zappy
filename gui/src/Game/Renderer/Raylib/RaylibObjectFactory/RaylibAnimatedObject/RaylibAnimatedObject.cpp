@@ -10,8 +10,10 @@
 
 namespace rl {
 
-RaylibAnimatedObject::RaylibAnimatedObject(std::shared_ptr<render::IModel> model, float fps)
-    : _model(std::move(model)), _frameRate(fps) {}
+RaylibAnimatedObject::RaylibAnimatedObject(std::shared_ptr<render::IModel> model,
+    std::unordered_map<int, int> animationMap,
+    float fps)
+    : _model(std::move(model)), _frameRate(fps), _animationMap(animationMap) {}
 
 void RaylibAnimatedObject::setPosition(const tools::Position3D<float>& pos)
 {
@@ -25,27 +27,48 @@ const tools::Position3D<float>& RaylibAnimatedObject::getPosition() const
 
 void RaylibAnimatedObject::playClip(int clipIndex, bool loop)
 {
-    _currentAnim = clipIndex;
+    auto it = _animationMap.find(clipIndex);
+    if (it == _animationMap.end()) {
+        throw std::runtime_error(
+            "[RaylibAnimatedObject] Unknown animation logical ID: " + std::to_string(clipIndex));
+            _currentAnim = 0;
+    }
+    if (it->second == -1)
+        return;
+    _currentAnim = it->second;
     _currentFrame = 0;
     _loop = loop;
     _time = 0.0f;
 }
 
-void RaylibAnimatedObject::setFrame(int frameIndex)
-{
-    _currentFrame = frameIndex;
-    _model->applyAnimationFrame(_currentAnim, _currentFrame);
-}
-
-void RaylibAnimatedObject::updateObject(float dt)
+bool RaylibAnimatedObject::updateObject(float dt)
 {
     _time += dt;
+
+    int frameCount = _model->getAnimationFrameCount(_currentAnim);
+    if (frameCount <= 0)
+        return true;
+
     int frame = static_cast<int>(_time * _frameRate);
-    setFrame(frame);
+
+    if (_loop) {
+        _currentFrame = frame % frameCount;
+        return false;
+    }
+
+    if (frame >= frameCount) {
+        _currentFrame = frameCount - 1;
+        return true;
+    } else {
+        _currentFrame = frame;
+        return false;
+    }
 }
+
 
 void RaylibAnimatedObject::drawObject() const
 {
+    _model->applyAnimationFrame(_currentAnim, _currentFrame);
     _model->drawAt(_position);
 }
 

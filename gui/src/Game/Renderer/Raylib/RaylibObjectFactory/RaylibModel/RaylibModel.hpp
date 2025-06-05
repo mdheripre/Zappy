@@ -25,7 +25,7 @@ namespace rl
             
             void loadFromFile(const std::string& path) override;
             const tools::BoundingBox &getBoundingBox() const override;
-            
+            int getAnimationFrameCount(int animIndex) const;
             void applyAnimationFrame(int animIndex, int frameIndex) override;
             void drawAt(const tools::Position3D<float>& pos) const override;
         private:

@@ -7,11 +7,11 @@
 
 #include "RaylibObjectFactory.hpp"
 
-std::unique_ptr<render::IAnimatedObject> rl::RaylibObjectFactory::createAnimatedObject(const std::string& path)
+std::unique_ptr<render::IAnimatedObject> rl::RaylibObjectFactory::createAnimatedObject(const std::string& path, std::unordered_map<int, int> animationMap)
 {
     std::shared_ptr<render::IModel> model = _mm.getOrLoad(path);
 
-    return std::make_unique<rl::RaylibAnimatedObject>(model);
+    return std::make_unique<rl::RaylibAnimatedObject>(model, animationMap);
 }
 
 std::unique_ptr<render::IStaticObject> rl::RaylibObjectFactory::createStaticObject(const std::string &path)

@@ -22,12 +22,7 @@ public:
     const std::string& getModelPath() const { return _modelPath; }
     float getScale() const { return _scale; }
 
-    int getAnimation(int anim) const {
-        auto it = _animationMap.find(anim);
-        if (it != _animationMap.end())
-            return it->second;
-        return -1;
-    }
+    const std::unordered_map<int, int> &getAnimation() const {return _animationMap;};
     private:
         std::string _modelPath;
         std::unordered_map<int, int> _animationMap;

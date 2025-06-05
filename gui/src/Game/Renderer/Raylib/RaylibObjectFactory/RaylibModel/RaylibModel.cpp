@@ -50,6 +50,14 @@ const tools::BoundingBox &RaylibModel::getBoundingBox() const
     return _boundingBox;
 }
 
+int RaylibModel::getAnimationFrameCount(int animIndex) const
+{
+    if (!_animations || animIndex < 0 || animIndex >= _animationCount) {
+        throw std::runtime_error("[RaylibModel] Invalid animation index");
+    }
+    return _animations[animIndex].frameCount;
+}
+
 void RaylibModel::applyAnimationFrame(int animIndex, int frameIndex)
 {
     if (!_animations || animIndex >= _animationCount || animIndex < 0)

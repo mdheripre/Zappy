@@ -30,6 +30,7 @@ namespace gui {
             tools::Position<int> _position;
             int _targetLevel;
             std::vector<int> _playerIds;
+            bool _finished = false;
     };
     class Incantation : public render::IRenderEntity, public IncantationState
     {
@@ -38,8 +39,7 @@ namespace gui {
         Incantation(tools::Position<int> pos,
             int level,
             const std::vector<int>& playerIds,
-            std::unique_ptr<render::IAnimatedObject> incObject = nullptr)
-            : IncantationState(pos, level, playerIds), _incObject(std::move(incObject)) {};
+            std::unique_ptr<render::IAnimatedObject> incObject = nullptr);
         ~Incantation() = default;
     private:
         std::unique_ptr<render::IAnimatedObject> _incObject;

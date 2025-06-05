@@ -46,8 +46,10 @@ namespace gui {
             virtual void setInventory(const std::array<int, 7>& inv) = 0;
             virtual void laidAnEgg() = 0;
             virtual void expulse() = 0;
+            virtual void expulseFrom(Orientation O, int maxWidth, int maxHeight) = 0;
             virtual void removeFromInventory(Tile::Resource res) = 0;
             virtual void broadcast(const std::string &msg) = 0;
+            virtual void startIncantation() = 0;
             virtual void incantationFailed() = 0;
             virtual void incantationSucced() = 0;
         
@@ -75,22 +77,26 @@ namespace gui {
                            std::unique_ptr<render::IAnimatedObject> trantorianObject = nullptr)
                     : TrantorianState(id, pos, teamName, orientation), _trantorianObject(std::move(trantorianObject)) {
                     _level = level;
+                    setPosition(pos);
                 }
                 ~Trantorian() override = default;
             private:
                 std::unique_ptr<render::IAnimatedObject> _trantorianObject;
+                tools::Position3D<float> _targetPos;
                 void setDead() override { _alive = false; }
-                void setPosition(tools::Position<int>  pos) override { _pos = pos; }
+                void setPosition(tools::Position<int>  pos) override;
                 void setOrientation(Orientation ori) override { _orientation = ori; }
                 void setLevel(int lvl) override { _level = lvl; }
                 void setInventory(const std::array<int, 7>& inv) override {_inventory = inv;};
                 void laidAnEgg() {std::cout << "Laid an Egg not implemented" << std::endl;};
                 void expulse() {std::cout << "Expulsion not implemented" << std::endl;}
+                void expulseFrom(Orientation O, int maxWidth, int maxHeight);
                 void incantationFailed() {std::cout << "Incantation failed not implemented" << std::endl;};
                 void incantationSucced() {std::cout << "Incantation succeed not implemented" << std::endl;};
                 void removeFromInventory(Tile::Resource res);
                 void addToInventory(Tile::Resource res);
-                void broadcast(const std::string &msg) {std::cout << "Brodcast from player " << _id << msg << std::endl;}
+                void startIncantation() {std::cout << "Start Incantation not implemented" << std::endl;};
+                void broadcast(const std::string &msg) {std::cout << "Brodcast from player " << _id << ": "<< msg << std::endl;}
                 bool update(float dt);
                 void draw() const;
             };         

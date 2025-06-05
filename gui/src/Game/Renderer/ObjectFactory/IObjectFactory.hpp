@@ -18,7 +18,7 @@ namespace render
     {
     public:
         virtual ~IObjectFactory() = default;
-        virtual std::unique_ptr<IAnimatedObject> createAnimatedObject(const std::string &path) = 0;
+        virtual std::unique_ptr<IAnimatedObject> createAnimatedObject(const std::string &path, std::unordered_map<int, int> animationMap) = 0;
         virtual std::unique_ptr<IStaticObject> createStaticObject(const std::string &path) = 0;
         virtual std::unique_ptr<IObject> createCube(const tools::Color &Color, const tools::Position3D<float> &size) = 0;
     };
