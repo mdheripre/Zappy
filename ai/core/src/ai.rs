@@ -6,11 +6,9 @@ use tokio::sync::{mpsc, Mutex};
 /// Possible AI command to the server
 ///
 /// # Variants
-///
 /// - see packet enum.
 ///
 /// # Examples
-///
 /// ```
 /// use crate::...;
 ///
@@ -50,22 +48,6 @@ pub enum AiCommand {
 
 /// Transform AiCommand into Packet
 ///
-/// # Arguments
-///
-/// - `command` (`AiCommand`)
-///
-/// # Returns
-///
-/// - `Self`.
-///
-/// # Examples
-///
-/// ```
-/// use crate::...;
-///
-/// let command = AiCommand::Forward;
-/// let packet = command.into();
-/// ```
 impl From<AiCommand> for Packet {
     fn from(command: AiCommand) -> Self {
         match command {
@@ -89,22 +71,11 @@ impl From<AiCommand> for Packet {
 /// Ai algorithm enty point
 ///
 /// # Arguments
-///
 /// - `state` (`&Arc<Mutex<AiState>>`) - pointer to zappy game state.
 ///
 /// # Returns
-///
 /// - `Option<AiCommand>` - Return the command to execute.
 ///
-/// # Examples
-///
-/// ```no_run
-/// use crate::...;
-///
-/// async {
-///   let result = ai_decision().await;
-/// };
-/// ```
 pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let state = state.lock().await;
 

@@ -1,9 +1,8 @@
 use crate::{CoreError, Result};
 
-/// All existing items
+/// All existing items in the game
 ///
 /// # Variants
-///
 /// - `Food` - Unit main ressource.
 /// - `Linemate` - Ressource for incantations.
 /// - `Deraumere` - Ressource for incantations.
@@ -13,7 +12,6 @@ use crate::{CoreError, Result};
 /// - `Thystame` - Ressource for incantations.
 ///
 /// # Examples
-///
 /// ```
 /// use crate::...;
 ///

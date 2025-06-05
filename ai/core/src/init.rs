@@ -6,13 +6,11 @@ use lib_tcp::tcp_client::AsyncTcpClient;
 /// Infos given by the server on connexion
 ///
 /// # Fields
-///
 /// - `client_num` (`i32`) - Number of team slots remaining.
 /// - `x` (`i32`) - width size of the map.
 /// - `y` (`i32`) - height size of the map.
 ///
 /// # Examples
-///
 /// ```
 /// use crate::...;
 ///
@@ -66,19 +64,15 @@ async fn handshake(client: &mut AsyncTcpClient, infos: &ServerInfos) -> Result<C
 /// initialize and connect a new client to the server
 ///
 /// # Arguments
-///
 /// - `infos` (`&ServerInfos`) - information requiered for connection.
 ///
 /// # Returns
-///
 /// - `Result<(AsyncTcpClient, ClientInfos)>` - Infos send by the server.
 ///
 /// # Errors
-///
 /// TCP errors.
 ///
 /// # Examples
-///
 /// ```no_run
 /// use crate::...;
 ///

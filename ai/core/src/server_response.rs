@@ -3,7 +3,6 @@ use crate::{CoreError, Result};
 /// Possible responses from the server.
 ///
 /// # Variants
-///
 /// - `Ok` - command succeed.
 /// - `Ko` - command failed.
 /// - `Dead` - player died.
@@ -15,7 +14,6 @@ use crate::{CoreError, Result};
 /// - `MapSize(i32, i32)` - Size of the map.
 ///
 /// # Examples
-///
 /// ```
 /// use crate::...;
 ///

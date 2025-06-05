@@ -105,26 +105,14 @@ impl AiCore {
     /// AiCore constructor
     ///
     /// # Arguments
-    ///
     /// - `infos` (`&ServerInfos`) - infos given by the server.
     ///
     /// # Returns
-    ///
     /// - `Result<Self>` - AiCore struct.
     ///
     /// # Errors
-    ///
     /// Tcp errors.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = new().await;
-    /// };
-    /// ```
     pub async fn new(infos: &ServerInfos) -> Result<Self> {
         let (client, client_infos) = init_client(infos).await?;
 
@@ -149,29 +137,12 @@ impl AiCore {
         })
     }
 
-    /// launch threads
-    ///
-    /// # Arguments
-    ///
-    /// - `&mut self` (`undefined`).
-    ///
-    /// # Returns
-    ///
-    /// - `Result<()>` - Ok(()).
+    /// launch the program core
+    /// lauch sender / recv / ai threads and core loop
     ///
     /// # Errors
-    ///
     /// CoreError.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = run().await;
-    /// };
-    /// ```
     pub async fn run(&mut self) -> Result<()> {
         self.sender_thread().await?;
         self.recv_thread().await?;
@@ -180,28 +151,11 @@ impl AiCore {
     }
 
     /// thread to send packets to the server
-    ///
-    /// # Arguments
-    ///
-    /// - `&mut self` (`undefined`).
-    ///
-    /// # Returns
-    ///
-    /// - `Result<()>` - Ok(()).
+    /// clone a pointer to the TcpClient, read the Packet channel and send Packet to the server
     ///
     /// # Errors
-    ///
     /// CoreError.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = sender_thread().await;
-    /// };
-    /// ```
     async fn sender_thread(&mut self) -> Result<()> {
         let sender_client = Arc::clone(&self.client);
         let mut send_rx = std::mem::replace(&mut self.send_rx, mpsc::unbounded_channel().1);
@@ -220,28 +174,12 @@ impl AiCore {
     }
 
     /// thread to receive packet from the server
-    ///
-    /// # Arguments
-    ///
-    /// - `&mut self` (`undefined`).
-    ///
-    /// # Returns
-    ///
-    /// - `Result<()>` - Ok(()).
+    /// clone a pointer to the TcpClient, read the TcpClient socket, send data in the Packet channel
+    /// If an Error occurs, it is propagated throught the error channel
     ///
     /// # Errors
-    ///
     /// CoreError.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = recv_thread().await;
-    /// };
-    /// ```
     async fn recv_thread(&mut self) -> Result<()> {
         let recv_client = Arc::clone(&self.client);
         let recv_tx = self.recv_tx.clone();
@@ -282,28 +220,11 @@ impl AiCore {
     }
 
     /// thread to generate Ai decisions
-    ///
-    /// # Arguments
-    ///
-    /// - `&mut self` (`undefined`).
-    ///
-    /// # Returns
-    ///
-    /// - `Result<()>` - Ok(()).
+    /// clone a pointer to the TcpClient, wait for a command to be decided by the AI and send it on the AiCommand channel
     ///
     /// # Errors
-    ///
     /// CoreError.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = ai_thread().await;
-    /// };
-    /// ```
     async fn ai_thread(&mut self) -> Result<()> {
         let ai_state = Arc::clone(&self.state);
         let ai_cmd_queue = self.cmd_queue.clone();
@@ -329,28 +250,11 @@ impl AiCore {
     }
 
     /// main loop that allow communication between threads and update the zappy game state
-    ///
-    /// # Arguments
-    ///
-    /// - `&mut self` (`undefined`).
-    ///
-    /// # Returns
-    ///
-    /// - `Result<()>` - Ok(()).
+    /// It alose reads the ServerResponse channel and handle it (self.handle_server_response)
     ///
     /// # Errors
-    ///
     /// CoreError.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = core_loop().await;
-    /// };
-    /// ```
     async fn core_loop(&mut self) -> Result<()> {
         let mut cmd_rx = std::mem::replace(&mut self.cmd_rx, mpsc::unbounded_channel().1);
         println!("core loop starting..");
@@ -389,21 +293,11 @@ impl AiCore {
     }
 
     /// Handle server responses
-    ///
+    /// Take a server response and send it to the AI thread throught a channel
     /// # Arguments
     ///
-    /// - `&self` (`undefined`).
     /// - `response` (`ServerResponse`) - ServerResponse to handle.
     ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = handle_server_response().await;
-    /// };
-    /// ```
     async fn handle_server_response(&self, response: ServerResponse) {
         println!("Received: {:?}", response);
 
@@ -421,19 +315,6 @@ impl AiCore {
 
     /// update the zappy game state
     ///
-    /// # Arguments
-    ///
-    /// - `&self` (`undefined`).
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use crate::...;
-    ///
-    /// async {
-    ///   let result = update_state().await;
-    /// };
-    /// ```
     async fn update_state(&self) {
         let _state = self.state.lock().await;
     }

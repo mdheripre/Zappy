@@ -11,19 +11,16 @@ mod utils;
 
 use crate::{ai_core::AiCore, prelude::*};
 use clap::Parser;
-use init::init_client;
 use tokio::runtime::Runtime;
 
 /// Informations requiered for server connection
 ///
 /// # Fields
-///
 /// - `long)] ip` (`String`) - ip address.
 /// - `long)] port` (`u16`) - port.
 /// - `long)] name` (`String`) - team name.
 ///
 /// # Examples
-///
 /// ```
 /// use crate::...;
 ///
