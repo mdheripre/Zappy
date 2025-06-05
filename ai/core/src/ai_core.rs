@@ -11,6 +11,29 @@ use crate::server_response::ServerResponse;
 use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
 
+/// Zappy game state
+/// 
+/// # Fields
+/// 
+/// - `client_num` (`i32`) - number of available slots.
+/// - `position` (`(i32`) - position on the map.
+/// - `inventory` (`Vec<Item>`) - inventory content.
+/// - `world_map` (`Vec<Vec<Tile>>`) - map empty at start.
+/// - `is_running` (`bool`) - checker.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use crate::...;
+/// 
+/// let s = AiState {
+///     client_num: value,
+///     position: value,
+///     inventory: value,
+///     world_map: value,
+///     is_running: value,
+/// };
+/// ```
 #[derive(Debug, Clone)]
 pub struct AiState {
     pub client_num: i32,
@@ -32,6 +55,39 @@ impl AiState {
     }
 }
 
+/// Ai core structure for thread communication and main loop
+/// 
+/// # Fields
+/// 
+/// - `client` (`Arc<Mutex<AsyncTcpClient>>`) - TCP client.
+/// - `state` (`Arc<Mutex<AiState>>`) - zappy game state.
+/// - `send_queue` (`mpsc`) - Packet sender.
+/// - `recv_queue` (`mpsc`) - ServerResponse receiver.
+/// - `cmd_queue` (`mpsc`) - AiCommand sender.
+/// - `err_queue` (`mpsc`) - Error receiver.
+/// - `send_rx` (`mpsc`) - Packet receiver.
+/// - `recv_tx` (`mpsc`) - ServerResponse sender.
+/// - `cmd_rx` (`mpsc`) - AiCommand receiver.
+/// - `err_tx` (`mpsc`) - Error sender.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use crate::...;
+/// 
+/// let s = AiCore {
+///     client: value,
+///     state: value,
+///     send_queue: value,
+///     recv_queue: value,
+///     cmd_queue: value,
+///     err_queue: value,
+///     send_rx: value,
+///     recv_tx: value,
+///     cmd_rx: value,
+///     err_tx: value,
+/// };
+/// ```
 pub struct AiCore {
     client: Arc<Mutex<AsyncTcpClient>>,
     state: Arc<Mutex<AiState>>,
@@ -46,6 +102,29 @@ pub struct AiCore {
 }
 
 impl AiCore {
+    /// AiCore constructor
+    /// 
+    /// # Arguments
+    /// 
+    /// - `infos` (`&ServerInfos`) - infos given by the server.
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<Self>` - AiCore struct.
+    /// 
+    /// # Errors
+    /// 
+    /// Tcp errors.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = new().await;
+    /// };
+    /// ```
     pub async fn new(infos: &ServerInfos) -> Result<Self> {
         let (client, client_infos) = init_client(infos).await?;
 
@@ -70,6 +149,29 @@ impl AiCore {
         })
     }
 
+    /// launch threads
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&mut self` (`undefined`).
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<()>` - Ok(()).
+    /// 
+    /// # Errors
+    /// 
+    /// CoreError.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = run().await;
+    /// };
+    /// ```
     pub async fn run(&mut self) -> Result<()> {
         self.sender_thread().await?;
         self.recv_thread().await?;
@@ -77,6 +179,29 @@ impl AiCore {
         self.core_loop().await
     }
 
+    /// thread to send packets to the server
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&mut self` (`undefined`).
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<()>` - Ok(()).
+    /// 
+    /// # Errors
+    /// 
+    /// CoreError.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = sender_thread().await;
+    /// };
+    /// ```
     async fn sender_thread(&mut self) -> Result<()> {
         let sender_client = Arc::clone(&self.client);
         let mut send_rx = std::mem::replace(&mut self.send_rx, mpsc::unbounded_channel().1);
@@ -94,6 +219,29 @@ impl AiCore {
         Ok(())
     }
 
+    /// thread to receive packet from the server
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&mut self` (`undefined`).
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<()>` - Ok(()).
+    /// 
+    /// # Errors
+    /// 
+    /// CoreError.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = recv_thread().await;
+    /// };
+    /// ```
     async fn recv_thread(&mut self) -> Result<()> {
         let recv_client = Arc::clone(&self.client);
         let recv_tx = self.recv_tx.clone();
@@ -133,6 +281,29 @@ impl AiCore {
         Ok(())
     }
 
+    /// thread to generate Ai decisions
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&mut self` (`undefined`).
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<()>` - Ok(()).
+    /// 
+    /// # Errors
+    /// 
+    /// CoreError.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = ai_thread().await;
+    /// };
+    /// ```
     async fn ai_thread(&mut self) -> Result<()> {
         let ai_state = Arc::clone(&self.state);
         let ai_cmd_queue = self.cmd_queue.clone();
@@ -157,6 +328,29 @@ impl AiCore {
         Ok(())
     }
 
+    /// main loop that allow communication between threads and update the zappy game state
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&mut self` (`undefined`).
+    /// 
+    /// # Returns
+    /// 
+    /// - `Result<()>` - Ok(()).
+    /// 
+    /// # Errors
+    /// 
+    /// CoreError.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = core_loop().await;
+    /// };
+    /// ```
     async fn core_loop(&mut self) -> Result<()> {
         let mut cmd_rx = std::mem::replace(&mut self.cmd_rx, mpsc::unbounded_channel().1);
         println!("core loop starting..");
@@ -194,6 +388,22 @@ impl AiCore {
         Ok(())
     }
 
+    /// Handle server responses
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&self` (`undefined`).
+    /// - `response` (`ServerResponse`) - ServerResponse to handle.
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = handle_server_response().await;
+    /// };
+    /// ```
     async fn handle_server_response(&self, response: ServerResponse) {
         println!("Received: {:?}", response);
 
@@ -209,6 +419,21 @@ impl AiCore {
         }
     }
 
+    /// update the zappy game state
+    /// 
+    /// # Arguments
+    /// 
+    /// - `&self` (`undefined`).
+    /// 
+    /// # Examples
+    /// 
+    /// ```no_run
+    /// use crate::...;
+    /// 
+    /// async {
+    ///   let result = update_state().await;
+    /// };
+    /// ```
     async fn update_state(&self) {
         let _state = self.state.lock().await;
     }

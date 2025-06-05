@@ -1,5 +1,37 @@
 use crate::{CoreError, Result};
 
+/// Possible responses from the server.
+/// 
+/// # Variants
+/// 
+/// - `Ok` - command succeed.
+/// - `Ko` - command failed.
+/// - `Dead` - player died.
+/// - `Look(Vec<String>)` - look command response with tiles.
+/// - `Inventory(Vec<String>)` - inventory content.
+/// - `Message(String)` - Broadcast command response with text.
+/// - `Welcome` - On client connexion.
+/// - `ClientNum(i32)` - Number of client slots remaining for the team.
+/// - `MapSize(i32, i32)` - Size of the map.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use crate::...;
+/// 
+/// let response = ServerResponse::Ok;
+/// match response {
+///     ServerResponse::Ok => handle_unit,
+///     ServerResponse::Ko => handle_unit,
+///     ServerResponse::Dead => handle_unit,
+///     ServerResponse::Look(v0) => handle_tuple,
+///     ServerResponse::Inventory(v0) => handle_tuple,
+///     ServerResponse::Message(v0) => handle_tuple,
+///     ServerResponse::Welcome => handle_unit,
+///     ServerResponse::ClientNum(v0) => handle_tuple,
+///     ServerResponse::MapSize(v0, v1) => handle_tuple,
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub enum ServerResponse {
     Ok,

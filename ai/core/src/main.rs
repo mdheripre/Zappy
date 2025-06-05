@@ -14,6 +14,25 @@ use clap::Parser;
 use init::init_client;
 use tokio::runtime::Runtime;
 
+/// Informations requiered for server connection
+/// 
+/// # Fields
+/// 
+/// - `long)] ip` (`String`) - ip address.
+/// - `long)] port` (`u16`) - port.
+/// - `long)] name` (`String`) - team name.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use crate::...;
+/// 
+/// let s = ServerInfos {
+///     long)] ip: value,
+///     long)] port: value,
+///     long)] name: value,
+/// };
+/// ```
 #[derive(Parser, Debug)]
 #[command(name = "zappy_ai", disable_help_flag = true)]
 struct ServerInfos {
