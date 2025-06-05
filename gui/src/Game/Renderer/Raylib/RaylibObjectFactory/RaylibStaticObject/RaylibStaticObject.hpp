@@ -14,17 +14,16 @@ namespace rl
 {
     class RaylibStaticObject : public render::IStaticObject
     {
-    private:
-        std::shared_ptr<render::IModel> _model;
-        tools::Position3D<float> _position;
-
-    public:
-        explicit RaylibStaticObject(std::shared_ptr<render::IModel> model);
-        ~RaylibStaticObject() override = default;
-
-        void setPosition(const tools::Position3D<float>& pos) override;
-        const tools::Position3D<float>& getPosition() const override;
-        const tools::BoundingBox& getBoundingBox() const override;
-        void drawObject() const override;
+        
+        public:
+            RaylibStaticObject(std::shared_ptr<render::IModel> model);
+            ~RaylibStaticObject() override = default; 
+            void setPosition(const tools::Position3D<float>& pos) override;
+            const tools::Position3D<float>& getPosition() const override;
+            const tools::BoundingBox& getBoundingBox() const override;
+            void drawObject() const override;
+        private:
+            std::shared_ptr<render::IModel> _model;
+            tools::Position3D<float> _position;
     };
 }

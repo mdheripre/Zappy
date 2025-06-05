@@ -16,13 +16,13 @@ namespace rl
 {
     class RaylibObjectFactory : public render::IObjectFactory
     {
-        private:
-            ModelManager _mm;
         public:
             RaylibObjectFactory() = default;
             ~RaylibObjectFactory() = default;
             std::unique_ptr<render::IAnimatedObject> createAnimatedObject(const std::string &path, std::unordered_map<int, int> animationMap);
             std::unique_ptr<render::IStaticObject> createStaticObject(const std::string &path);
             std::unique_ptr<render::IObject> createCube(const tools::Color &Color, const tools::Position3D<float> &size);
+        private:
+            ModelManager _mm;
     };
 } // namespace rl

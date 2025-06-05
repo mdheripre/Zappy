@@ -7,6 +7,12 @@
 
 #include "Tile.hpp"
 
+gui::Tile::Tile()
+{
+    for (auto &i : _resources)
+    i = 0;
+}
+
 bool gui::Tile::popResource(Resource res)
 {
     int index = static_cast<int>(res);
