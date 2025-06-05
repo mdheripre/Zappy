@@ -23,6 +23,22 @@ impl AsyncW<TcpStream> {
         Ok(())
     }
 
+    pub async fn try_recv(&mut self) -> Result<Option<String>> {
+        let mut buffer = vec![0; 1024];
+
+        match self.0.try_read(&mut buffer) {
+            Ok(0) => Err(TcpError::ConnectionClosed),
+            Ok(n) => {
+                buffer.truncate(n);
+                Ok(Some(String::from_utf8_lossy(&buffer[..n]).to_string()))
+            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                Ok(None)
+            }
+            Err(e) => Err(e.into()),
+        }
+    }
+
     pub async fn recv(&mut self) -> Result<String> {
         let mut buffer = vec![0; 1024];
         let n = self.0.read(&mut buffer).await?;
@@ -67,6 +83,7 @@ impl AsyncW<TcpStream> {
         }
         Ok(String::from_utf8_lossy(&buffer).to_string())
     }
+
     pub fn get_ref(&self) -> &TcpStream {
         &self.0
     }
