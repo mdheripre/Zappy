@@ -9,8 +9,9 @@
 
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     std::shared_ptr<tools::MessageQueue> outgoing,
-    std::unique_ptr<render::IRenderer> render)
-    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render))
+    std::unique_ptr<render::IRenderer> render,
+    std::unique_ptr<render::IObjectFactory> objFactory)
+    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render)), _objFactory(std::move(objFactory))
 {
     for (const auto& [name, handler] : commands) {
         _cm.addCommand(name, handler);

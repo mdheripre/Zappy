@@ -9,6 +9,7 @@
 
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
 #include "Game/GameState/EntityState/EntityState.hpp"
+#include "Game/Renderer/Object/IAnimatedObject.hpp"
 #include <string>
 #include <memory>
 #include <iostream>
@@ -21,11 +22,13 @@ namespace gui {
             HATCH,
             DIE
         };
-        Egg(int id, tools::Position<int> pos, const std::string& teamName)
-            : EntityState(id, pos, teamName) {}
+        Egg(int id, tools::Position<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedObject> eggObject = nullptr)
+            : EntityState(id, pos, teamName), _eggObject(std::move(eggObject)) {
+                setPosition(pos);
+            }
         ~Egg() override = default;
     private:
-        
+        std::unique_ptr<render::IAnimatedObject> _eggObject;
         void setDead() override;
         void setPosition(tools::Position<int>  pos) override;
         bool update(float dt) override;

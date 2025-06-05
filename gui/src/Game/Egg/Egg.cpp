@@ -9,17 +9,27 @@
 
 bool gui::Egg::update(float)
 {
-    std::cout << "Update an egg not implemented" << std::endl;
-    return false;
+    if (!_alive)
+        return false;
+    return true;
 }
 
 void gui::Egg::draw() const
 {
-    std::cout << "Draw an egg not implemented" << std::endl;
+    if (_eggObject)
+        _eggObject->drawObject();
 }
 
 void gui::Egg::setPosition(tools::Position<int> pos)
 {
+    tools::Position3D<float> bb = _eggObject->getBoundingBox().getSize();
+
+    tools::Position3D<float> dPos(
+        static_cast<float>(pos.x),
+        bb.y,
+        static_cast<float>(pos.y)
+    );
+    _eggObject->setPosition(dPos);
     _pos = pos;
 }
 

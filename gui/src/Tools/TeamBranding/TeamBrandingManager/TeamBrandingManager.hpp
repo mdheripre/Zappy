@@ -11,6 +11,7 @@
 #include <string>
 #include <array>
 #include "Tools/TeamBranding/TeamBranding.hpp"
+#include "Game/Trantorian/Trantorian.hpp"
 
 namespace tools
 {
@@ -48,7 +49,15 @@ namespace tools
             const std::array<TeamBranding, 3> _presetBrandings = {
                 //Example 1
                 TeamBranding("default1", Color(255, 0, 0, 0),
-                             AssetDefinition("player_red.glb", {{0, 1}, {1, 2}}, 1.0f),
+                             AssetDefinition("player_red.glb",
+                                {
+                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 0},
+                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 2},
+                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::INCANT), -1}, // if there is no animation available
+                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::TALK), 1},
+                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 0},
+                                },
+                                1.0f),
                              AssetDefinition("egg_red.glb", {{0, 3}}, 0.7f)),
                 //Example 2
                 TeamBranding("default2", Color(0, 255, 0, 0),

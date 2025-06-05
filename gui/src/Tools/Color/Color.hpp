@@ -13,16 +13,16 @@ namespace tools
     class Color {
     public:
         Color() : r(0), g(0), b(0), a(1) {}
-        Color(float red,
-            float green,
-            float blue,
-            float alpha)
+        Color(unsigned char red,
+            unsigned char green,
+            unsigned char blue,
+            unsigned char alpha)
         : r(red), g(green), b(blue), a(alpha) {}
         
-        float r;
-        float g;
-        float b;
-        float a;
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+        unsigned char a;
 
         Color& operator+=(const Color& o) {
             r += o.r;
@@ -50,7 +50,7 @@ namespace tools
             return c;
         }
     };
-    inline Color operator*(const Color& color, float scalar) {
+    inline Color operator*(const Color& color, unsigned char scalar) {
         return Color(
             color.r * scalar,
             color.g * scalar,
@@ -58,10 +58,10 @@ namespace tools
             color.a
         );
     }
-    inline Color operator*(float scalar, const Color& color) {
+    inline Color operator*(unsigned char scalar, const Color& color) {
         return color * scalar;
     }
-    inline Color operator/(const Color& color, float scalar) {
+    inline Color operator/(const Color& color, unsigned char scalar) {
         if (scalar == 0.0f)
             throw std::runtime_error("Division by zero in Color operator/");
         return Color(

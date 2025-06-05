@@ -10,6 +10,9 @@
 #include <vector>
 #include "Tools/Position/Position.hpp"
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Object/IStaticObject.hpp"
+#include "Game/Renderer/Object/IAnimatedObject.hpp"
+#include <memory>
 #include <stdexcept>
 #include <iostream>
 
@@ -28,23 +31,42 @@ class MapState
         const Tile& getTile(const tools::Position<int> &pos) const;
         tools::Position<int> getDim() const { return tools::Position<int>(_width, _height );}
         virtual void setTile(const Tile& tile, const tools::Position<int> &pos) = 0;
+        virtual bool popResource(Tile::Resource res, tools::Position<int> pos) = 0;
+        virtual void pushResource(Tile::Resource res, tools::Position<int> pos) = 0;
 };
 
-class Map : public MapState, public render::IRenderEntity{
-private:
-    int _width;
-    int _height;
-    std::vector<std::vector<Tile>> _map;
-
-public:
-    Map(int width, int height)
-        : MapState(width, height) {}
-    ~Map() = default;
+class Map : public MapState, public render::IRenderEntity {
     private:
-    void setTile(const Tile& tile, const tools::Position<int> &pos);
-    void draw() const {std::cout << "Draw map not implemented" << std::endl;};
-    bool update(float) {return true;};
-};
+        int _width;
+        int _height;
+        std::vector<std::vector<Tile>> _map;
+    
+        std::unique_ptr<render::IObject> _tileObject;
+        std::array<std::unique_ptr<render::IAnimatedObject>, 7> _propsObject;
+    
+    public:
+        Map(int width,
+            int height,
+            std::unique_ptr<render::IObject> tileObject = nullptr,
+            std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject = {})
+            : MapState(width, height),
+              _width(width),
+              _height(height),
+              _map(width, std::vector<Tile>(height)),
+              _tileObject(std::move(tileObject)),
+              _propsObject(std::move(propsObject))
+        {}
+    
+        ~Map() override = default;
+    
+        void setTile(const Tile& tile, const tools::Position<int>& pos);
+        void drawProps(const Tile& tile, const tools::Position3D<float> &tilePos) const;
+        void draw() const override;
+        bool update(float dt) override;
+        bool popResource(Tile::Resource res, tools::Position<int> pos);
+        void pushResource(Tile::Resource res, tools::Position<int> pos);
+    };
+    
 
 } // namespace game
 

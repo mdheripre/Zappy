@@ -20,7 +20,14 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
         printErrorCommand("msz", token);
-    std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(std::stoi(token[0]), std::stoi(token[1]));
+    std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
+        std::stoi(token[0]),
+        std::stoi(token[1]),
+        _objFactory->createCube(
+            tools::Color(0, 255, 0, 255),
+            tools::Position3D<float>(1.0, 1.0, 1.0)
+        )
+    );
     _gm.map = map;
     _renderer->pushEntity(map);
     std::cout << "Map created" << std::endl;
@@ -69,22 +76,27 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     int orientation = std::stoi(token[3]);
     int lvl = std::stoi(token[4]);
+    auto it = _gm.trantorians.find(id);
+    const auto& tran = it->second;
     std::string tokens;
-
     for (int i = 5; i < token.size(); i++) {
         tokens += " ";
         tokens += token[i];
     }
+    tools::TeamBranding tb = _tbManager.getTeamBranding(tokens);
 
-    auto it = _gm.trantorians.find(id);
-    const auto& tran = it->second;
-
+    _objFactory->createAnimatedObject(
+        tb.getPlayerAsset().getModelPath(),
+        tb.getPlayerAsset().getAnimation());
     auto trantorian = std::make_shared<gui::Trantorian>(
         id,
         pos,
         tokens,
         static_cast<gui::Trantorian::Orientation>(orientation),
-        lvl
+        lvl,
+        _objFactory->createAnimatedObject(
+            tb.getPlayerAsset().getModelPath(),
+            tb.getPlayerAsset().getAnimation())
     );
 
     std::shared_ptr<gui::TrantorianState> tranState = trantorian;
@@ -166,6 +178,11 @@ void game::Game::pexCommand(const std::vector<std::string> &token)
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
         it->expulse();
+        for (auto &[otherId, other] : _gm.trantorians) {
+            if (other.get() != it.get() && other->getPosition() == it->getPosition()) {
+                other->expulseFrom(it->getOrientation(), _gm.map->getDim().x, _gm.map->getDim().y);
+            }
+        }
     } else {
         printErrorCommand("Unknown id in pdi for trantorian ", token);
     }
@@ -194,19 +211,50 @@ void game::Game::picCommand(const std::vector<std::string> &token)
         return;
     }
 
+    int x = std::stoi(token[0]);
+    int y = std::stoi(token[1]);
     int level = std::stoi(token[2]);
-    tools::Position<int> pos(std::stoi(token[0]), std::stoi(token[1]));
+    tools::Position<int> pos(x, y);
+
     std::vector<int> playerIds;
 
-    for (size_t i = 3; i < token.size(); i++)
-        playerIds.push_back(std::stoi(token[i]));
-    auto incantation = std::make_shared<gui::Incantation>(pos, level, playerIds);
+    int firstId = std::stoi(token[3]);
+    auto itInit = _gm.trantorians.find(firstId);
+    if (itInit == _gm.trantorians.end()) {
+        throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
+    }
+
+    tools::TeamBranding tb = _tbManager.getTeamBranding(itInit->second->getTeamName());
+
+    for (size_t i = 3; i < token.size(); ++i) {
+        int pid = std::stoi(token[i]);
+        playerIds.push_back(pid);
+
+        auto it = _gm.trantorians.find(pid);
+        if (it == _gm.trantorians.end()) {
+            throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(pid) + " in pic command.");
+        }
+
+        it->second->startIncantation();
+    }
+
+    auto incantation = std::make_shared<gui::Incantation>(
+        pos,
+        level,
+        playerIds,
+        _objFactory->createAnimatedObject(
+            tb.getPlayerAsset().getModelPath(),
+            tb.getPlayerAsset().getAnimation()
+        )
+    );
 
     std::shared_ptr<render::IRenderEntity> renderPtr = incantation;
     _renderer->pushEntity(renderPtr);
     _gm.incantations[pos] = incantation;
-    std::cout << "Incantation started at (" << std::stoi(token[0]) << ", " << std::stoi(token[1]) << ") for level " << level << std::endl;
+
+    std::cout << "Incantation started at (" << x << ", " << y << ") for level " << level << std::endl;
 }
+
 
 
 void game::Game::pieCommand(const std::vector<std::string> &token)
@@ -270,6 +318,9 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
+        tools::Position<int> pos = it->getPosition();
+
+        _gm.map->popResource(res, pos);
         it->removeFromInventory(res);
     } else {
         printErrorCommand("Unknown id in pdr for trantorian ", token);
@@ -286,7 +337,11 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
+        tools::Position<int> pos = it->getPosition();
+
+        _gm.map->pushResource(res, pos);
         it->addToInventory(res);
+
     } else {
         printErrorCommand("Unknown id in pgt for trantorian ", token);
     }
@@ -327,12 +382,15 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         printErrorCommand("Trantorian id don't exist in enw ", token);
     }
     if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
-        //TODO after render implementation
-        /*tools::TeamBranding tb = _tbManager.getTeamBranding(teamName)*/;
+
+        tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
         auto egg = std::make_shared<gui::Egg>(
             eggId,
             pos,
-            teamName
+            teamName,
+            _objFactory->createAnimatedObject(
+                tb.getEggAsset().getModelPath(),
+                tb.getEggAsset().getAnimation())
         );
         std::shared_ptr<state::EntityState> eggState = egg;
         std::shared_ptr<render::IRenderEntity> eggRender = egg;
@@ -358,10 +416,17 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
     if (it != _gm.eggs.end()) {
         const auto& egg = it->second;
 
+        tools::TeamBranding tb = _tbManager.getTeamBranding(egg->getTeamName());
+
         auto trantorian = std::make_shared<gui::Trantorian>(
             egg->getId(), 
             egg->getPosition(), 
-            egg->getTeamName()
+            egg->getTeamName(),
+            gui::Trantorian::Orientation::NORTH,
+            1,
+            _objFactory->createAnimatedObject(
+                tb.getPlayerAsset().getModelPath(),
+                tb.getPlayerAsset().getAnimation())
         );
 
         std::shared_ptr<gui::TrantorianState> tranState = trantorian;
