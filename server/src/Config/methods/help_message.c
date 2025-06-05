@@ -7,6 +7,18 @@
 
 #include <unistd.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                            HELPER METHODS                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Prints the help message listing all available command-line options.
+ *
+ * This function is called when the user provides the -h, --help or -help
+ * flag. It outputs the usage information and describes each argument.
+ */
 void help_message(void)
 {
     write(1, "USAGE: ./zappy_server -p port -x width -y height "

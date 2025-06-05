@@ -10,6 +10,23 @@
 #include "utils.h"
 #include <stdbool.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                            PARSER METHODS                                */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * @brief Checks if optional values are set correctly in config.
+ *
+ * Verifies that the frequency is set and that there are at least
+ * two team names registered.
+ *
+ * @param config The configuration object.
+ * @param parser The parser instance (used for setting error_msg).
+ * @return true if all optional values are valid, false otherwise.
+ */
 static bool check_other_unset_values(config_t *config, parser_t *parser)
 {
     if (config->frequency == -1.0f) {
@@ -23,6 +40,16 @@ static bool check_other_unset_values(config_t *config, parser_t *parser)
     return true;
 }
 
+/**
+ * @brief Checks if all required configuration values are set.
+ *
+ * This includes port, map size (width/height), team size,
+ * and delegates frequency/team validation to another checker.
+ *
+ * @param config The configuration object.
+ * @param parser The parser instance (used for setting error_msg).
+ * @return true if all required values are present, false otherwise.
+ */
 static bool check_unset_values(config_t *config, parser_t *parser)
 {
     if (config->port == -1) {
@@ -44,6 +71,18 @@ static bool check_unset_values(config_t *config, parser_t *parser)
     return check_other_unset_values(config, parser);
 }
 
+/**
+ * @brief Initializes the argument parser before parsing begins.
+ *
+ * Ensures that the argument list is not empty, and sets up
+ * parser values such as argc, argv, and default states.
+ *
+ * @param config The configuration context.
+ * @param parser The parser structure to initialize.
+ * @param argc Argument count from main().
+ * @param argv Argument vector from main().
+ * @return true if initialization succeeds, false otherwise.
+ */
 static bool init_parser(config_t *config, parser_t *parser, int argc,
     char **argv)
 {
@@ -61,6 +100,17 @@ static bool init_parser(config_t *config, parser_t *parser, int argc,
     return true;
 }
 
+/**
+ * @brief Main entry point for command-line parsing.
+ *
+ * Iterates over argv, dispatches handlers, validates each arg,
+ * and checks for missing required values at the end.
+ *
+ * @param argc Argument count from main().
+ * @param argv Argument vector from main().
+ * @param config The configuration structure to fill.
+ * @return true if parsing succeeds, false otherwise.
+ */
 bool parse_args(int argc, char **argv, config_t *config)
 {
     parser_t parser;

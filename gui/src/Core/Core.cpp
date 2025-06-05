@@ -34,7 +34,7 @@ gui::Core::Core(std::vector<std::string> args, char **env)
     _incoming = std::make_shared<tools::MessageQueue>();
     _outgoing = std::make_shared<tools::MessageQueue>();
     _net = std::make_unique<net::Network>(_incoming, _outgoing, port, addr);
-    _game = std::make_unique<game::Game>(_incoming, _outgoing);
+    _game = std::make_unique<game::Game>(_incoming, _outgoing, std::make_unique<rl::Raylib>());
 }
 
 bool gui::Core::isEnvGraphics(char **env)
@@ -58,8 +58,14 @@ void gui::Core::run()
         return;
     }
     std::thread netThread(&net::Network::startLoop, _net.get());
-    _game->gameLoop();
+    try
+    {
+        _game->gameLoop();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     _net->stopLoop();
     netThread.join();
-    _game->stopLoop();
 }

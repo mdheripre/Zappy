@@ -18,7 +18,6 @@
  * Each index corresponds to a log level (LOG_INFO, LOG_SUCCESS, etc.)
  * and holds the ANSI color code string for that level.
  */
-
 static const char *LOG_COLORS[] = {
     [LOG_INFO] = COLOR_INFO,
     [LOG_SUCCESS] = COLOR_SUCCESS,
@@ -31,7 +30,6 @@ static const char *LOG_COLORS[] = {
  * Maps log level enums (LOG_INFO, LOG_SUCCESS, LOG_WARNING, LOG_ERROR)
  * to their corresponding string representations.
  */
-
 static const char *LOG_LABELS[] = {
     [LOG_INFO] = "INFO",
     [LOG_SUCCESS] = "SUCCESS",

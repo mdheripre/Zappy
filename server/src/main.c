@@ -33,8 +33,10 @@ int main(int argc, char **argv)
     if (config->exit)
         return terminate(0);
     server = NEW(server, config);
-    if (!server)
+    if (!server) {
+        printf("Error: Failed to create server instance.\n");
         return terminate(84);
+    }
     server->vtable->run(server);
     return terminate(0);
 }

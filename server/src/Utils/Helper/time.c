@@ -8,6 +8,20 @@
 #include <sys/time.h>
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                                 TIME                                     */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Returns the current time in milliseconds.
+ *
+ * Uses `gettimeofday` to retrieve the current time, then converts it to
+ * milliseconds since the Unix epoch.
+ *
+ * @return Current time in milliseconds as a long integer.
+ */
 long get_ms_time(void)
 {
     struct timeval tv;
