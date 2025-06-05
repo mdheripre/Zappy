@@ -8,6 +8,30 @@ use tokio::net::TcpStream;
 
 pub struct AsyncW<T>(T);
 
+/// bunch of simple methods to connect / read / write to a socket
+///
+/// # Arguments
+///
+/// - `ip` (`&str`) - ip address.
+/// - `port` (`u16`) - port.
+///
+/// # Returns
+///
+/// - `Result<Self>` - Wrapped TcpStream.
+///
+/// # Errors
+///
+/// Tcp errors.
+///
+/// # Examples
+///
+/// ```no_run
+/// use crate::...;
+///
+/// async {
+///   let result = connect().await;
+/// };
+/// ```
 impl AsyncW<TcpStream> {
     pub async fn connect(ip: &str, port: u16) -> Result<Self> {
         let addr: SocketAddr = format!("{}:{}", ip, port)
@@ -23,6 +47,44 @@ impl AsyncW<TcpStream> {
         Ok(())
     }
 
+    /// non blocking read
+    ///
+    /// # Arguments
+    ///
+    /// - `&mut self` (`undefined`).
+    ///
+    /// # Returns
+    ///
+    /// - `Result<Option<String>>` - value red from socket.
+    ///
+    /// # Errors
+    ///
+    /// Tcp error.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use crate::...;
+    ///
+    /// async {
+    ///   let result = try_recv().await;
+    /// };
+    /// ```
+    pub async fn try_recv(&mut self) -> Result<Option<String>> {
+        let mut buffer = vec![0; 1024];
+
+        match self.0.try_read(&mut buffer) {
+            Ok(0) => Err(TcpError::ConnectionClosed),
+            Ok(n) => {
+                buffer.truncate(n);
+                Ok(Some(String::from_utf8_lossy(&buffer[..n]).to_string()))
+            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => Ok(None),
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    /// Blocking read functions
     pub async fn recv(&mut self) -> Result<String> {
         let mut buffer = vec![0; 1024];
         let n = self.0.read(&mut buffer).await?;
@@ -67,6 +129,7 @@ impl AsyncW<TcpStream> {
         }
         Ok(String::from_utf8_lossy(&buffer).to_string())
     }
+
     pub fn get_ref(&self) -> &TcpStream {
         &self.0
     }

@@ -3,6 +3,44 @@ use async_trait::async_trait;
 use core::fmt;
 use lib_tcp::tcp_client::AsyncTcpClient;
 
+/// packet enum for zappy client/server communication
+///
+/// # Variants
+/// - `TeamName(String)` - Team name.
+/// - `Forward` - Move forward (1 tile).
+/// - `Right` - Turn 90° right.
+/// - `Left` - Turn 90° left.
+/// - `Look` - Look forward to get tiles's content.
+/// - `Inventory` - Get inventory content.
+/// - `Broadcast(String)` - Send text to everyone.
+/// - `ConnectNbr` - Number of team slots remaining.
+/// - `Fork` - Create a new unit.
+/// - `Eject` - Eject all units from a tile.
+/// - `Take(String)` - Take item on a tile.
+/// - `Set(String)` - Put item on a tile.
+/// - `Incantation` - Start an incantation.
+///
+/// # Examples
+/// ```
+/// use crate::...;
+///
+/// let packet = Packet::TeamName;
+/// match packet {
+///     Packet::TeamName(v0) => handle_tuple,
+///     Packet::Forward => handle_unit,
+///     Packet::Right => handle_unit,
+///     Packet::Left => handle_unit,
+///     Packet::Look => handle_unit,
+///     Packet::Inventory => handle_unit,
+///     Packet::Broadcast(v0) => handle_tuple,
+///     Packet::ConnectNbr => handle_unit,
+///     Packet::Fork => handle_unit,
+///     Packet::Eject => handle_unit,
+///     Packet::Take(v0) => handle_tuple,
+///     Packet::Set(v0) => handle_tuple,
+///     Packet::Incantation => handle_unit,
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub enum Packet {
     TeamName(String),
@@ -12,7 +50,7 @@ pub enum Packet {
     Look,
     Inventory,
     Broadcast(String),
-    ConnectNbr(u32),
+    ConnectNbr,
     Fork,
     Eject,
     // Death,
@@ -21,6 +59,20 @@ pub enum Packet {
     Incantation,
 }
 
+/// Packet into protocol format
+///
+/// # Arguments
+/// - `f` (`&mut fmt`) - Formatter.
+///
+/// # Returns
+/// - `fmt::Result` - Formatted packet.
+///
+/// # Examples
+/// ```
+/// use crate::...;
+///
+/// let _ = fmt();
+/// ```
 impl fmt::Display for Packet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = match self {
@@ -34,7 +86,7 @@ impl fmt::Display for Packet {
             Packet::Eject => "Eject".to_string(),
             Packet::Incantation => "Incantation".to_string(),
             Packet::Broadcast(msg) => format!("Broadcast {}", msg),
-            Packet::ConnectNbr(n) => format!("Connect_nbr {}", n),
+            Packet::ConnectNbr => "Connect_nbr".to_string(),
             Packet::Take(item) => format!("Take {}", item),
             Packet::Set(item) => format!("Set {}", item),
         };
@@ -68,6 +120,22 @@ pub trait PacketSender {
 
 #[async_trait]
 impl PacketSender for AsyncTcpClient {
+    /// send any packet to the server
+    ///
+    /// # Arguments
+    /// - `packet` (`Packet`) - packet to be sent.
+    ///
+    /// # Errors
+    /// Tcp errors.
+    ///
+    /// # Examples
+    /// ```no_run
+    /// use crate::...;
+    ///
+    /// async {
+    ///   let result = send_packet().await;
+    /// };
+    /// ```
     async fn send_packet(&mut self, packet: Packet) -> Result<()> {
         let data = packet.to_string();
         self.send(&format!("{}\n", data)).await?;
