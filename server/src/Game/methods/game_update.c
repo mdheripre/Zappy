@@ -23,8 +23,14 @@
  */
 void game_update(game_t *self)
 {
+    static int tick_counter = 0;
+
     if (!self)
         return;
-    if (self->methods->update_players)
-        self->methods->update_players(self);
+    self->methods->update_players(self);
+    tick_counter++;
+    if (tick_counter >= 20) {
+        self->methods->spawn_resources(self);
+        tick_counter = 0;
+    }
 }

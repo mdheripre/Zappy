@@ -22,7 +22,8 @@ static const game_methods_t GAME_METHODS = {
     .dispatch_events = game_dispatch_events,
     .update = game_update,
     .count_team_members = count_team_members,
-    .update_players = update_players
+    .update_players = update_players,
+    .spawn_resources = spawn_resources,
 };
 
 /****************************************************************************/
@@ -31,43 +32,12 @@ static const game_methods_t GAME_METHODS = {
 /*                                                                          */
 /****************************************************************************/
 
-static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
-    [RESOURCE_FOOD] = 0.5,
-    [RESOURCE_LINEMATE] = 0.3,
-    [RESOURCE_DERAUMERE] = 0.15,
-    [RESOURCE_SIBUR] = 0.1,
-    [RESOURCE_MENDIANE] = 0.1,
-    [RESOURCE_PHIRAS] = 0.08,
-    [RESOURCE_THYSTAME] = 0.05
-};
-
 static void game_init_tile(tile_t *tile, int x, int y)
 {
     tile->x = x;
     tile->y = y;
     for (int r = 0; r < RESOURCE_COUNT; r++)
         tile->resources[r] = 0;
-}
-
-static void game_spawn_resources(game_t *game)
-{
-    int total_tiles = game->width * game->height;
-    int count[RESOURCE_COUNT];
-    int x;
-    int y;
-
-    for (int r = 0; r < RESOURCE_COUNT; r++) {
-        count[r] = (int)(RESOURCE_DENSITY[r] * total_tiles);
-        if (count[r] == 0)
-            count[r] = 1;
-    }
-    for (int r = 0; r < RESOURCE_COUNT; r++) {
-        for (int i = 0; i < count[r]; i++) {
-            x = rand() % game->width;
-            y = rand() % game->height;
-            game->map[y][x].resources[r]++;
-        }
-    }
 }
 
 static void init_egg(list_node_t *node, int *egg_id, game_t *game)
@@ -114,7 +84,7 @@ static bool game_init_map(game_t *game)
         for (int x = 0; x < game->width; x++)
             game_init_tile(&game->map[y][x], x, y);
     }
-    game_spawn_resources(game);
+    game->methods->spawn_resources(game);
     game_init_eggs(game);
     return true;
 }

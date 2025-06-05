@@ -99,6 +99,7 @@ struct game_methods_s {
     void (*update)(game_t *self);
     int (*count_team_members)(game_t *self, const char *team_name);
     void (*update_players)(game_t *self);
+    void (*spawn_resources)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -152,4 +153,5 @@ void game_dispatch_events(game_t *self);
 void game_update(game_t *self);
 int count_team_members(game_t *self, const char *team_name);
 void update_players(game_t *self);
+void spawn_resources(game_t *self);
 #endif /* !GAME_H_ */

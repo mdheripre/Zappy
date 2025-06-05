@@ -118,6 +118,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/count_team_members.c \
 	$(SRC_GAME_METHODS)/update_players.c \
+	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
