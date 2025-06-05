@@ -1,12 +1,9 @@
 use std::sync::Arc;
 
-use clap::builder::Str;
 use lib_tcp::tcp_client::AsyncTcpClient;
-use lib_tcp::TcpError;
 use tokio::sync::{mpsc, Mutex};
-use tokio::time::{sleep, Duration};
 
-use crate::ai::{ai_decision, command_to_packet, AiCommand};
+use crate::ai::{ai_decision, AiCommand};
 use crate::init::{init_client, ClientInfos};
 use crate::item::Item;
 use crate::packet::{Packet, PacketSender};
@@ -130,7 +127,6 @@ impl AiCore {
                         break;
                     }
                 }
-                sleep(Duration::from_millis(10)).await;
             }
             println!("recv thread closing..");
         });
@@ -155,7 +151,6 @@ impl AiCore {
                         break;
                     }
                 }
-                sleep(Duration::from_millis(10)).await;
             }
             println!("ai thread starting..");
         });
@@ -188,13 +183,12 @@ impl AiCore {
                         break;
                     }
                     _ => {
-                        let packet = command_to_packet(command);
+                        let packet = command.into();
                         self.send_queue.send(packet)?;
                     }
                 }
             }
             self.update_state().await;
-            sleep(Duration::from_millis(50)).await;
         }
         println!("Ai loop closing..");
         Ok(())

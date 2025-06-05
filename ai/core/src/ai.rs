@@ -1,4 +1,5 @@
 use crate::{ai_core::AiState, item::Item, packet::Packet, CoreError, Result};
+use std::convert::Into;
 use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 
@@ -19,21 +20,23 @@ pub enum AiCommand {
     Stop,
 }
 
-pub fn command_to_packet(command: AiCommand) -> Packet {
-    match command {
-        AiCommand::Forward => Packet::Forward,
-        AiCommand::Right => Packet::Right,
-        AiCommand::Left => Packet::Left,
-        AiCommand::Look => Packet::Look,
-        AiCommand::Inventory => Packet::Inventory,
-        AiCommand::ConnectNbr => Packet::ConnectNbr,
-        AiCommand::Broadcast(msg) => Packet::Broadcast(msg),
-        AiCommand::Fork => Packet::Fork,
-        AiCommand::Eject => Packet::Eject,
-        AiCommand::Take(item) => Packet::Take(item),
-        AiCommand::Set(item) => Packet::Take(item),
-        AiCommand::Incantation => Packet::Incantation,
-        AiCommand::Stop => Packet::Forward, //placehoder
+impl Into<Packet> for AiCommand {
+    fn into(self) -> Packet {
+        match self {
+            AiCommand::Forward => Packet::Forward,
+            AiCommand::Right => Packet::Right,
+            AiCommand::Left => Packet::Left,
+            AiCommand::Look => Packet::Look,
+            AiCommand::Inventory => Packet::Inventory,
+            AiCommand::ConnectNbr => Packet::ConnectNbr,
+            AiCommand::Broadcast(msg) => Packet::Broadcast(msg),
+            AiCommand::Fork => Packet::Fork,
+            AiCommand::Eject => Packet::Eject,
+            AiCommand::Take(item) => Packet::Take(item),
+            AiCommand::Set(item) => Packet::Take(item),
+            AiCommand::Incantation => Packet::Incantation,
+            AiCommand::Stop => Packet::Forward, //placehoder
+        }
     }
 }
 
