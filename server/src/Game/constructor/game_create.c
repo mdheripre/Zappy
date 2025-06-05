@@ -17,12 +17,12 @@
 /****************************************************************************/
 
 static const game_methods_t GAME_METHODS = {
-    .tick = game_tick,
     .add_event = game_add_event,
     .pop_event = game_pop_event,
     .dispatch_events = game_dispatch_events,
     .update = game_update,
     .count_team_members = count_team_members,
+    .update_players = update_players
 };
 
 /****************************************************************************/

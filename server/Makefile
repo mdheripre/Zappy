@@ -11,6 +11,7 @@ SRC_DIR = src
 SRC_PLAYER = $(SRC_DIR)/Player
 SRC_PLAYER_CTOR = $(SRC_PLAYER)/constructor
 SRC_PLAYER_DTOR = $(SRC_PLAYER)/destructor
+SRC_PLAYER_METHODS = $(SRC_PLAYER)/methods
 SRC_SERVER = $(SRC_DIR)/Server
 SRC_SERV_CTOR = $(SRC_SERVER)/constructor
 SRC_SERV_DTOR = $(SRC_SERVER)/destructor
@@ -36,13 +37,11 @@ SRC_LIST = $(SRC_DIR)/List
 SRC_LIST_CTOR = $(SRC_LIST)/constructor
 SRC_LIST_DTOR = $(SRC_LIST)/destructor
 SRC_LIST_METHODS = $(SRC_LIST)/methods
-
 SRC_CONFIG = $(SRC_DIR)/Config
 SRC_CONFIG_CTOR = $(SRC_CONFIG)/constructor
 SRC_CONFIG_DTOR = $(SRC_CONFIG)/destructor
 SRC_CONFIG_METHODS = $(SRC_CONFIG)/methods
 SRC_CONFIG_METHODS_EVT = $(SRC_CONFIG)/Event
-
 SRC_GAME = $(SRC_DIR)/Game
 SRC_GAME_CTOR = $(SRC_GAME)/constructor
 SRC_GAME_DTOR = $(SRC_GAME)/destructor
@@ -116,12 +115,18 @@ SRCS = \
 	$(SRC_GAME_DTOR)/game_destroy.c \
 	$(SRC_GAME_METHODS)/game_add_event.c \
 	$(SRC_GAME_METHODS)/game_pop_event.c \
-	$(SRC_GAME_METHODS)/game_tick.c \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/count_team_members.c \
+	$(SRC_GAME_METHODS)/update_players.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
+	$(SRC_PLAYER_METHODS)/add_ressource.c \
+	$(SRC_PLAYER_METHODS)/remove_ressource.c \
+	$(SRC_PLAYER_METHODS)/move.c \
+	$(SRC_PLAYER_METHODS)/die.c \
+	$(SRC_PLAYER_METHODS)/update.c \
+
 
 OBJS = $(SRCS:.c=.o)
 
