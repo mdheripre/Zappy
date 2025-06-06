@@ -7,6 +7,16 @@
 
 #include "Game.hpp"
 
+/**
+ * @brief Constructs the Game object.
+ *
+ * Initializes renderer, object factory, camera and command manager.
+ *
+ * @param incoming Message queue for incoming messages from server.
+ * @param outgoing Message queue for messages to send to server.
+ * @param render Renderer used to draw the world.
+ * @param objFactory Factory used to generate world objects.
+ */
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     std::shared_ptr<tools::MessageQueue> outgoing,
     std::unique_ptr<render::IRenderer> render,
@@ -22,6 +32,14 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     _renderer->setBindings(bindings);
 }
 
+/**
+ * @brief Processes a single server command.
+ *
+ * Tokenizes the string and delegates handling to the CommandManager.
+ *
+ * @param command Raw command string.
+ * @throw std::runtime_error if command is unknown.
+ */
 void game::Game::manageCommand(const std::string &command)
 {
     std::istringstream iss(command);
@@ -34,6 +52,12 @@ void game::Game::manageCommand(const std::string &command)
         throw std::runtime_error("Error Unknown Command " + command);
 }
 
+/**
+ * @brief Main game loop.
+ *
+ * Continuously updates the renderer, processes incoming commands,
+ * and handles errors. Runs until the renderer is closed.
+ */
 void game::Game::gameLoop()
 {
     bool errorCaught = false;

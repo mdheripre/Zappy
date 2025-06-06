@@ -7,12 +7,27 @@
 
 #include "Trantorian.hpp"
 
+/**
+ * @brief Draws the Trantorian on screen.
+ *
+ * Delegates the rendering to the animated object if it exists.
+ */
 void gui::Trantorian::draw() const
 {
     if (_trantorianObject)
         _trantorianObject->drawObject();
 }
 
+/**
+ * @brief Moves the Trantorian away from a given direction.
+ *
+ * Simulates an expulsion from another player by updating the position
+ * based on the given orientation, applying toroidal wrapping.
+ *
+ * @param O Orientation from which the expulsion occurs.
+ * @param maxWidth Map width for wrap-around.
+ * @param maxHeight Map height for wrap-around.
+ */
 void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
 {
     tools::Position<int> offset;
@@ -30,6 +45,15 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
     setPosition(newPos);
 }
 
+/**
+ * @brief Removes a resource from the Trantorian's inventory.
+ *
+ * Decrements the quantity of the specified resource.
+ * If it goes below zero, resets it to zero.
+ *
+ * @param res Resource to remove.
+ * @throw std::runtime_error if the resource index is invalid.
+ */
 void gui::Trantorian::removeFromInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
@@ -41,6 +65,14 @@ void gui::Trantorian::removeFromInventory(Tile::Resource res)
         _inventory[index] = 0;
 }
 
+/**
+ * @brief Adds a resource to the Trantorian's inventory.
+ *
+ * Increments the quantity of the specified resource.
+ *
+ * @param res Resource to add.
+ * @throw std::runtime_error if the resource index is invalid.
+ */
 void gui::Trantorian::addToInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
@@ -50,6 +82,15 @@ void gui::Trantorian::addToInventory(Tile::Resource res)
     _inventory[index]++;
 }
 
+/**
+ * @brief Updates the Trantorian's animation state.
+ *
+ * If the animation ends and the Trantorian is alive, it will loop the IDLE animation.
+ * If the Trantorian is dead, it will return false to remove itself from rendering.
+ *
+ * @param dt Delta time since the last update.
+ * @return true if the Trantorian should continue rendering, false otherwise.
+ */
 bool gui::Trantorian::update(float dt)
 {
     bool anim_end = true;
@@ -67,6 +108,13 @@ bool gui::Trantorian::update(float dt)
     return true;
 }
 
+/**
+ * @brief Sets the Trantorian's position on the map and updates its render position.
+ *
+ * Converts a grid position into a 3D position and updates the animated model accordingly.
+ *
+ * @param pos New map position (grid coordinates).
+ */
 void gui::Trantorian::setPosition(tools::Position<int>  pos)
 {
     tools::Position3D<float> bb = _trantorianObject->getBoundingBox().getSize();
