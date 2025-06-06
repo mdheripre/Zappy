@@ -50,9 +50,9 @@ void RaylibStaticObject::drawObject() const
 }
 
 /**
- * @brief Renders the static object at its current position.
+ * @brief Returns the cube's bounding box.
  *
- * Delegates drawing to the wrapped model.
+ * @return A reference to the bounding box.
  */
 const tools::BoundingBox& RaylibStaticObject::getBoundingBox() const
 {
