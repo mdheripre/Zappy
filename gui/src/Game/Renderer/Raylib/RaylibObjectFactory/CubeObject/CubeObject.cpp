@@ -9,6 +9,14 @@
 
 namespace rl {
 
+/**
+ * @brief Constructs a cube object with a given size and color.
+ *
+ * Also computes the cube's initial bounding box.
+ *
+ * @param size Dimensions of the cube.
+ * @param color RGBA color of the cube.
+ */
 CubeObject::CubeObject(const tools::Position3D<float>& size, tools::Color color)
     : _size(size), _color(color) {
         _bb.min = {
@@ -24,16 +32,31 @@ CubeObject::CubeObject(const tools::Position3D<float>& size, tools::Color color)
         };
     }
 
+/**
+ * @brief Sets the world position of the cube.
+ *
+ * @param pos New 3D position.
+ */
 void CubeObject::setPosition(const tools::Position3D<float>& pos)
 {
     _position = pos;
 }
 
+/**
+ * @brief Gets the current world position of the cube.
+ *
+ * @return A reference to the 3D position.
+ */
 const tools::Position3D<float>& CubeObject::getPosition() const
 {
     return _position;
 }
 
+/**
+ * @brief Renders the cube in the scene.
+ *
+ * Draws both the filled cube and its black wireframe.
+ */
 void CubeObject::drawObject() const
 {
     Vector3 pos = { _position.x, _position.y, _position.z };
@@ -44,6 +67,11 @@ void CubeObject::drawObject() const
     DrawCubeWires(pos, size.x, size.y, size.z, BLACK);
 }
 
+/**
+ * @brief Returns the cube's bounding box.
+ *
+ * @return A reference to the bounding box.
+ */
 const tools::BoundingBox& CubeObject::getBoundingBox() const
 {
     return _bb;

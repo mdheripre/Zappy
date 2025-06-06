@@ -11,6 +11,11 @@ namespace rl {
 
 RaylibModel::RaylibModel() = default;
 
+/**
+ * @brief Destructor for RaylibModel.
+ *
+ * Frees the model and its animations from memory if they were loaded.
+ */
 RaylibModel::~RaylibModel()
 {
     if (_animations)
@@ -19,6 +24,13 @@ RaylibModel::~RaylibModel()
         UnloadModel(_model);
 }
 
+/**
+ * @brief Loads a 3D model and its animations from a file.
+ *
+ * Also computes the overall bounding box for all meshes in the model.
+ *
+ * @param path Path to the model file.
+ */
 void RaylibModel::loadFromFile(const std::string& path)
 {
     _model = LoadModel(path.c_str());
@@ -45,11 +57,23 @@ void RaylibModel::loadFromFile(const std::string& path)
         tools::Position3D<float>(max.x, max.y, max.z));
 }
 
+/**
+ * @brief Returns the computed bounding box for the model.
+ *
+ * @return A reference to the bounding box.
+ */
 const tools::BoundingBox &RaylibModel::getBoundingBox() const
 {
     return _boundingBox;
 }
 
+/**
+ * @brief Returns the number of animation frames for a given animation index.
+ *
+ * @param animIndex Index of the animation.
+ * @return Number of frames in the animation.
+ * @throw std::runtime_error if the animation index is invalid.
+ */
 int RaylibModel::getAnimationFrameCount(int animIndex) const
 {
     if (!_animations || animIndex < 0 || animIndex >= _animationCount) {
@@ -58,6 +82,14 @@ int RaylibModel::getAnimationFrameCount(int animIndex) const
     return _animations[animIndex].frameCount;
 }
 
+/**
+ * @brief Applies a specific frame of an animation to the model.
+ *
+ * If the frame index exceeds the frame count, it wraps around.
+ *
+ * @param animIndex Animation index to apply.
+ * @param frameIndex Frame index to apply.
+ */
 void RaylibModel::applyAnimationFrame(int animIndex, int frameIndex)
 {
     if (!_animations || animIndex >= _animationCount || animIndex < 0)
@@ -68,6 +100,13 @@ void RaylibModel::applyAnimationFrame(int animIndex, int frameIndex)
     UpdateModelAnimation(_model, anim, frame);
 }
 
+/**
+ * @brief Draws the model at a specified 3D position.
+ *
+ * Uses a scale of 1.0 and white color tint.
+ *
+ * @param pos World position to draw the model at.
+ */
 void RaylibModel::drawAt(const tools::Position3D<float>& pos) const
 {
     Vector3 rayPos = { pos.x, pos.y, pos.z };
