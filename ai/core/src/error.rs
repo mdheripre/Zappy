@@ -33,6 +33,7 @@ use crate::packet::Packet;
 pub enum CoreError {
     Io(std::io::Error),
     Tcp(lib_tcp::TcpError),
+    FormatError(std::fmt::Error),
     InvalidResponse(String),
     SendChannelError(SendError<Packet>),
     ConnectionClosed(String),
@@ -45,6 +46,7 @@ impl fmt::Display for CoreError {
         match self {
             CoreError::Io(e) => write!(f, "Io error: {}", e),
             CoreError::Tcp(e) => write!(f, "Tcp error: {}", e),
+            CoreError::FormatError(e) => write!(f, "Format error: {}", e),
             CoreError::InvalidResponse(e) => write!(f, "Invalid Response: {}", e),
             CoreError::ConnectionClosed(e) => write!(f, "ConnectionClosed: {}", e),
             CoreError::SendChannelError(e) => write!(f, "Send channel Error: {}", e),
@@ -61,6 +63,12 @@ impl From<io::Error> for CoreError {
 impl From<lib_tcp::TcpError> for CoreError {
     fn from(err: lib_tcp::TcpError) -> Self {
         CoreError::Tcp(err)
+    }
+}
+
+impl From<std::fmt::Error> for CoreError {
+    fn from(err: std::fmt::Error) -> Self {
+        CoreError::FormatError(err)
     }
 }
 

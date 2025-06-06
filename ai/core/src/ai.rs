@@ -1,7 +1,6 @@
 use crate::{ai_core::AiState, item::Item, packet::Packet, CoreError, Result};
-use std::convert::Into;
 use std::sync::Arc;
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::Mutex;
 
 /// Possible AI command to the server
 ///
@@ -40,8 +39,8 @@ pub enum AiCommand {
     ConnectNbr,
     Fork,
     Eject,
-    Take(String),
-    Set(String),
+    Take(Item),
+    Set(Item),
     Incantation,
     Stop,
 }
@@ -60,8 +59,8 @@ impl From<AiCommand> for Packet {
             AiCommand::Broadcast(msg) => Packet::Broadcast(msg),
             AiCommand::Fork => Packet::Fork,
             AiCommand::Eject => Packet::Eject,
-            AiCommand::Take(item) => Packet::Take(item),
-            AiCommand::Set(item) => Packet::Take(item),
+            AiCommand::Take(item) => Packet::Take(item.to_string()),
+            AiCommand::Set(item) => Packet::Set(item.to_string()),
             AiCommand::Incantation => Packet::Incantation,
             AiCommand::Stop => Packet::Forward, //placehoder
         }
