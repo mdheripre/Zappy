@@ -7,6 +7,17 @@
 
 #include "Core.hpp"
 
+/**
+ * @brief Constructs the GUI Core object.
+ *
+ * Parses command-line arguments, initializes network and game components,
+ * and validates the graphical environment. Throws on invalid or missing arguments.
+ *
+ * @param args Command-line arguments.
+ * @param env Environment variables.
+ * @throw std::runtime_error if invalid arguments or no graphical environment.
+ */
+
 gui::Core::Core(std::vector<std::string> args, char **env)
 {
     int port = 0;
@@ -40,6 +51,15 @@ gui::Core::Core(std::vector<std::string> args, char **env)
         std::make_unique<rl::RaylibObjectFactory>());
 }
 
+/**
+ * @brief Checks if a graphical environment is available.
+ *
+ * Verifies the presence of a valid DISPLAY variable in the environment.
+ *
+ * @param env The environment variables array.
+ * @return true if a graphical environment is detected, false otherwise.
+ */
+
 bool gui::Core::isEnvGraphics(char **env)
 {
     std::regex displayRegex(R"(^(:[0-9]+(.[0-9]+)?)$)");
@@ -53,6 +73,13 @@ bool gui::Core::isEnvGraphics(char **env)
     }
     return false;
 }
+
+/**
+ * @brief Runs the GUI core loop.
+ *
+ * Starts the networking thread and executes the main game loop.
+ * Also handles the `-help` case and shutdown.
+ */
 
 void gui::Core::run()
 {
