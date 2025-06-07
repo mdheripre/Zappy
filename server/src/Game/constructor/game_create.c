@@ -24,7 +24,13 @@ static const game_methods_t GAME_METHODS = {
     .count_team_members = count_team_members,
     .update_players = update_players,
     .spawn_resources = spawn_resources,
+    .update_incantations = update_incantations,
+    .check_incantate = check_incantate,
 };
+
+static void register_event_game(dispatcher_t *dispatcher)
+{
+}
 
 /****************************************************************************/
 /*                                                                          */
@@ -95,11 +101,6 @@ static bool game_init_map(game_t *game)
 /*                                                                          */
 /****************************************************************************/
 
-
-// static void free_players(void *)
-// {
-// }
-
 /**
  * @brief Initializes the internal lists used in the game.
  *
@@ -115,6 +116,7 @@ static bool game_init_lists(game_t *game)
     game->eggs = NEW(list, free);
     game->incantations = NEW(list, NULL);
     game->event_queue = NEW(list, free);
+    game->server_event_queue = NEW(list, free);
     return game->players && game->eggs && game->event_queue &&
     game->incantations;
 }
@@ -149,6 +151,7 @@ game_t *game_create(config_game_t *config)
     game->started = false;
     game->methods = &GAME_METHODS;
     game->dispatcher = NEW(dispatcher, NULL);
+    register_event_game(game->dispatcher);
     if (!game->dispatcher)
         return NULL;
     if (!game_init_lists(game) || !game_init_map(game))

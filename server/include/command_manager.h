@@ -19,6 +19,7 @@ struct command_manager_methods_s {
     void (*process_identify)(command_manager_t *self, server_t *server);
     void (*process_all)(command_manager_t *self, server_t *server,
         float delta);
+    void (*process_responses)(command_manager_t *self, game_t *game);
 };
 
 struct command_manager_s {
@@ -33,14 +34,17 @@ void register_all(command_manager_t *self, server_t *server);
 void process_identify(command_manager_t *self, server_t *server);
 void process_all(command_manager_t *self, server_t *server, float delta);
 void on_command_not_found(dispatcher_t *self, const char *event, void *data);
+void process_responses(command_manager_t *self, game_t *game);
 
 /* Handlers */
 void handle_command_forward(void *ctx, void *data);
 void handle_command_connect_nbr(void *ctx, void *data);
+void handle_command_incantation(void *ctx, void *data);
 void handle_command_gui_msz(void *ctx, void *data);
 void handle_command_gui_sgt(void *ctx, void *data);
 void handle_command_gui_tna(void *ctx, void *data);
 void handle_command_gui_bct(void *ctx, void *data);
 void handle_command_gui_mct(void *ctx, void *data);
+
 
 #endif /* !COMMAND_MANAGER_H_ */

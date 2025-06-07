@@ -42,7 +42,6 @@ struct player_s {
     char *team_name;
     int inventory[INVENTORY_SIZE];
     int nbr_tick;
-    client_t *client;
 
     const player_methods_t *methods;
 };

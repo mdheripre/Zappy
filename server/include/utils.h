@@ -35,4 +35,5 @@ bool client_enqueue_command(client_t *client,
     const char *cmd, float delay);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
 queued_command_t *client_peek_command(client_t *client);
+const char *event_type_name(game_event_type_t type);
 #endif /* !UTILS_H_ */

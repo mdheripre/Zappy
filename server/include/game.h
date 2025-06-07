@@ -21,6 +21,7 @@ typedef enum game_event_type_e game_event_type_t;
 typedef struct server_s server_t;
 typedef struct player_s player_t;
 typedef struct config_game_s config_game_t;
+typedef struct incantation_s incantation_t;
 
 enum resource_type_e {
     RESOURCE_FOOD = 0,
@@ -38,15 +39,66 @@ struct tile_s {
     int resources[RESOURCE_COUNT];
 };
 
-enum game_event_type_e {
-    GAME_EVENT_PLAYER_MOVED,
-    GAME_EVENT_PLAYER_DIED,
-    GAME_EVENT_TILE_UPDATED,
-    GAME_EVENT_PLAYER_LEVEL_UP,
-    GAME_EVENT_EGG_LAID,
-    GAME_EVENT_INCANTATION_STARTED,
-    GAME_EVENT_INCANTATION_ENDED
+typedef enum game_event_type_e {
+    // === Événements internes / moteurs
+    // (produits par IA ou déclenchés par le jeu)
+    GAME_EVENT_START_INCANTATION,  // Début d'incantation
+    GAME_EVENT_END_INCANTATION,    // Fin d'incantation (tick 300)
+    GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
+    GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
+    GAME_EVENT_LOOK_AROUND,        // Regarder autour
+    GAME_EVENT_CHECK_INVENTORY,    // Consulter inventaire
+    GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
+    GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
+    GAME_EVENT_EGG_LAID,           // Œuf pondu
+    GAME_EVENT_TILE_UPDATED,       // Changement de ressource sur une case
+
+    // === Réponses (à destination des IA et/ou GUI)
+    GAME_EVENT_RESPONSE_PLAYER_MOVED,       // ppo + "ok"
+    GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
+    GAME_EVENT_RESPONSE_EGG_LAID,           // enw
+    GAME_EVENT_RESPONSE_INCANTATION,        // pie + "elevation underway"/"ko"
+    GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
+    GAME_EVENT_RESPONSE_LOOK,               // réponse IA
+    GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
+    GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
+    GAME_EVENT_RESPONSE_TAKE,               // réponse IA
+    GAME_EVENT_RESPONSE_DROP,               // réponse IA
+} game_event_type_t;
+
+
+typedef struct {
+    game_event_type_t type;
+    const char *name;
+} event_type_entry_t;
+
+
+static const event_type_entry_t EVENT_TYPE_MAP[] = {
+    // Internes
+    { GAME_EVENT_START_INCANTATION, "START_INCANTATION" },
+    { GAME_EVENT_END_INCANTATION, "END_INCANTATION" },
+    { GAME_EVENT_PLAYER_TAKE_ITEM, "PLAYER_TAKE_ITEM" },
+    { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
+    { GAME_EVENT_LOOK_AROUND, "LOOK_AROUND" },
+    { GAME_EVENT_CHECK_INVENTORY, "CHECK_INVENTORY" },
+    { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
+    { GAME_EVENT_PLAYER_DIED, "PLAYER_DIED" },
+    { GAME_EVENT_EGG_LAID, "EGG_LAID" },
+    { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
+
+    // Réponses
+    { GAME_EVENT_RESPONSE_PLAYER_MOVED, "RESPONSE_PLAYER_MOVED" },
+    { GAME_EVENT_RESPONSE_PLAYER_DIED, "RESPONSE_PLAYER_DIED" },
+    { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
+    { GAME_EVENT_RESPONSE_INCANTATION, "RESPONSE_INCANTATION" },
+    { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
+    { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
+    { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
+    { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
+    { GAME_EVENT_RESPONSE_TAKE, "RESPONSE_TAKE" },
+    { GAME_EVENT_RESPONSE_DROP, "RESPONSE_DROP" },
 };
+
 
 typedef struct {
     game_event_type_t type;
@@ -56,41 +108,35 @@ typedef struct {
             int x;
             int y;
             int orientation;
-        } moved;
+            int client_fd;
+            bool ia_success;
+        } player_moved;
         struct {
             int player_id;
-        } died;
-        struct {
-            int x;
-            int y;
-        } tile_updated;
-        struct {
-            int player_id;
-            int new_level;
-        } level_up;
+            int client_fd;
+        } player_died;
         struct {
             int player_id;
             int x;
             int y;
             const char *team_name;
         } egg_laid;
+        struct {
+            int x;
+            int y;
+        } tile;
+        struct {
+            int x;
+            int y;
+            bool success;
+            list_t *participants;
+        } incantation;
+        struct {
+            int client_fd;
+            const char *response;
+        } generic_response;
     } data;
 } game_event_t;
-
-typedef struct {
-    game_event_type_t type;
-    const char *name;
-} event_type_entry_t;
-
-static const event_type_entry_t EVENT_TYPE_MAP[] = {
-    { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
-    { GAME_EVENT_PLAYER_DIED, "PLAYER_DIED" },
-    { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
-    { GAME_EVENT_PLAYER_LEVEL_UP, "PLAYER_LEVEL_UP" },
-    { GAME_EVENT_EGG_LAID, "EGG_LAID" },
-    { GAME_EVENT_INCANTATION_STARTED, "INCANTATION_STARTED" },
-    { GAME_EVENT_INCANTATION_ENDED, "INCANTATION_ENDED" },
-};
 
 struct game_methods_s {
     void (*add_event)(game_t *self, game_event_t event);
@@ -100,6 +146,8 @@ struct game_methods_s {
     int (*count_team_members)(game_t *self, const char *team_name);
     void (*update_players)(game_t *self);
     void (*spawn_resources)(game_t *self);
+    void (*update_incantations)(game_t *self);
+    bool (*check_incantate)(game_t *self, incantation_t *inc);
 };
 
 typedef struct egg_s {
@@ -110,14 +158,18 @@ typedef struct egg_s {
     const char *team_name;
 } egg_t;
 
-typedef struct incantation_s {
+typedef struct incantation_rule_s {
+    int players;
+    int resources[RESOURCE_COUNT];
+} incantation_rule_t;
+
+struct incantation_s {
     int x;
     int y;
     int target_level;
     list_t *participants;
-    long end_time;
-    bool started;
-} incantation_t;
+    int tick_remaining;
+};
 
 struct game_s {
     int width;
@@ -133,6 +185,7 @@ struct game_s {
     list_t *eggs;
     list_t *incantations;
     list_t *event_queue;
+    list_t *server_event_queue;
     dispatcher_t *dispatcher;
     const game_methods_t *methods;
 };
@@ -154,4 +207,9 @@ void game_update(game_t *self);
 int count_team_members(game_t *self, const char *team_name);
 void update_players(game_t *self);
 void spawn_resources(game_t *self);
+void update_incantations(game_t *self);
+bool check_incantate(game_t *game, incantation_t *inc);
+
+/* Event */
+void handle_event_incantation_ended(void *ctx, void *data);
 #endif /* !GAME_H_ */

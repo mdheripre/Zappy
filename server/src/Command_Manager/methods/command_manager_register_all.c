@@ -25,6 +25,10 @@ void register_all(command_manager_t *self, server_t *server)
         return;
     REGISTER(self->dispatcher, "command_ia_Forward", handle_command_forward,
         NULL);
+    REGISTER(self->dispatcher, "command_ia_Connect_nbr",
+        handle_command_connect_nbr, server);
+    REGISTER(self->dispatcher, "command_ia_Incantation",
+        handle_command_incantation, server);
     REGISTER(self->dispatcher, "command_gui_msz", handle_command_gui_msz,
         server);
     REGISTER(self->dispatcher, "command_gui_sgt", handle_command_gui_sgt,
@@ -35,6 +39,4 @@ void register_all(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
         server);
-    REGISTER(self->dispatcher, "command_ia_Connect_nbr",
-        handle_command_connect_nbr, server);
 }

@@ -7,12 +7,14 @@
 
 #include "player.h"
 #include "game.h"
+#include "client.h"
 
 void player_update(player_t *self, game_t *game)
 {
     game_event_t event = {
         .type = GAME_EVENT_PLAYER_DIED,
-        .data.died.player_id = self->id
+        .data.player_died.player_id = self->id,
+        .data.player_died.client_fd = -1,
     };
 
     if (!self || !self->is_alive)

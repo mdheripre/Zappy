@@ -28,6 +28,7 @@ void game_update(game_t *self)
     if (!self)
         return;
     self->methods->update_players(self);
+    self->methods->update_incantations(self);
     tick_counter++;
     if (tick_counter >= 20) {
         self->methods->spawn_resources(self);

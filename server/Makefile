@@ -23,6 +23,8 @@ SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
 SRC_CMD_MANAGER_EVENTS_IA = $(SRC_CMD_MANAGER_EVENTS)/ia
+SRC_CMD_MANAGER_EVENTS_HANDLER = $(SRC_CMD_MANAGER_EVENTS_IA)/handler
+SRC_CMD_MANAGER_EVENTS_RESPONSE = $(SRC_CMD_MANAGER_EVENTS_IA)/response
 SRC_CMD_MANAGER_EVENTS_GUI = $(SRC_CMD_MANAGER_EVENTS)/gui
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
@@ -70,8 +72,10 @@ SRCS = \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
-	$(SRC_CMD_MANAGER_EVENTS_IA)/forward.c \
-	$(SRC_CMD_MANAGER_EVENTS_IA)/connect_nbr.c \
+	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_response.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/connect_nbr.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -82,6 +86,7 @@ SRCS = \
 	$(SRC_UTILS_LOG)/print_log.c \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
+	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
@@ -120,6 +125,8 @@ SRCS = \
 	$(SRC_GAME_METHODS)/update_players.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_GAME_METHODS)/game_update_incantation.c \
+	$(SRC_GAME_METHODS)/check_incantate.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \
