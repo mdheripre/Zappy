@@ -59,7 +59,8 @@ static void emit_identify_event(server_t *server,
     if (!payload)
         return;
     payload->client = client;
-    payload->message = strdup(message);
+    payload->message = strdup(strncmp(message, "TEAM-", 5) == 0 ?
+        message + 5 : message);
     if (!payload->message) {
         free(payload);
         return;

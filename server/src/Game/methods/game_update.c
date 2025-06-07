@@ -23,18 +23,14 @@
  */
 void game_update(game_t *self)
 {
+    static int tick_counter = 0;
+
     if (!self)
         return;
+    self->methods->update_players(self);
+    tick_counter++;
+    if (tick_counter >= 20) {
+        self->methods->spawn_resources(self);
+        tick_counter = 0;
+    }
 }
-// update des joueurs
-// if (self->methods->update_players)
-//     self->methods->update_players(self, get_ms_time());
-// // update des oeufs (éclosion)
-// if (self->methods->update_eggs)
-//     self->methods->update_eggs(self, get_ms_time());
-// // update des incantations (résolution)
-// if (self->methods->update_incantations)
-//     self->methods->update_incantations(self, get_ms_time());
-// // respawn aléatoire de ressources sur la map
-// if (self->methods->spawn_resources)
-//     self->methods->spawn_resources(self);

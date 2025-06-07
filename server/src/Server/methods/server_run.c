@@ -15,20 +15,6 @@
 /*                                                                          */
 /****************************************************************************/
 
-
-
-static float get_delta_time(struct timeval *last_time)
-{
-    struct timeval now;
-    float delta = 0.0f;
-
-    gettimeofday(&now, NULL);
-    delta = (float)(now.tv_sec - last_time->tv_sec)
-        + (float)(now.tv_usec - last_time->tv_usec) / 1000000.0f;
-    *last_time = now;
-    return delta;
-}
-
 static bool poll_clients(server_t *self, struct pollfd *fds, nfds_t *nfds)
 {
     int ret = 0;
@@ -49,16 +35,24 @@ static void update_commands(server_t *self, float delta)
         return;
     self->command_manager->methods->process_identify(self->command_manager,
         self);
-    self->command_manager->methods->process_all(self->command_manager, self,
-        delta);
+    self->command_manager->methods->process_all(self->command_manager,
+        self, delta);
 }
 
 static void update_game(server_t *self)
 {
-    if (self->game && self->game->methods) {
-        self->game->methods->tick(self->game, get_ms_time());
-        self->game->methods->dispatch_events(self->game);
-    }
+    if (!self || !self->game || !self->game->methods)
+        return;
+    self->game->methods->update(self->game);
+    self->game->methods->dispatch_events(self->game);
+}
+
+static void on_tick(server_t *self, float delta, long *last_ms,
+    long *current_ms)
+{
+    *last_ms = *current_ms;
+    update_commands(self, delta);
+    update_game(self);
 }
 
 void run_server(server_t *self)
@@ -66,15 +60,19 @@ void run_server(server_t *self)
     struct pollfd fds[MAX_CLIENTS + 1];
     nfds_t nfds = 0;
     struct timeval last_tick = {0};
-    float delta;
+    long last_ms = 0;
+    long current_ms = 0;
+    long tick_interval = (long)(1000.0 / self->game->frequency);
+    float delta = 1.0f;
 
     gettimeofday(&last_tick, NULL);
+    last_ms = get_ms_time();
     memset(fds, 0, sizeof(fds));
     while (1) {
         if (!poll_clients(self, fds, &nfds))
             break;
-        delta = get_delta_time(&last_tick);
-        update_commands(self, delta);
-        update_game(self);
+        current_ms = get_ms_time();
+        if ((current_ms - last_ms) >= tick_interval)
+            on_tick(self, delta, &last_ms, &current_ms);
     }
 }

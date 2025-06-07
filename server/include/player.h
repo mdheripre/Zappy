@@ -14,6 +14,7 @@
 
 typedef struct player_s player_t;
 typedef struct client_s client_t;
+typedef struct game_s game_t;
 
 typedef struct {
     int id;
@@ -28,6 +29,7 @@ typedef struct player_methods_s {
     void (*die)(player_t *self);
     void (*add_resource)(player_t *self, int resource_type, int amount);
     void (*remove_resource)(player_t *self, int resource_type, int amount);
+    void (*update)(player_t *self, game_t *game);
 } player_methods_t;
 
 struct player_s {
@@ -39,6 +41,7 @@ struct player_s {
     bool is_alive;
     char *team_name;
     int inventory[INVENTORY_SIZE];
+    int nbr_tick;
     client_t *client;
 
     const player_methods_t *methods;
@@ -46,4 +49,9 @@ struct player_s {
 
 player_t *player_create(player_config_t config);
 void player_destroy(player_t *self);
+void player_update(player_t *self, game_t *game);
+void player_die(player_t *self);
+void player_move(player_t *self, int dx, int dy);
+void player_add_resource(player_t *self, int type, int amount);
+void player_remove_resource(player_t *self, int type, int amount);
 #endif /* !PLAYER_H_ */
