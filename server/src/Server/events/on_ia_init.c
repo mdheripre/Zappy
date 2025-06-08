@@ -30,7 +30,7 @@ static void init_player_from_egg(server_t *server, client_t *client,
     config.id = server->game->players->size + 1;
     config.x = egg ? egg->x : 0;
     config.y = egg ? egg->y : 0;
-    config.orientation = 0;
+    config.orientation = (rand() % 4) + 1;
     config.team_name = team_name;
     client->player = NEW(player, config);
     if (!client->player)

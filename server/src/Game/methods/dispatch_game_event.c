@@ -33,11 +33,11 @@ void game_dispatch_events(game_t *self)
 
     if (!self || !self->dispatcher)
         return;
-    event = self->methods->pop_event(self);
+    event = self->event_queue->methods->pop_front(self->event_queue);
     while (event) {
         event_name = event_type_name(event->type);
         EMIT(self->dispatcher, event_name, event);
         free(event);
-        event = self->methods->pop_event(self);
+        event = self->event_queue->methods->pop_front(self->event_queue);
     }
 }

@@ -22,20 +22,16 @@
  */
 static void send_end_incantation(game_t *self, incantation_t *inc)
 {
-    game_event_t *event = NULL;
+    game_event_t event;
 
     if (!self || !inc)
         return;
-    event = malloc(sizeof(game_event_t));
-    if (!event)
-        return;
-    event->type = GAME_EVENT_END_INCANTATION;
-    event->data.incantation.x = inc->x;
-    event->data.incantation.y = inc->y;
-    event->data.incantation.success = false;
-    event->data.incantation.participants = inc->participants;
-    self->methods->add_event(self, *event);
-    free(event);
+    event.type = GAME_EVENT_END_INCANTATION;
+    event.data.incantation.x = inc->x;
+    event.data.incantation.y = inc->y;
+    event.data.incantation.success = false;
+    event.data.incantation.participants = inc->participants;
+    self->event_queue->methods->push_back(self->event_queue, &event);
 }
 
 /**

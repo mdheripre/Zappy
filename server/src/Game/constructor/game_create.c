@@ -16,9 +16,12 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Table of game methods used to operate on the game state.
+ *
+ * Contains function pointers for game logic operations.
+ */
 static const game_methods_t GAME_METHODS = {
-    .add_event = game_add_event,
-    .pop_event = game_pop_event,
     .dispatch_events = game_dispatch_events,
     .update = game_update,
     .count_team_members = count_team_members,
@@ -28,8 +31,16 @@ static const game_methods_t GAME_METHODS = {
     .check_incantate = check_incantate,
 };
 
-static void register_event_game(dispatcher_t *dispatcher)
+/**
+ * @brief Register game-related events to the dispatcher.
+ *
+ * @param dispatcher Pointer to the event dispatcher.
+ * @param game Pointer to the game instance.
+ */
+static void register_event_game(dispatcher_t *dispatcher, game_t *game)
 {
+    REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
+    REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
 }
 
 /****************************************************************************/
@@ -178,7 +189,7 @@ game_t *game_create(config_game_t *config)
     game->started = false;
     game->methods = &GAME_METHODS;
     game->dispatcher = NEW(dispatcher, NULL);
-    register_event_game(game->dispatcher);
+    register_event_game(game->dispatcher, game);
     if (!game->dispatcher)
         return NULL;
     if (!game_init_lists(game) || !game_init_map(game))

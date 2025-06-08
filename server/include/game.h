@@ -99,6 +99,12 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_DROP, "RESPONSE_DROP" },
 };
 
+typedef enum move_direction_e {
+    MOVE_FORWARD,
+    TURN_LEFT,
+    TURN_RIGHT
+} move_direction_t;
+
 
 typedef struct {
     game_event_type_t type;
@@ -107,13 +113,13 @@ typedef struct {
             int player_id;
             int x;
             int y;
+            move_direction_t direction;
             int orientation;
             int client_fd;
             bool ia_success;
         } player_moved;
         struct {
             int player_id;
-            int client_fd;
         } player_died;
         struct {
             int player_id;
@@ -139,8 +145,6 @@ typedef struct {
 } game_event_t;
 
 struct game_methods_s {
-    void (*add_event)(game_t *self, game_event_t event);
-    game_event_t *(*pop_event)(game_t *self);
     void (*dispatch_events)(game_t *self);
     void (*update)(game_t *self);
     int (*count_team_members)(game_t *self, const char *team_name);
@@ -200,8 +204,6 @@ struct config_game_s {
 
 game_t *game_create(config_game_t *config);
 void game_destroy(game_t *game);
-void game_add_event(game_t *self, game_event_t event);
-game_event_t *game_pop_event(game_t *self);
 void game_dispatch_events(game_t *self);
 void game_update(game_t *self);
 int count_team_members(game_t *self, const char *team_name);
@@ -211,5 +213,6 @@ void update_incantations(game_t *self);
 bool check_incantate(game_t *game, incantation_t *inc);
 
 /* Event */
-void handle_event_incantation_ended(void *ctx, void *data);
+void on_player_moved(void *ctx, void *data);
+void on_player_died(void *ctx, void *data);
 #endif /* !GAME_H_ */

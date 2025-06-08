@@ -41,6 +41,6 @@ void handle_command_incantation(void *ctx, void *data)
     event->data.incantation.y = player->y;
     event->data.incantation.success = false;
     event->data.incantation.participants = NULL;
-    server->game->methods->add_event(server->game, *event);
-    free(event);
+    server->game->event_queue->methods->push_back(server->game->event_queue,
+        event);
 }

@@ -46,5 +46,8 @@ void handle_command_gui_tna(void *ctx, void *data);
 void handle_command_gui_bct(void *ctx, void *data);
 void handle_command_gui_mct(void *ctx, void *data);
 
+/* Responses */
+void on_response_player_moved(void *ctx, void *data);
+void on_response_player_died(void *ctx, void *data);
 
 #endif /* !COMMAND_MANAGER_H_ */

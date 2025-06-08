@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** forward
+** left
 */
 
 #include "server.h"
@@ -16,14 +16,14 @@
 /****************************************************************************/
 
 /**
- * Handle the 'Forward' command from a client.
+ * Handle the 'Left' command from a client.
  *
  * Adds a GAME_EVENT_PLAYER_MOVED event to the game event queue.
  *
  * @param ctx Server context (server_t *).
  * @param data Client data (client_t *).
  */
-void handle_command_forward(void *ctx, void *data)
+void handle_command_left(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;
     client_t *client = (client_t *)data;
@@ -39,7 +39,7 @@ void handle_command_forward(void *ctx, void *data)
     event->data.player_moved.player_id = player->id;
     event->data.player_moved.client_fd = client->fd;
     event->data.player_moved.ia_success = true;
-    event->data.player_moved.direction = MOVE_FORWARD;
+    event->data.player_moved.direction = TURN_LEFT;
     event->data.player_moved.x = player->x;
     event->data.player_moved.y = player->y;
     event->data.player_moved.orientation = player->orientation;
