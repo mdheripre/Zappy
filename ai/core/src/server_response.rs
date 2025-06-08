@@ -38,9 +38,7 @@ pub enum ServerResponse {
     Look(Vec<String>),
     Inventory(Vec<String>),
     Message(String),
-    Welcome,
     ClientNum(i32),
-    MapSize(i32, i32),
 }
 
 impl ServerResponse {
@@ -50,7 +48,6 @@ impl ServerResponse {
             "ok" => ServerResponse::Ok,
             "ko" => ServerResponse::Ko,
             "dead" => ServerResponse::Dead,
-            "WELCOME" => ServerResponse::Welcome,
             s if s.starts_with("[") && s.ends_with("]") => {
                 let items = s[1..s.len() - 1]
                     .split(',')

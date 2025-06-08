@@ -95,6 +95,8 @@ pub struct AiCore {
     recv_queue: mpsc::UnboundedReceiver<ServerResponse>,
     cmd_queue: mpsc::UnboundedSender<AiCommand>,
     err_queue: mpsc::UnboundedReceiver<String>,
+    resp_queue: mpsc::UnboundedSender<ServerResponse>,
+    resp_rx: mpsc::UnboundedReceiver<ServerResponse>,
     send_rx: mpsc::UnboundedReceiver<Packet>,
     recv_tx: mpsc::UnboundedSender<ServerResponse>,
     cmd_rx: mpsc::UnboundedReceiver<AiCommand>,
@@ -116,9 +118,10 @@ impl AiCore {
     pub async fn new(infos: &ServerInfos) -> Result<Self> {
         let (client, client_infos) = init_client(infos).await?;
 
-        let (send_tx, send_rx_) = mpsc::unbounded_channel::<Packet>();
-        let (recv_tx_, recv_rx) = mpsc::unbounded_channel::<ServerResponse>();
-        let (cmd_tx, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
+        let (send_tx_, send_rx_) = mpsc::unbounded_channel::<Packet>();
+        let (recv_tx_, recv_rx_) = mpsc::unbounded_channel::<ServerResponse>();
+        let (resp_tx_, resp_rx_) = mpsc::unbounded_channel::<ServerResponse>();
+        let (cmd_tx_, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
         let (err_tx_, err_rx_) = mpsc::unbounded_channel::<String>();
 
         let state = Arc::new(Mutex::new(AiState::new(client_infos)));
@@ -126,10 +129,12 @@ impl AiCore {
         Ok(AiCore {
             client: Arc::new(Mutex::new(client)),
             state,
-            send_queue: send_tx,
-            recv_queue: recv_rx,
-            cmd_queue: cmd_tx,
+            send_queue: send_tx_,
+            recv_queue: recv_rx_,
+            cmd_queue: cmd_tx_,
             err_queue: err_rx_,
+            resp_queue: resp_tx_,
+            resp_rx : resp_rx_,
             send_rx: send_rx_,
             recv_tx: recv_tx_,
             cmd_rx: cmd_rx_,
@@ -228,6 +233,7 @@ impl AiCore {
     async fn ai_thread(&mut self) -> Result<()> {
         let ai_state = Arc::clone(&self.state);
         let ai_cmd_queue = self.cmd_queue.clone();
+        let resp_queue = std::mem::replace(&mut self.resp_rx, mpsc::unbounded_channel().1);
         tokio::spawn(async move {
             println!("ai thread starting..");
             loop {
@@ -302,15 +308,25 @@ impl AiCore {
         println!("Received: {:?}", response);
 
         let _state = self.state.lock().await;
-        match response {
-            ServerResponse::Ok => {
-                // command executed succeeded
+        match &response {
+            ServerResponse::Look(items) => {
+                // update tiles
             }
-            ServerResponse::Ko => {
-                // command executed failed
+            ServerResponse::Dead => {
+                // you died XDDD
+            }
+            ServerResponse::ClientNum(num) => {
+                // update client num
+            }
+            ServerResponse::Inventory(items) => {
+                // update inventory
+            }
+            ServerResponse::Message(msg) => {
+                // send message to AI
             }
             _ => {}
         }
+        self.resp_queue.send(response);
     }
 
     /// update the zappy game state

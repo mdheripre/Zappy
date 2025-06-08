@@ -1,6 +1,6 @@
 use crate::{ai_core::AiState, item::Item, packet::Packet, CoreError, Result};
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use std::{sync::Arc, time::Duration};
+use tokio::{sync::Mutex, time::sleep};
 
 /// Possible AI command to the server
 ///
@@ -78,9 +78,6 @@ impl From<AiCommand> for Packet {
 pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let state = state.lock().await;
 
-    if state.inventory.is_empty() {
-        Some(AiCommand::Look)
-    } else {
-        Some(AiCommand::Forward)
-    }
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    Some(AiCommand::Look)
 }
