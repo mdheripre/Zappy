@@ -8,6 +8,18 @@
 #include "game.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            METHODS GAME                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Emit an event signaling the end of an incantation.
+ *
+ * @param self Pointer to the game instance.
+ * @param inc Pointer to the incantation to end.
+ */
 static void send_end_incantation(game_t *self, incantation_t *inc)
 {
     game_event_t *event = NULL;
@@ -26,6 +38,11 @@ static void send_end_incantation(game_t *self, incantation_t *inc)
     free(event);
 }
 
+/**
+ * @brief Update ongoing incantations and end those that are finished.
+ *
+ * @param self Pointer to the game instance.
+ */
 void update_incantations(game_t *self)
 {
     list_node_t *curr = NULL;

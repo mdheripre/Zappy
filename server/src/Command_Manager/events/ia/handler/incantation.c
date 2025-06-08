@@ -9,6 +9,21 @@
 #include "game.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            HANDLER COMMANDS                              */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * Handle the 'Incantation' command from a client.
+ *
+ * Adds a GAME_EVENT_START_INCANTATION event at the player's position.
+ *
+ * @param ctx Server context (server_t *).
+ * @param data Client data (client_t *).
+ */
 void handle_command_incantation(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;

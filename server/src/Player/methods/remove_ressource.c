@@ -7,6 +7,21 @@
 
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                           PLAYER METHOD                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Remove resources from the player's inventory.
+ *
+ * Clamps the amount to zero if negative.
+ *
+ * @param self Pointer to the player.
+ * @param type Resource type index.
+ * @param amount Quantity to remove.
+ */
 void player_remove_resource(player_t *self, int type, int amount)
 {
     if (!self || type < 0 || type >= INVENTORY_SIZE)

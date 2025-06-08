@@ -11,10 +11,18 @@
 
 /****************************************************************************/
 /*                                                                          */
-/*                        COMMAND PRIVATE                                   */
+/*                        HANDLER COMMAND                                   */
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * Handle the 'Forward' command from a client.
+ *
+ * Adds a GAME_EVENT_PLAYER_MOVED event to the game event queue.
+ *
+ * @param ctx Server context (server_t *).
+ * @param data Client data (client_t *).
+ */
 void handle_command_forward(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;

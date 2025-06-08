@@ -9,6 +9,21 @@
 #include "game.h"
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                       PROCESS RESPONSE                                   */
+/*                                                                          */
+/****************************************************************************/
+
+
+/**
+ * Process game events queued for server responses.
+ *
+ * Pops all events from the server_event_queue and emits them.
+ *
+ * @param self Command manager handling the dispatcher.
+ * @param game Game instance containing the event queue.
+ */
 void process_responses(command_manager_t *self, game_t *game)
 {
     game_event_t *event = NULL;

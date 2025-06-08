@@ -8,6 +8,19 @@
 #include "game.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            METHODS GAME                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Update all players in the game.
+ *
+ * Calls each player's update method with the current game state.
+ *
+ * @param self Pointer to the game instance.
+ */
 void update_players(game_t *self)
 {
     list_node_t *node = NULL;

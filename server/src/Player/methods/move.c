@@ -8,6 +8,19 @@
 #include "player.h"
 #include "utils.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                           PLAYER METHOD                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Move the player by the given delta.
+ *
+ * @param self Pointer to the player.
+ * @param dx Horizontal offset.
+ * @param dy Vertical offset.
+ */
 void player_move(player_t *self, int dx, int dy)
 {
     if (!self)

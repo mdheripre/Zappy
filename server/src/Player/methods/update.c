@@ -9,6 +9,20 @@
 #include "game.h"
 #include "client.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                           PLAYER METHOD                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Update the player's state (food, death).
+ *
+ * Called every tick. Removes food or kills the player if starving.
+ *
+ * @param self Pointer to the player.
+ * @param game Pointer to the game instance.
+ */
 void player_update(player_t *self, game_t *game)
 {
     game_event_t event = {

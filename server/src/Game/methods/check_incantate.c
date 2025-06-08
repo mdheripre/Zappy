@@ -8,6 +8,17 @@
 #include "game.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                         INCANTATION RULES                                */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Rules defining resources and players required for each level up.
+ *
+ * Each entry corresponds to a level-up requirement from level N to N+1.
+ */
 static const incantation_rule_t INCANTATION_RULES[] = {
     {1, {1, 0, 0, 0, 0, 0, 0}},  // 1 -> 2
     {2, {1, 1, 1, 0, 0, 0, 0}},  // 2 -> 3
@@ -18,6 +29,13 @@ static const incantation_rule_t INCANTATION_RULES[] = {
     {6, {2, 2, 2, 2, 2, 1, 0}},  // 7 -> 8
 };
 
+/**
+ * @brief Check if enough players are eligible for the incantation.
+ *
+ * @param inc Pointer to the incantation info.
+ * @param rule Pointer to the incantation rule.
+ * @return true if enough valid players are present, false otherwise.
+ */
 static bool check_incantate_players(const incantation_t *inc,
     const incantation_rule_t *rule)
 {
@@ -34,6 +52,13 @@ static bool check_incantate_players(const incantation_t *inc,
     return count >= rule->players;
 }
 
+/**
+ * @brief Check if the tile has required resources for the incantation.
+ *
+ * @param tile Pointer to the tile to check.
+ * @param rule Pointer to the incantation rule.
+ * @return true if all required resources are present, false otherwise.
+ */
 static bool check_incantate_resources(const tile_t *tile,
     const incantation_rule_t *rule)
 {
@@ -44,6 +69,19 @@ static bool check_incantate_resources(const tile_t *tile,
     return true;
 }
 
+/****************************************************************************/
+/*                                                                          */
+/*                            METHODS GAME                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Validate an incantation based on rules and current state.
+ *
+ * @param game Pointer to the game state.
+ * @param inc Pointer to the incantation data.
+ * @return true if incantation is valid, false otherwise.
+ */
 bool check_incantate(game_t *game, incantation_t *inc)
 {
     const incantation_rule_t *rule = NULL;
