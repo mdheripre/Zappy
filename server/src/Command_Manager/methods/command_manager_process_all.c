@@ -77,8 +77,6 @@ void process_all(command_manager_t *self, server_t *server, float delta)
         if (!client || !client->connected || client->type != CLIENT_IA
             || client->stuck)
             continue;
-        if (client->type != CLIENT_IA)
-            continue;
         cmd = client_peek_command(client);
         if (!cmd)
             continue;
