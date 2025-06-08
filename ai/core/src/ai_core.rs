@@ -204,9 +204,7 @@ impl AiCore {
                             let full_msg = msg_buffer[..newline_pos].to_string();
                             msg_buffer.drain(..=newline_pos);
                             let parsed = ServerResponse::from_string(&full_msg);
-                            if recv_tx.send(parsed).is_err() {
-                                break;
-                            }
+                            let _ = recv_tx.send(parsed).map_err(CoreError::SendChannelErrorSR);
                         }
                     }
                     Ok(None) => {
@@ -233,7 +231,7 @@ impl AiCore {
     async fn ai_thread(&mut self) -> Result<()> {
         let ai_state = Arc::clone(&self.state);
         let ai_cmd_queue = self.cmd_queue.clone();
-        let resp_queue = std::mem::replace(&mut self.resp_rx, mpsc::unbounded_channel().1);
+        let mut resp_queue = std::mem::replace(&mut self.resp_rx, mpsc::unbounded_channel().1);
         tokio::spawn(async move {
             println!("ai thread starting..");
             loop {
@@ -243,12 +241,17 @@ impl AiCore {
                         break;
                     }
                 }
+
                 let command = ai_decision(&ai_state).await;
                 if let Some(cmd) = command {
                     if ai_cmd_queue.send(cmd).is_err() {
                         break;
                     }
                 }
+
+                // block until the server respond, the state has already been updated.
+                // You can use the response type for more decision control
+                resp_queue.recv().await;
             }
             println!("ai thread starting..");
         });
@@ -276,7 +279,7 @@ impl AiCore {
             }
 
             while let Ok(response) = self.recv_queue.try_recv() {
-                self.handle_server_response(response).await;
+                self.handle_server_response(response).await?;
             }
 
             while let Ok(command) = cmd_rx.try_recv() {
@@ -304,7 +307,7 @@ impl AiCore {
     ///
     /// - `response` (`ServerResponse`) - ServerResponse to handle.
     ///
-    async fn handle_server_response(&self, response: ServerResponse) {
+    async fn handle_server_response(&self, response: ServerResponse) -> Result<()>{
         println!("Received: {:?}", response);
 
         let _state = self.state.lock().await;
@@ -326,7 +329,7 @@ impl AiCore {
             }
             _ => {}
         }
-        self.resp_queue.send(response);
+        self.resp_queue.send(response).map_err(CoreError::SendChannelErrorSR)
     }
 
     /// update the zappy game state

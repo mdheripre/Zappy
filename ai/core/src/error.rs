@@ -4,6 +4,7 @@ use std::io;
 use tokio::sync::mpsc::error::SendError;
 
 use crate::packet::Packet;
+use crate::server_response::ServerResponse;
 
 /// Error enum
 ///
@@ -35,7 +36,8 @@ pub enum CoreError {
     Tcp(lib_tcp::TcpError),
     FormatError(std::fmt::Error),
     InvalidResponse(String),
-    SendChannelError(SendError<Packet>),
+    SendChannelErrorPacket(SendError<Packet>),
+    SendChannelErrorSR(SendError<ServerResponse>),
     ConnectionClosed(String),
 }
 
@@ -49,7 +51,8 @@ impl fmt::Display for CoreError {
             CoreError::FormatError(e) => write!(f, "Format error: {}", e),
             CoreError::InvalidResponse(e) => write!(f, "Invalid Response: {}", e),
             CoreError::ConnectionClosed(e) => write!(f, "ConnectionClosed: {}", e),
-            CoreError::SendChannelError(e) => write!(f, "Send channel Error: {}", e),
+            CoreError::SendChannelErrorPacket(e) => write!(f, "Send channel Error: {}", e),
+            CoreError::SendChannelErrorSR(e) => write!(f, "Send channel Error: {}", e),
         }
     }
 }
@@ -74,6 +77,12 @@ impl From<std::fmt::Error> for CoreError {
 
 impl From<SendError<Packet>> for CoreError {
     fn from(err: SendError<Packet>) -> Self {
-        CoreError::SendChannelError(err)
+        CoreError::SendChannelErrorPacket(err)
+    }
+}
+
+impl From<SendError<ServerResponse>> for CoreError {
+    fn from(err: SendError<ServerResponse>) -> Self {
+        CoreError::SendChannelErrorSR(err)
     }
 }
