@@ -46,15 +46,45 @@ static void register_gui_command(command_manager_t *self, server_t *server)
  * @param self Pointer to the command manager.
  * @param server Pointer to the server instance.
  */
+static void extend_register_handler_ia_command(command_manager_t *self,
+    server_t *server)
+{
+    REGISTER(self->dispatcher, "command_ia_Eject", handle_command_eject,
+        server);
+    REGISTER(self->dispatcher, "command_ia_Fork", handle_command_fork,
+        server);
+    REGISTER(self->dispatcher, "command_ia_Broadcast",
+        handle_command_broadcast, server);
+}
+
+/**
+ * @brief Register IA commands to the dispatcher.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ */
 static void register_handler_ia_command(command_manager_t *self,
     server_t *server)
 {
     REGISTER(self->dispatcher, "command_ia_Forward", handle_command_forward,
         server);
+    REGISTER(self->dispatcher, "command_ia_Right", handle_command_right,
+        server);
+    REGISTER(self->dispatcher, "command_ia_Left", handle_command_left,
+        server);
     REGISTER(self->dispatcher, "command_ia_Connect_nbr",
         handle_command_connect_nbr, server);
     REGISTER(self->dispatcher, "command_ia_Incantation",
         handle_command_incantation, server);
+    REGISTER(self->dispatcher, "command_ia_Look", handle_command_look,
+        server);
+    REGISTER(self->dispatcher, "command_ia_Inventory",
+        handle_command_inventory, server);
+    REGISTER(self->dispatcher, "command_ia_Take", handle_command_take,
+        server);
+    REGISTER(self->dispatcher, "command_ia_Drop", handle_command_drop,
+        server);
+    extend_register_handler_ia_command(self, server);
 }
 
 /****************************************************************************/

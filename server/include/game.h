@@ -47,6 +47,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
     GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
     GAME_EVENT_LOOK_AROUND,        // Regarder autour
+    GAME_EVENT_PLAYER_EJECT,        // Éjecter un joueur
     GAME_EVENT_CHECK_INVENTORY,    // Consulter inventaire
     GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
     GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
@@ -57,6 +58,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_MOVED,       // ppo + "ok"
     GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
     GAME_EVENT_RESPONSE_EGG_LAID,           // enw
+    GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_INCANTATION,        // pie + "elevation underway"/"ko"
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
@@ -79,6 +81,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_END_INCANTATION, "END_INCANTATION" },
     { GAME_EVENT_PLAYER_TAKE_ITEM, "PLAYER_TAKE_ITEM" },
     { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
+    { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
     { GAME_EVENT_LOOK_AROUND, "LOOK_AROUND" },
     { GAME_EVENT_CHECK_INVENTORY, "CHECK_INVENTORY" },
     { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
@@ -91,6 +94,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_PLAYER_DIED, "RESPONSE_PLAYER_DIED" },
     { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
     { GAME_EVENT_RESPONSE_INCANTATION, "RESPONSE_INCANTATION" },
+    { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
     { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
     { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
     { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
