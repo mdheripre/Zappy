@@ -35,4 +35,8 @@ bool client_enqueue_command(client_t *client,
     const char *cmd, float delay);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
 queued_command_t *client_peek_command(client_t *client);
+const char *event_type_name(game_event_type_t type);
+player_t *find_player_by_id(game_t *game, int player_id);
+int get_client_fd_by_player(server_t *server, player_t *player, int *index);
+int get_client_index_by_player(server_t *server, player_t *player);
 #endif /* !UTILS_H_ */

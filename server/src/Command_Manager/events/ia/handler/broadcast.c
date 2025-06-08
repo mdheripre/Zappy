@@ -2,24 +2,19 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** forward
+** broadcast
 */
 
 #include "server.h"
 #include "utils.h"
-
+#include "player.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                        COMMAND PRIVATE                                   */
+/*                             AI COMMANDS                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void handle_command_forward(void *ctx, void *data)
+void handle_command_broadcast(void *ctx, void *data)
 {
-    client_t *client = data;
-
-    (void)ctx;
-    console_log(LOG_INFO, "Handling command: Forward (fd=%d)", client->fd);
-    write(client->fd, "ok\n", 3);
 }

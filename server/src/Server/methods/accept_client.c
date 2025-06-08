@@ -82,6 +82,7 @@ void accept_client(server_t *self)
     client->fd = client_fd;
     client->type = CLIENT_UNDEFINED;
     client->connected = true;
+    client->stuck = false;
     self->client_count++;
     EMIT(self->dispatcher, "client_connected", client);
 }

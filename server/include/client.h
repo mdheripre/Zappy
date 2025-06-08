@@ -8,7 +8,7 @@
 #ifndef CLIENT_H_
     #define CLIENT_H_
     #include <stdbool.h>
-    #include "server.h"
+    // #include "server.h"
     #define CLIENT_BUFFER_SIZE 1024
     #define MAX_COMMANDS 10
 
@@ -36,6 +36,7 @@ typedef struct client_s {
     int command_tail;
     int command_count;
     size_t buffer_len;
+    bool stuck;
 } client_t;
 
 #endif /* CLIENT_H_ */

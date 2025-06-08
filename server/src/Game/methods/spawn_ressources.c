@@ -7,6 +7,17 @@
 
 #include "game.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            METHODS GAME                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Resource spawn density per tile for each resource type.
+ *
+ * Used to compute how many of each resource to spawn on the map.
+ */
 static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
     [RESOURCE_FOOD] = 0.5,
     [RESOURCE_LINEMATE] = 0.3,
@@ -17,6 +28,11 @@ static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
     [RESOURCE_THYSTAME] = 0.05
 };
 
+/**
+ * @brief Spawn resources randomly on the game map based on density.
+ *
+ * @param self Pointer to the game instance.
+ */
 void spawn_resources(game_t *self)
 {
     int total_tiles = self->width * self->height;

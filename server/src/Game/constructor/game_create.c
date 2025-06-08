@@ -16,15 +16,32 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Table of game methods used to operate on the game state.
+ *
+ * Contains function pointers for game logic operations.
+ */
 static const game_methods_t GAME_METHODS = {
-    .add_event = game_add_event,
-    .pop_event = game_pop_event,
     .dispatch_events = game_dispatch_events,
     .update = game_update,
     .count_team_members = count_team_members,
     .update_players = update_players,
     .spawn_resources = spawn_resources,
+    .update_incantations = update_incantations,
+    .check_incantate = check_incantate,
 };
+
+/**
+ * @brief Register game-related events to the dispatcher.
+ *
+ * @param dispatcher Pointer to the event dispatcher.
+ * @param game Pointer to the game instance.
+ */
+static void register_event_game(dispatcher_t *dispatcher, game_t *game)
+{
+    REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
+    REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
+}
 
 /****************************************************************************/
 /*                                                                          */
@@ -32,6 +49,13 @@ static const game_methods_t GAME_METHODS = {
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Initialize a tile's coordinates and clear its resources.
+ *
+ * @param tile Pointer to the tile to initialize.
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ */
 static void game_init_tile(tile_t *tile, int x, int y)
 {
     tile->x = x;
@@ -40,6 +64,13 @@ static void game_init_tile(tile_t *tile, int x, int y)
         tile->resources[r] = 0;
 }
 
+/**
+ * @brief Spawn an egg for a team at a random map position.
+ *
+ * @param node List node containing the team name.
+ * @param egg_id Pointer to the egg ID counter to increment.
+ * @param game Pointer to the game instance.
+ */
 static void init_egg(list_node_t *node, int *egg_id, game_t *game)
 {
     egg_t *egg;
@@ -58,6 +89,13 @@ static void init_egg(list_node_t *node, int *egg_id, game_t *game)
         egg->id, egg->team_name, egg->x, egg->y);
 }
 
+/**
+ * @brief Initialize all team eggs on the map.
+ *
+ * Spawns one egg per team slot available.
+ *
+ * @param game Pointer to the game instance.
+ */
 static void game_init_eggs(game_t *game)
 {
     int egg_id = 1;
@@ -72,6 +110,12 @@ static void game_init_eggs(game_t *game)
     }
 }
 
+/**
+ * @brief Initialize the game map, tiles, resources and eggs.
+ *
+ * @param game Pointer to the game instance.
+ * @return true on success, false if memory allocation fails.
+ */
 static bool game_init_map(game_t *game)
 {
     game->map = malloc(sizeof(tile_t *) * game->height);
@@ -95,11 +139,6 @@ static bool game_init_map(game_t *game)
 /*                                                                          */
 /****************************************************************************/
 
-
-// static void free_players(void *)
-// {
-// }
-
 /**
  * @brief Initializes the internal lists used in the game.
  *
@@ -115,6 +154,7 @@ static bool game_init_lists(game_t *game)
     game->eggs = NEW(list, free);
     game->incantations = NEW(list, NULL);
     game->event_queue = NEW(list, free);
+    game->server_event_queue = NEW(list, free);
     return game->players && game->eggs && game->event_queue &&
     game->incantations;
 }
@@ -149,6 +189,7 @@ game_t *game_create(config_game_t *config)
     game->started = false;
     game->methods = &GAME_METHODS;
     game->dispatcher = NEW(dispatcher, NULL);
+    register_event_game(game->dispatcher, game);
     if (!game->dispatcher)
         return NULL;
     if (!game_init_lists(game) || !game_init_map(game))
