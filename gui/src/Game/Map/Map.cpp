@@ -7,6 +7,14 @@
 
 #include "Map.hpp"
 
+/**
+ * @brief Constructs a Map object with rendering capabilities.
+ *
+ * @param width Width of the map in tiles.
+ * @param height Height of the map in tiles.
+ * @param tileObject Renderable tile object (base ground).
+ * @param propsObject Array of 7 animated objects representing resources.
+ */
 gui::Map::Map(int width, int height, std::unique_ptr<render::IObject> tileObject, std::array<std::unique_ptr<render::IAnimatedObject>, 7> propsObject)
     : MapState(width, height),
     _width(width),
@@ -15,6 +23,14 @@ gui::Map::Map(int width, int height, std::unique_ptr<render::IObject> tileObject
     _tileObject(std::move(tileObject)),
     _propsObject(std::move(propsObject)) {}
 
+
+/**
+ * @brief Gets the tile at a specific position.
+ *
+ * @param pos Tile position.
+ * @return The tile at the given position.
+ * @throw std::runtime_error if position is out of bounds.
+ */
 const gui::Tile& gui::MapState::getTile(const tools::Position<int> &pos) const
 {
     if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height)
@@ -23,6 +39,13 @@ const gui::Tile& gui::MapState::getTile(const tools::Position<int> &pos) const
 }
 
 
+/**
+ * @brief Sets a tile at the specified position.
+ *
+ * @param tile Tile data to set.
+ * @param pos Position to place the tile.
+ * @throw std::runtime_error if position is out of bounds.
+ */
 void gui::Map::setTile(const Tile &tile, const tools::Position<int> &pos)
 {
     if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height)
@@ -30,6 +53,15 @@ void gui::Map::setTile(const Tile &tile, const tools::Position<int> &pos)
     _map[pos.y][pos.x] = tile;
 }
 
+
+/**
+ * @brief Draws resource props (animated objects) on a tile.
+ *
+ * Places them in a 3x3 grid within the tile bounds.
+ *
+ * @param tile The tile whose resources to draw.
+ * @param tilePos The world position of the tile.
+ */
 void gui::Map::drawProps(const Tile &tile, const tools::Position3D<float> &tilePos) const
 {
     const tools::BoundingBox &bb = _tileObject->getBoundingBox();
@@ -61,6 +93,11 @@ void gui::Map::drawProps(const Tile &tile, const tools::Position3D<float> &tileP
 }
 
 
+/**
+ * @brief Draws the entire map.
+ *
+ * Iterates through all tiles and draws both the tile and its associated props.
+ */
 void gui::Map::draw() const
 {
     if (_tileObject != nullptr) {
@@ -80,6 +117,13 @@ void gui::Map::draw() const
     }
 }
 
+
+/**
+ * @brief Updates animated props (e.g., idle rotation).
+ *
+ * @param dt Delta time since last update.
+ * @return Always true.
+ */
 bool gui::Map::update(float dt)
 {
     for (int i = 0; i < 7; ++i) {
@@ -90,6 +134,14 @@ bool gui::Map::update(float dt)
     return true;
 }
 
+
+/**
+ * @brief Attempts to remove a resource from a tile.
+ *
+ * @param res The resource to remove.
+ * @param pos The position of the tile.
+ * @return true if the resource was removed, false if invalid position or empty.
+ */
 bool gui::Map::popResource(Tile::Resource res, tools::Position<int> pos)
 {
     if (pos.y < _map.size() && pos.x < _map[0].size()) {
@@ -99,6 +151,13 @@ bool gui::Map::popResource(Tile::Resource res, tools::Position<int> pos)
     return false;
 }
 
+
+/**
+ * @brief Adds a resource to a tile.
+ *
+ * @param res The resource to add.
+ * @param pos The position of the tile.
+ */
 void gui::Map::pushResource(Tile::Resource res, tools::Position<int> pos)
 {
     if (pos.y < _map.size() && pos.x < _map[0].size()) {

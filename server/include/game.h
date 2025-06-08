@@ -63,16 +63,16 @@ typedef struct {
         struct {
             int x;
             int y;
-        } tile;
+        } tile_updated;
         struct {
             int player_id;
             int new_level;
         } level_up;
         struct {
-            int egg_id;
             int player_id;
             int x;
             int y;
+            const char *team_name;
         } egg_laid;
     } data;
 } game_event_t;
@@ -93,12 +93,13 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
 };
 
 struct game_methods_s {
-    void (*tick)(game_t *self, long current_time);
     void (*add_event)(game_t *self, game_event_t event);
     game_event_t *(*pop_event)(game_t *self);
     void (*dispatch_events)(game_t *self);
     void (*update)(game_t *self);
     int (*count_team_members)(game_t *self, const char *team_name);
+    void (*update_players)(game_t *self);
+    void (*spawn_resources)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -106,7 +107,7 @@ typedef struct egg_s {
     int player_id;
     int x;
     int y;
-    long hatch_time;
+    const char *team_name;
 } egg_t;
 
 typedef struct incantation_s {
@@ -146,10 +147,11 @@ struct config_game_s {
 
 game_t *game_create(config_game_t *config);
 void game_destroy(game_t *game);
-void game_tick(game_t *self, long current_time);
 void game_add_event(game_t *self, game_event_t event);
 game_event_t *game_pop_event(game_t *self);
 void game_dispatch_events(game_t *self);
 void game_update(game_t *self);
 int count_team_members(game_t *self, const char *team_name);
+void update_players(game_t *self);
+void spawn_resources(game_t *self);
 #endif /* !GAME_H_ */

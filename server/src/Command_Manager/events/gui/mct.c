@@ -53,6 +53,7 @@ static char *format_bct_response(const tile_t *tile)
  * @param tile Pointer to the tile whose content is to be sent.
  */
 static void send_bct_response(server_t *server, client_t *client,
+
     const tile_t *tile)
 {
     response_payload_t *payload = NULL;

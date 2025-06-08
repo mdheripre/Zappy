@@ -2,11 +2,18 @@
 ** EPITECH PROJECT, 2025
 ** Projet
 ** File description:
-** Tile.hpp
+** Command.cpp
 */
 
 #include "Game/Game.hpp"
 
+/**
+ * @brief Handles the WELCOME command from the server.
+ *
+ * Sends the GRAPHIC identifier and sets the game state to CONNECTED.
+ *
+ * @param token Unused tokens from the command.
+ */
 void game::Game::welcomeCm(const std::vector<std::string> &token)
 {
     if (!token.empty())
@@ -16,6 +23,13 @@ void game::Game::welcomeCm(const std::vector<std::string> &token)
     std::cout << "Connected" << std::endl;
 }
 
+/**
+ * @brief Handles the MSZ command (map size).
+ *
+ * Creates a new map and pushes it to the renderer.
+ *
+ * @param token Expected format: {width, height}
+ */
 void game::Game::mszCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
@@ -33,6 +47,13 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
     std::cout << "Map created" << std::endl;
 }
 
+/**
+ * @brief Handles the BCT command (tile content).
+ *
+ * Sets resources on the given tile position.
+ *
+ * @param token Expected format: {x, y, q0, q1, ..., q6}
+ */
 void game::Game::bctCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 9)
@@ -47,6 +68,13 @@ void game::Game::bctCommand(const std::vector<std::string> &token)
     std::cout << "Tile set" << std::endl;
 }
 
+/**
+ * @brief Handles the TNA command (team names).
+ *
+ * Adds a team to the internal list if not already present.
+ *
+ * @param token List of team names.
+ */
 void game::Game::tnaCommand(const std::vector<std::string> &token)
 {
     if (token.empty())
@@ -66,7 +94,13 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
     }
 }
 
-
+/**
+ * @brief Handles the PNW command (new player).
+ *
+ * Spawns a new Trantorian with given position, orientation, level, and team.
+ *
+ * @param token Expected format: {#id, x, y, orientation, level, team_name}
+ */
 void game::Game::pnwCommand(const std::vector<std::string> &token)
 {
     if (token.size() < 6)
@@ -108,6 +142,13 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian " << id << " was created." << std::endl;
 }
 
+/**
+ * @brief Handles the PPO command (player position).
+ *
+ * Updates the position and orientation of a player.
+ *
+ * @param token Expected format: {#id, x, y, orientation}
+ */
 void game::Game::ppoCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 4)
@@ -130,6 +171,13 @@ void game::Game::ppoCommand(const std::vector<std::string> &token)
     std::cout << "Player #" << id << " moved to (" << pos.x << ", " << pos.y << ")\n";
 }
 
+/**
+ * @brief Handles the PLV command (player level).
+ *
+ * Updates the level of a player.
+ *
+ * @param token Expected format: {#id, level}
+ */
 void game::Game::plvCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
@@ -148,6 +196,13 @@ void game::Game::plvCommand(const std::vector<std::string> &token)
     }
 }
 
+/**
+ * @brief Handles the PIN command (player inventory).
+ *
+ * Sets a player's position and inventory content.
+ *
+ * @param token Expected format: {#id, x, y, q0, ..., q6}
+ */
 void game::Game::pinCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 10)
@@ -169,6 +224,13 @@ void game::Game::pinCommand(const std::vector<std::string> &token)
     std::cout << "Inventory's Player " << id << " set" << std::endl;
 }
 
+/**
+ * @brief Handles the PEX command (expulsion).
+ *
+ * Expels all players from the same tile as the given Trantorian.
+ *
+ * @param token Expected format: {#id}
+ */
 void game::Game::pexCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -189,6 +251,13 @@ void game::Game::pexCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian " << id << " expulse" << std::endl;
 }
 
+/**
+ * @brief Handles the PBC command (broadcast).
+ *
+ * Broadcasts a message from a player.
+ *
+ * @param token Expected format: {#id, message}
+ */
 void game::Game::pbcCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
@@ -204,6 +273,13 @@ void game::Game::pbcCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian " << id << "broadcast: " <<token[1] << std::endl;
 }
 
+/**
+ * @brief Handles the PIC command (start incantation).
+ *
+ * Begins an incantation at a tile for a group of players.
+ *
+ * @param token Expected format: {x, y, level, #id, #id, ...}
+ */
 void game::Game::picCommand(const std::vector<std::string> &token)
 {
     if (token.size() < 4) {
@@ -255,8 +331,13 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     std::cout << "Incantation started at (" << x << ", " << y << ") for level " << level << std::endl;
 }
 
-
-
+/**
+ * @brief Handles the PIE command (end incantation).
+ *
+ * Marks an incantation as success or failure and updates involved players.
+ *
+ * @param token Expected format: {x, y, result}
+ */
 void game::Game::pieCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 3) {
@@ -293,7 +374,13 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
     _gm.incantations.erase(pos);
 }
 
-
+/**
+ * @brief Handles the PFK command (egg laid).
+ *
+ * Marks a Trantorian as having laid an egg.
+ *
+ * @param token Expected format: {#id}
+ */
 void game::Game::pfkCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -309,6 +396,13 @@ void game::Game::pfkCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian" << id << "laid an egg" << std::endl;
 }
 
+/**
+ * @brief Handles the PDR command (drop resource).
+ *
+ * Updates the map and player inventory after a resource is dropped.
+ *
+ * @param token Expected format: {#id, resource_id}
+ */
 void game::Game::pdrCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
@@ -328,6 +422,13 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian " << id << " droped " << std::stoi(token[1]) << std::endl;
 }
 
+/**
+ * @brief Handles the PGT command (take resource).
+ *
+ * Updates the map and player inventory after a resource is taken.
+ *
+ * @param token Expected format: {#id, resource_id}
+ */
 void game::Game::pgtCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
@@ -348,6 +449,13 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
     std::cout << "Trantorian " << id << " take " << std::stoi(token[1]) << std::endl;
 }
 
+/**
+ * @brief Handles the PDI command (player death).
+ *
+ * Removes the player from the game.
+ *
+ * @param token Expected format: {#id}
+ */
 void game::Game::pdiCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -363,6 +471,13 @@ void game::Game::pdiCommand(const std::vector<std::string> &token)
     }
 }
 
+/**
+ * @brief Handles the ENW command (egg laid on map).
+ *
+ * Creates a new Egg entity on the map.
+ *
+ * @param token Expected format: {egg_id, trantorian_id, x, y}
+ */
 void game::Game::enwCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 4) {
@@ -403,6 +518,13 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
     }
 }
 
+/**
+ * @brief Handles the EBO command (egg hatched).
+ *
+ * Transforms an egg into a Trantorian.
+ *
+ * @param token Expected format: {#egg_id}
+ */
 void game::Game::eboCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1) {
@@ -444,7 +566,13 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
     }
 }
 
-
+/**
+ * @brief Handles the EDI command (egg dies).
+ *
+ * Deletes an egg from the map.
+ *
+ * @param token Expected format: {#egg_id}
+ */
 void game::Game::ediCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -461,6 +589,13 @@ void game::Game::ediCommand(const std::vector<std::string> &token)
     std::cout << "Egg " << id << " died." << std::endl;
 }
 
+/**
+ * @brief Handles the SGT command (get time unit).
+ *
+ * Updates the game time unit.
+ *
+ * @param token Expected format: {time_unit}
+ */
 void game::Game::sgtCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -470,6 +605,13 @@ void game::Game::sgtCommand(const std::vector<std::string> &token)
     std::cout << "Time unit has been change to " << _gm.time_unit << std::endl;
 }
 
+/**
+ * @brief Handles the SST command (set time unit).
+ *
+ * Updates the game time unit.
+ *
+ * @param token Expected format: {time_unit}
+ */
 void game::Game::sstCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 1)
@@ -479,6 +621,13 @@ void game::Game::sstCommand(const std::vector<std::string> &token)
     std::cout << "Time unit has been change to " << _gm.time_unit << std::endl;
 }
 
+/**
+ * @brief Handles the SEG command (game end).
+ *
+ * Marks the game state as ended.
+ *
+ * @param token Expected to be empty.
+ */
 void game::Game::segCommand(const std::vector<std::string> &token)
 {
     if (!token.empty())
@@ -487,6 +636,13 @@ void game::Game::segCommand(const std::vector<std::string> &token)
     std::cout << "Game end;" << std::endl;
 }
 
+/**
+ * @brief Handles the SMG command (server message).
+ *
+ * Displays a server-side message.
+ *
+ * @param token The message content.
+ */
 void game::Game::smgCommand(const std::vector<std::string> &token)
 {
     std::string tokens;
@@ -498,16 +654,29 @@ void game::Game::smgCommand(const std::vector<std::string> &token)
     std::cout << "Message from server:" << tokens << std::endl;
 }
 
+/**
+ * @brief Handles the SUC command (unknown command).
+ */
 void game::Game::sucCommand(const std::vector<std::string> &token)
 {
     std::cout << "Server don't know the last command" << std::endl;
 }
 
+/**
+ * @brief Handles the SBP command (bad parameters).
+ */
 void game::Game::sbpCommand(const std::vector<std::string> &token)
 {
     std::cout << "Server don't accept params of the last command" << std::endl;
 }
 
+/**
+ * @brief Utility to print and throw command error.
+ *
+ * @param cm The command name.
+ * @param token The full token list received.
+ * @throw std::runtime_error with constructed error message.
+ */
 void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
 {
     std::string tokens;

@@ -28,7 +28,8 @@ static const list_methods_t LIST_METHODS = {
     .pop_front = list_pop_front,
     .size = list_size,
     .contain = list_contain,
-    .remove = list_remove
+    .remove = list_remove,
+    .consume = list_consume
 };
 
 /**
@@ -51,7 +52,7 @@ list_t *list_create(void (*free_fn)(void *))
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
-    list->free_fn = free_fn ? free_fn : free;
+    list->free_fn = free_fn;
     list->methods = &LIST_METHODS;
     return list;
 }
