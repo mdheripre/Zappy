@@ -39,7 +39,7 @@ pub struct AiState {
     pub client_num: i32,
     pub position: (i32, i32),
     pub inventory: Vec<Item>,
-    pub world_map: Vec<Vec<Tile>>,
+    pub world_map: Vec<Tile>,
     pub is_running: bool,
 }
 

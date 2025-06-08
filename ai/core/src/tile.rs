@@ -20,12 +20,17 @@ use std::collections::HashMap;
 /// ```
 #[derive(Debug, Clone)]
 pub struct Tile {
+    position: (i32, i32),
     pub nb_items: i32,
     pub nb_players: i32,
     items: HashMap<Item, usize>,
 }
 
 impl Tile {
+    pub fn position(&self) -> (i32, i32) {
+        self.position
+    }
+
     pub fn get_items(&self) -> &HashMap<Item, usize> {
         &self.items
     }
