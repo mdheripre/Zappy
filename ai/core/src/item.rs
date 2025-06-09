@@ -1,4 +1,5 @@
 use crate::{CoreError, Result};
+use std::fmt;
 
 /// All existing items in the game
 ///
@@ -26,7 +27,7 @@ use crate::{CoreError, Result};
 ///     Item::Thystame => handle_unit,
 /// }
 /// ```
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Item {
     Food,
     Linemate,
@@ -35,4 +36,19 @@ pub enum Item {
     Mendiane,
     Phiras,
     Thystame,
+}
+
+impl fmt::Display for Item {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Item::Food => "food",
+            Item::Linemate => "linemate",
+            Item::Deraumere => "deraumere",
+            Item::Sibur => "sibur",
+            Item::Mendiane => "mendiane",
+            Item::Phiras => "Phiras",
+            Item::Thystame => "thystame"
+        };
+        write!(f, "{}", s)
+    }
 }
