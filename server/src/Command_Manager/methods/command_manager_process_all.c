@@ -33,30 +33,47 @@ static void build_full_command(char *dest,
 }
 
 /**
- * @brief Executes a queued command for a client if its timer has expired.
+ * @brief Extracts the command name from a queued command content.
  *
- * Decrements the command's remaining time by delta. If the timer reaches
- * zero, builds the full command, emits it to the dispatcher,
- * and dequeues the command.
- *
- * @param server Pointer to the server structure.
- * @param client Pointer to the client structure.
- * @param cmd Pointer to the queued command.
- * @param delta Time elapsed since last call (in seconds).
+ * @param content The content of the queued command.
+ * @param out Buffer to store the extracted command name.
+ * @param size Size of the output buffer.
  */
-static void execute_command(command_manager_t *self,
-    client_t *client, queued_command_t *cmd, float delta)
+static void execute_ready_command(command_manager_t *self,
+    client_t *client, queued_command_t *cmd)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
+    char cmd_name[BUFFER_SIZE] = {0};
 
-    cmd->time_remaining -= delta;
-    console_log(LOG_INFO, "Client %d command: \"%s\" (%.2fs left)",
-    client->fd, cmd->content, cmd->time_remaining);
-    if (cmd->time_remaining > 0.0f)
-        return;
-    build_full_command(built, sizeof(built), client->type, cmd->content);
+    extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
+    build_full_command(built, sizeof(built), client->type, cmd_name);
     EMIT(self->dispatcher, built, client);
     client_dequeue_command(client, NULL);
+}
+
+/**
+ * @brief Processes a queued command for a client if it is
+ *        ready to be executed.
+ *
+ * This function checks the time remaining for the command and executes it
+ * if the time has elapsed. It also logs the command execution.
+ *
+ * @param self Pointer to the command manager instance.
+ * @param client Pointer to the client that owns the command.
+ * @param cmd Pointer to the queued command to process.
+ * @param delta Time elapsed since last update, used for command execution.
+ */
+static void process_command_if_ready(command_manager_t *self,
+    client_t *client, queued_command_t *cmd, float delta)
+{
+    char cmd_name[BUFFER_SIZE] = {0};
+
+    extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
+    cmd->time_remaining -= delta;
+    console_log(LOG_INFO, "Client %d command: \"%s\" (%.2fs left)",
+        client->fd, cmd_name, cmd->time_remaining);
+    if (cmd->time_remaining <= 0.0f)
+        execute_ready_command(self, client, cmd);
 }
 
 /**
@@ -78,8 +95,7 @@ void process_all(command_manager_t *self, server_t *server, float delta)
             || client->stuck)
             continue;
         cmd = client_peek_command(client);
-        if (!cmd)
-            continue;
-        execute_command(self, client, cmd, delta);
+        if (cmd)
+            process_command_if_ready(self, client, cmd, delta);
     }
 }

@@ -82,7 +82,7 @@ static void register_handler_ia_command(command_manager_t *self,
         handle_command_inventory, server);
     REGISTER(self->dispatcher, "command_ia_Take", handle_command_take,
         server);
-    REGISTER(self->dispatcher, "command_ia_Drop", handle_command_drop,
+    REGISTER(self->dispatcher, "command_ia_Set", handle_command_drop,
         server);
     extend_register_handler_ia_command(self, server);
 }
@@ -106,6 +106,8 @@ static void register_process_response(command_manager_t *self,
         on_response_player_moved, server);
     REGISTER(self->dispatcher, "RESPONSE_PLAYER_DIED",
         on_response_player_died, server);
+    REGISTER(self->dispatcher, "RESPONSE_CONNECT_NBR",
+        on_response_connect_nbr, server);
 }
 
 /****************************************************************************/

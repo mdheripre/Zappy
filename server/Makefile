@@ -65,7 +65,6 @@ SRCS = \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
-	$(SRC_SERV_METHODS)/broadcast_gui.c \
 	$(SRC_SERV_METHODS)/setup_poll.c \
 	$(SRC_SERV_METHODS)/reject_client.c \
 	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
@@ -88,6 +87,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_moved_player.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_died.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_connect_player.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -99,8 +99,10 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
 	$(SRC_UTILS_HELPERS)/find_player_by_id.c \
+	$(SRC_UTILS_HELPERS)/parsing_command.c \
 	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
+	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
@@ -114,6 +116,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \
 	$(SRC_LIST_METHODS)/list_remove.c \
+	$(SRC_LIST_METHODS)/list_front.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
@@ -141,6 +144,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/check_incantate.c \
 	$(SRC_GAME_EVENT)/player_moved.c \
 	$(SRC_GAME_EVENT)/player_died.c \
+	$(SRC_GAME_EVENT)/number_player.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \

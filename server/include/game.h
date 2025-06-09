@@ -47,7 +47,9 @@ typedef enum game_event_type_e {
     GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
     GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
     GAME_EVENT_LOOK_AROUND,        // Regarder autour
-    GAME_EVENT_PLAYER_EJECT,        // Éjecter un joueur
+    GAME_EVENT_BROADCAST_MESSAGE,  // Diffuser un message
+    GAME_EVENT_CONNECT_NBR,        // Nombre de connexions disponibles
+    GAME_EVENT_PLAYER_EJECT,       // Éjecter un joueur
     GAME_EVENT_CHECK_INVENTORY,    // Consulter inventaire
     GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
     GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
@@ -61,9 +63,10 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_INCANTATION,        // pie + "elevation underway"/"ko"
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
+    GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
+    GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
-    GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
 } game_event_type_t;
@@ -82,6 +85,8 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_PLAYER_TAKE_ITEM, "PLAYER_TAKE_ITEM" },
     { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
     { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
+    { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
+    { GAME_EVENT_CONNECT_NBR, "CONNECT_NBR" },
     { GAME_EVENT_LOOK_AROUND, "LOOK_AROUND" },
     { GAME_EVENT_CHECK_INVENTORY, "CHECK_INVENTORY" },
     { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
@@ -95,6 +100,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
     { GAME_EVENT_RESPONSE_INCANTATION, "RESPONSE_INCANTATION" },
     { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
+    { GAME_EVENT_RESPONSE_CONNECT_NBR, "RESPONSE_CONNECT_NBR" },
     { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
     { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
     { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
@@ -142,9 +148,15 @@ typedef struct {
             list_t *participants;
         } incantation;
         struct {
+            int player_id;
             int client_fd;
             const char *response;
         } generic_response;
+        struct {
+            int player_id;
+            int client_fd;
+            char *item_name;
+        } player_item;
     } data;
 } game_event_t;
 
@@ -218,5 +230,6 @@ bool check_incantate(game_t *game, incantation_t *inc);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);
+void on_connect_nbr(void *ctx, void *data);
 void on_player_died(void *ctx, void *data);
 #endif /* !GAME_H_ */

@@ -41,6 +41,7 @@ static void register_event_game(dispatcher_t *dispatcher, game_t *game)
 {
     REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
     REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
+    REGISTER(dispatcher, "CONNECT_NBR", on_connect_nbr, game);
 }
 
 /****************************************************************************/
