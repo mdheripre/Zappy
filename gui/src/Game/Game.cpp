@@ -6,6 +6,7 @@
 */
 
 #include "Game.hpp"
+#include "Error/ZappyGuiException.hpp"
 
 /**
  * @brief Constructs the Game object.
@@ -38,7 +39,7 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
  * Tokenizes the string and delegates handling to the CommandManager.
  *
  * @param command Raw command string.
- * @throw std::runtime_error if command is unknown.
+ * @throw CommandException if command is unknown.
  */
 void game::Game::manageCommand(const std::string &command)
 {
@@ -49,7 +50,7 @@ void game::Game::manageCommand(const std::string &command)
     while (iss >> token)
         tokens.push_back(token);
     if (!_cm.handleCommand(tokens))
-        throw std::runtime_error("Error Unknown Command " + command);
+        throw CommandException("Unknown Command: " + command);
 }
 
 /**
@@ -81,8 +82,13 @@ void game::Game::gameLoop()
             _renderer->update(dt);
             if (_gm.map)
                 _renderer->render();
-        } catch (const std::exception& e) {
+        } catch (const ZappyGuiException& e) {
             std::cerr << "Game " << e.what() << std::endl;
+            errorCaught = true;
+            errorMessage = e.what();
+            _running = false;
+        } catch (const std::exception& e) {
+            std::cerr << "Game (Unexpected Error) " << e.what() << std::endl;
             errorCaught = true;
             errorMessage = e.what();
             _running = false;
