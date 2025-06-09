@@ -58,14 +58,17 @@ namespace tools
                                     {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 0},
                                 },
                                 1.0f),
+                                AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
                              AssetDefinition("egg_red.glb", {{0, 3}}, 0.7f)),
                 //Example 2
                 TeamBranding("default2", Color(0, 255, 0, 0),
                              AssetDefinition("player_green.glb", {{0, 1}}, 1.0f),
+                             AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
                              AssetDefinition("egg_green.glb", {{0, 2}}, 0.7f)),
                 //Example 3
                 TeamBranding("default3", Color(0, 0, 255, 0),
                              AssetDefinition("player_blue.glb", {{0, 1}}, 1.0f),
+                             AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
                              AssetDefinition("egg_blue.glb", {{0, 2}}, 0.7f))
             };
     };

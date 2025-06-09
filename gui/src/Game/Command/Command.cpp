@@ -319,8 +319,8 @@ void game::Game::picCommand(const std::vector<std::string> &token)
         level,
         playerIds,
         _objFactory->createAnimatedObject(
-            tb.getPlayerAsset().getModelPath(),
-            tb.getPlayerAsset().getAnimation()
+            tb.getIncantationAsset().getModelPath(),
+            tb.getIncantationAsset().getAnimation()
         )
     );
 
@@ -547,8 +547,8 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
             gui::Trantorian::Orientation::NORTH,
             1,
             _objFactory->createAnimatedObject(
-                tb.getPlayerAsset().getModelPath(),
-                tb.getPlayerAsset().getAnimation())
+                tb.getEggAsset().getModelPath(),
+                tb.getEggAsset().getAnimation())
         );
 
         std::shared_ptr<gui::TrantorianState> tranState = trantorian;
