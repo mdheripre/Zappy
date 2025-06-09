@@ -46,30 +46,55 @@ namespace tools
             std::unordered_map<std::string, TeamBranding> _brandMap;
             int _nextIndex = 0;
     
-            const std::array<TeamBranding, 3> _presetBrandings = {
-                //Example 1
-                TeamBranding("default1", Color(255, 0, 0, 0),
-                             AssetDefinition("player_red.glb",
-                                {
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 0},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 2},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::INCANT), -1}, // if there is no animation available
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::TALK), 1},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 0},
-                                },
-                                1.0f),
-                                AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
-                             AssetDefinition("egg_red.glb", {{0, 3}}, 0.7f)),
-                //Example 2
-                TeamBranding("default2", Color(0, 255, 0, 0),
-                             AssetDefinition("player_green.glb", {{0, 1}}, 1.0f),
-                             AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
-                             AssetDefinition("egg_green.glb", {{0, 2}}, 0.7f)),
-                //Example 3
-                TeamBranding("default3", Color(0, 0, 255, 0),
-                             AssetDefinition("player_blue.glb", {{0, 1}}, 1.0f),
-                             AssetDefinition("inc_green.glb", {{0, 2}}, 0.7f),
-                             AssetDefinition("egg_blue.glb", {{0, 2}}, 0.7f))
+            const std::array<TeamBranding, 1> _presetBrandings = {
+                //Team Starmie
+                TeamBranding(
+                    "Starmie", 
+                    Color(255, 0, 0, 0),
+                    //Trantorian Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/src/Asset/Trantorian/scene.gltf",
+                        //Texture Path
+                        "gui/src/Asset/Trantorian/Starmie_emissive.png",
+                        // Animation Mapping
+                        {
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 12},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::INCANT), 3}, // if there is no animation available
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::TALK), -1},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 8},
+                        },
+                        // Scaling to apply
+                        0.2f
+                    ),
+                    //Incantation Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/src/Asset/Incantation/Magic_ring/scene.gltf",
+                        //Texture Path
+                        "gui/src/Asset/Incantation/Magic_ring/textures/Material.001_diffuse.png",
+                        //Animation Mapping
+                        {
+        
+                        },
+                        //Scaling to apply
+                        0.7f
+                    ),
+                    //Egg Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/src/Asset/Egg/SharkSquid/scene.gltf", 
+                        //Texture Path
+                        "gui/src/Asset/Egg/SharkSquid/textures/DefaultMaterial_baseColor.jpeg",
+                        //Animation Mapping
+                        {
+
+                        },
+                        //Scaling to Apply
+                        0.2f
+                    )
+                )
             };
     };
 } // namespace tools

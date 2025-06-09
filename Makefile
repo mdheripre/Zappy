@@ -23,11 +23,11 @@ $(NAME_AI):
 	$(MAKE) -C $(DIR_AI)
 	@mv $(DIR_AI)/$(NAME_AI) ./
 
-$(NAME_GUI):
-	@echo "Building GUI using CMake..."
-	@cmake -S $(DIR_GUI) -B $(DIR_GUI)/build > /dev/null
-	@cmake --build $(DIR_GUI)/build > /dev/null
-	@mv $(DIR_GUI)/build/$(NAME_GUI) ./ 2>/dev/null || true
+$(NAME_GUI): gui/CMakeLists.txt $(shell find gui/src -name "*.cpp" -o -name "*.hpp")
+	@cmake --build $(DIR_GUI)/build
+	@cp $(DIR_GUI)/build/$(NAME_GUI) ./ 2>/dev/null || true
+
+
 
 clean:
 	$(MAKE) -C $(DIR_SERVER) clean

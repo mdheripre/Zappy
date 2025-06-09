@@ -4,6 +4,14 @@ project(zappy_gui)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Ajout du mode Debug par défaut si non précisé
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+# Ajout du flag -g explicitement
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(RAYLIB REQUIRED raylib)
 
@@ -26,3 +34,4 @@ target_link_libraries(zappy_gui
     rt
     X11
 )
+
