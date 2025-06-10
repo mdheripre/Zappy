@@ -61,7 +61,8 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
     GAME_EVENT_RESPONSE_EGG_LAID,           // enw
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
-    GAME_EVENT_RESPONSE_INCANTATION,        // pie + "elevation underway"/"ko"
+    GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
+    GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
     GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
@@ -98,7 +99,8 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_PLAYER_MOVED, "RESPONSE_PLAYER_MOVED" },
     { GAME_EVENT_RESPONSE_PLAYER_DIED, "RESPONSE_PLAYER_DIED" },
     { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
-    { GAME_EVENT_RESPONSE_INCANTATION, "RESPONSE_INCANTATION" },
+    { GAME_EVENT_RESPONSE_START_INCANTATION, "RESPONSE_START_INCANTATION" },
+    { GAME_EVENT_RESPONSE_END_INCANTATION, "RESPONSE_END_INCANTATION" },
     { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
     { GAME_EVENT_RESPONSE_CONNECT_NBR, "RESPONSE_CONNECT_NBR" },
     { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
@@ -168,6 +170,7 @@ struct game_methods_s {
     void (*spawn_resources)(game_t *self);
     void (*update_incantations)(game_t *self);
     bool (*check_incantate)(game_t *self, incantation_t *inc);
+    list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
 };
 
 typedef struct egg_s {
@@ -227,6 +230,7 @@ void update_players(game_t *self);
 void spawn_resources(game_t *self);
 void update_incantations(game_t *self);
 bool check_incantate(game_t *game, incantation_t *inc);
+list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);
@@ -236,4 +240,6 @@ void on_look(void *ctx, void *data);
 void on_inventory(void *ctx, void *data);
 void on_eject(void *ctx, void *data);
 void on_egg_laid(void *ctx, void *data);
+void on_end_incantation(void *ctx, void *data);
+void on_start_incantation(void *ctx, void *data);
 #endif /* !GAME_H_ */

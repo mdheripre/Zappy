@@ -116,6 +116,10 @@ static void register_process_response(command_manager_t *self,
         on_response_eject, server);
     REGISTER(self->dispatcher, "RESPONSE_EGG_LAID",
         on_response_egg_laid, server);
+    REGISTER(self->dispatcher, "RESPONSE_START_INCANTATION",
+        on_response_start_incantation, server);
+    REGISTER(self->dispatcher, "RESPONSE_END_INCANTATION",
+        on_response_end_incantation, server);
 }
 
 /****************************************************************************/

@@ -66,5 +66,7 @@ void on_response_look(void *ctx, void *data);
 void on_response_inventory(void *ctx, void *data);
 void on_response_eject(void *ctx, void *data);
 void on_response_egg_laid(void *ctx, void *data);
+void on_response_end_incantation(void *ctx, void *data);
+void on_response_start_incantation(void *ctx, void *data);
 
 #endif /* !COMMAND_MANAGER_H_ */
