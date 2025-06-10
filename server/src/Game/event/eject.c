@@ -16,6 +16,13 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Get the direction vector based on player's orientation.
+ *
+ * @param orientation Orientation of the player.
+ * @param dx Output X direction.
+ * @param dy Output Y direction.
+ */
 static void get_eject_direction(player_orientation_t orientation,
     int *dx, int *dy)
 {
@@ -37,6 +44,15 @@ static void get_eject_direction(player_orientation_t orientation,
     }
 }
 
+/**
+ * @brief Eject players from the same tile in a specific direction.
+ *
+ * Updates their positions and stores them in the ejected list.
+ *
+ * @param game Pointer to the game instance.
+ * @param source Pointer to the player performing the ejection.
+ * @param ejected List to store ejected players.
+ */
 static void eject_players(game_t *game, player_t *source, list_t *ejected)
 {
     player_t *target = NULL;
@@ -56,6 +72,14 @@ static void eject_players(game_t *game, player_t *source, list_t *ejected)
     }
 }
 
+/**
+ * @brief Handle an eject game event and compute the result.
+ *
+ * Moves other players and queues a response for the initiator.
+ *
+ * @param ctx Pointer to the game instance.
+ * @param data Pointer to the eject event.
+ */
 void on_eject(void *ctx, void *data)
 {
     game_t *game = ctx;

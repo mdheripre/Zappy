@@ -15,7 +15,14 @@
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Handle the response to an eject command.
+ *
+ * Emits a send_response event to inform the client of the result.
+ *
+ * @param ctx Pointer to the server.
+ * @param data Pointer to the eject response event.
+ */
 void on_response_eject(void *ctx, void *data)
 {
     server_t *server = ctx;
