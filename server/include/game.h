@@ -235,4 +235,5 @@ void on_player_died(void *ctx, void *data);
 void on_look(void *ctx, void *data);
 void on_inventory(void *ctx, void *data);
 void on_eject(void *ctx, void *data);
+void on_egg_laid(void *ctx, void *data);
 #endif /* !GAME_H_ */

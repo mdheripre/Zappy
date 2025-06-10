@@ -45,6 +45,7 @@ static void register_event_game(dispatcher_t *dispatcher, game_t *game)
     REGISTER(dispatcher, "LOOK_AROUND", on_look, game);
     REGISTER(dispatcher, "CHECK_INVENTORY", on_inventory, game);
     REGISTER(dispatcher, "PLAYER_EJECT", on_eject, game);
+    REGISTER(dispatcher, "EGG_LAID", on_egg_laid, game);
 }
 
 /****************************************************************************/

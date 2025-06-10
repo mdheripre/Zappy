@@ -91,6 +91,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -151,6 +152,7 @@ SRCS = \
 	$(SRC_GAME_EVENT)/look_around.c \
 	$(SRC_GAME_EVENT)/eject.c \
 	$(SRC_GAME_EVENT)/inventory.c \
+	$(SRC_GAME_EVENT)/egg_laid.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \
