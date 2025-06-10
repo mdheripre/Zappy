@@ -55,6 +55,36 @@ static bool is_server_full(server_t *self)
 }
 
 /**
+ * @brief Initializes a new client structure for the server.
+ *
+ * Allocates and sets up a client_t instance in the server's client array,
+ * initializes its fields, and creates a command list for the client.
+ *
+ * @param self Pointer to the server structure.
+ * @param fd File descriptor for the new client connection.
+ * @return Pointer to the initialized client_t, or NULL on failure.
+ */
+static client_t *init_client(server_t *self, int fd)
+{
+    client_t *client = NULL;
+
+    if (!self)
+        return NULL;
+    client = &self->clients[self->client_count];
+    client->fd = fd;
+    client->type = CLIENT_UNDEFINED;
+    client->connected = true;
+    client->stuck = false;
+    client->commands = NEW(list, free);
+    if (!client->commands) {
+        console_log(LOG_ERROR, "Failed to create command list for client.");
+        close(client->fd);
+        return NULL;
+    }
+    return client;
+}
+
+/**
  * @brief Accepts a new client connection and initializes the client structure.
  *
  * This function accepts a new client connection, checks if the server is full,
@@ -78,11 +108,9 @@ void accept_client(server_t *self)
         close(client_fd);
         return;
     }
-    client = &self->clients[self->client_count];
-    client->fd = client_fd;
-    client->type = CLIENT_UNDEFINED;
-    client->connected = true;
-    client->stuck = false;
+    client = init_client(self, client_fd);
+    if (!client)
+        return;
     self->client_count++;
     EMIT(self->dispatcher, "client_connected", client);
 }
