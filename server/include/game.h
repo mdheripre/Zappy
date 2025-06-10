@@ -232,4 +232,5 @@ bool check_incantate(game_t *game, incantation_t *inc);
 void on_player_moved(void *ctx, void *data);
 void on_connect_nbr(void *ctx, void *data);
 void on_player_died(void *ctx, void *data);
+void on_look(void *ctx, void *data);
 #endif /* !GAME_H_ */

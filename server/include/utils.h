@@ -29,6 +29,18 @@ typedef enum log_level_e {
     LOG_ERROR
 } log_level_t;
 
+typedef struct {
+    int x;
+    int y;
+} vector2i_t;
+
+typedef struct {
+    int dx;
+    int dy;
+    char *buffer;
+} query_t;
+
+
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);

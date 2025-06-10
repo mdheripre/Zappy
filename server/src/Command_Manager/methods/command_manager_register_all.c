@@ -108,6 +108,8 @@ static void register_process_response(command_manager_t *self,
         on_response_player_died, server);
     REGISTER(self->dispatcher, "RESPONSE_CONNECT_NBR",
         on_response_connect_nbr, server);
+    REGISTER(self->dispatcher, "RESPONSE_LOOK",
+        on_response_look, server);
 }
 
 /****************************************************************************/
