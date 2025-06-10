@@ -64,5 +64,6 @@ void on_response_player_died(void *ctx, void *data);
 void on_response_connect_nbr(void *ctx, void *data);
 void on_response_look(void *ctx, void *data);
 void on_response_inventory(void *ctx, void *data);
+void on_response_eject(void *ctx, void *data);
 
 #endif /* !COMMAND_MANAGER_H_ */

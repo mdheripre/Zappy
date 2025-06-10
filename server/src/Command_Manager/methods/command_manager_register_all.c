@@ -112,6 +112,8 @@ static void register_process_response(command_manager_t *self,
         on_response_look, server);
     REGISTER(self->dispatcher, "RESPONSE_INVENTORY",
         on_response_inventory, server);
+    REGISTER(self->dispatcher, "RESPONSE_PLAYER_EJECTED",
+        on_response_eject, server);
 }
 
 /****************************************************************************/
