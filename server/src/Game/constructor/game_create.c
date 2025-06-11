@@ -29,6 +29,7 @@ static const game_methods_t GAME_METHODS = {
     .spawn_resources = spawn_resources,
     .update_incantations = update_incantations,
     .check_incantate = check_incantate,
+    .get_players_on_tile = get_players_on_tile,
 };
 
 /**
@@ -42,6 +43,12 @@ static void register_event_game(dispatcher_t *dispatcher, game_t *game)
     REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
     REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
     REGISTER(dispatcher, "CONNECT_NBR", on_connect_nbr, game);
+    REGISTER(dispatcher, "LOOK_AROUND", on_look, game);
+    REGISTER(dispatcher, "CHECK_INVENTORY", on_inventory, game);
+    REGISTER(dispatcher, "PLAYER_EJECT", on_eject, game);
+    REGISTER(dispatcher, "EGG_LAID", on_egg_laid, game);
+    REGISTER(dispatcher, "START_INCANTATION", on_start_incantation, game);
+    REGISTER(dispatcher, "END_INCANTATION", on_end_incantation, game);
 }
 
 /****************************************************************************/
