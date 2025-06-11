@@ -6,6 +6,7 @@
 */
 
 #include "Game/Game.hpp"
+#include "Error/Error.hpp"
 
 /**
  * @brief Handles the WELCOME command from the server.
@@ -677,7 +678,7 @@ void game::Game::sbpCommand(const std::vector<std::string> &token)
  * @param token The full token list received.
  * @throw std::runtime_error with constructed error message.
  */
-void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
+ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
 {
     std::string tokens;
 
@@ -686,5 +687,5 @@ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std:
         tokens += " ";
         tokens += i;
     }
-    throw std::runtime_error("Error " + tokens);
+    throw DataParsingError("Invalid command format: " + tokens);
 }
