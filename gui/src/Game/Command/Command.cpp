@@ -6,7 +6,7 @@
 */
 
 #include "Game/Game.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Handles the WELCOME command from the server.

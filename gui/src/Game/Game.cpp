@@ -6,7 +6,7 @@
 */
 
 #include "Game.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Constructs the Game object.

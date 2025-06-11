@@ -6,7 +6,7 @@
 */
 
 #include "Client.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 void net::Client::sendMessage(const std::string &message) const
 {

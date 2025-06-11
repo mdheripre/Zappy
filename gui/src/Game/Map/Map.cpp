@@ -6,7 +6,7 @@
 */
 
 #include "Map.hpp"
-#include "Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Constructs a Map object with rendering capabilities.

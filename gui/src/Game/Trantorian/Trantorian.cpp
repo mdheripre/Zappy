@@ -6,7 +6,7 @@
 */
 
 #include "Trantorian.hpp"
-#include "Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Draws the Trantorian on screen.
