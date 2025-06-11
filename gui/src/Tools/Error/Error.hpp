@@ -93,3 +93,15 @@ public:
     }
 };
 
+/**
+ * @brief Exception thrown for network-related issues (e.g., connection errors).
+ */
+class NetworkError : public Error {
+public:
+    NetworkError(const std::string& message) : Error("[Network] " + message) {}
+    
+    NetworkError& where(const std::string& location) {
+        Error::where(location);
+        return *this;
+    }
+};
