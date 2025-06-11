@@ -49,44 +49,49 @@ namespace tools
             const std::array<TeamBranding, 1> _presetBrandings = {
                 //Team Starmie
                 TeamBranding(
-                    "Starmie", 
-                    Color(255, 0, 0, 0),
+                    "Yellow Knight", 
+                    Color(255, 255, 0, 0),
                     //Trantorian Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/src/Asset/Trantorian/scene.gltf",
+                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         // Animation Mapping
                         {
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 12},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::INCANT), 3}, // if there is no animation available
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::TALK), -1},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 8},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
                         },
                         // Scaling to apply
-                        0.2f
+                        1.0f,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
                     ),
                     //Incantation Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/src/Asset/Incantation/Magic_ring/scene.gltf",
+                        "gui/assets/Tiny Swords (Update 010)/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
         
                         },
                         //Scaling to apply
-                        0.7f
+                        0.7f,
+                        //Rows en colonnes to cut texture for animation
+                        7,
+                        1
                     ),
                     //Egg Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/src/Asset/Egg/SharkSquid/scene.gltf",
+                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         //Animation Mapping
                         {
 
                         },
                         //Scaling to Apply
-                        0.2f
+                        0.2f,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
                     )
                 )
             };

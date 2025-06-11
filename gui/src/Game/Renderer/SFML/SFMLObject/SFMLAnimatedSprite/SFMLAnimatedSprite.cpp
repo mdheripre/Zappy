@@ -47,7 +47,7 @@ const tools::Vector2<float>& SFMLAnimatedSprite::getPosition() const
 
 const tools::Vector2<float>& SFMLAnimatedSprite::getSize() const
 {
-    tools::Vector2<float> size;
+    static tools::Vector2<float> size;
     auto bounds = sprite.getGlobalBounds();
 
     size.x = bounds.width;

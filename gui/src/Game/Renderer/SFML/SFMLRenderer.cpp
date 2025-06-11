@@ -13,7 +13,7 @@ sfml::SFMLRenderer::SFMLRenderer()
 }
 
 
-void sfml::SFMLRenderer::init(std::string title, int height, int width, int frameRate)
+void sfml::SFMLRenderer::init(std::string title, int width, int height, int frameRate)
 {
     _rWindow = std::make_shared<sf::RenderWindow>(
         sf::VideoMode(width, height),
@@ -61,7 +61,7 @@ void sfml::SFMLRenderer::pushEntity(std::shared_ptr<render::IRenderEntity> rende
     _entities.push_back(renderEntity);
 }
 
-const render::IObjectFactory &sfml::SFMLRenderer::getFactory() const
+render::IObjectFactory &sfml::SFMLRenderer::getFactory()
 {
     return *_objFactory;
 }

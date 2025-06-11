@@ -47,8 +47,8 @@ std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite
         _rWindow,
         definition.getFrameWidth(),
         definition.getFrameHeight(),
-        definition.getAnimation(),
-        definition.getScale()
+        definition.getScale(),
+        definition.getAnimation()
     );
 }
 

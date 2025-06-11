@@ -19,13 +19,13 @@ namespace sfml
     public:
         SFMLRenderer();
         ~SFMLRenderer() = default;
-        void init(std::string title, int height, int width, int frameRate);
+        void init(std::string title, int width, int height, int frameRate);
         void update(float dt);
         void render();
         bool isClose() const;
         void pushEntity(std::shared_ptr<render::IRenderEntity> renderEntity);
         void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>> bindings) {_bindings = bindings;};
-        const render::IObjectFactory &getFactory() const;
+        render::IObjectFactory &getFactory();
         void poll();
         const std::unordered_map<tools::KeyCode, sf::Keyboard::Key> _keyMap = {
             { tools::KeyCode::Right, sf::Keyboard::Right },
