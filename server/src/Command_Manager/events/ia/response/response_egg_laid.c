@@ -21,5 +21,4 @@ void on_response_egg_laid(void *ctx, void *data)
 
     if (!server || !event)
         return;
-    printf("fin\n");
 }

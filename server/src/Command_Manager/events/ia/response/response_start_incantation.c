@@ -17,14 +17,14 @@
 /****************************************************************************/
 
 static void send_ko_to_participants(server_t *server,
-    incantation_t *incantation)
+    list_t *participants)
 {
     player_t *p = NULL;
     int fd = -1;
 
-    if (!incantation || !incantation->participants)
+    if (!participants)
         return;
-    for (list_node_t *n = incantation->participants->head; n; n = n->next) {
+    for (list_node_t *n = participants->head; n; n = n->next) {
         p = n->data;
         if (!p)
             continue;
@@ -42,7 +42,7 @@ void on_response_start_incantation(void *ctx, void *data)
     if (!server || !event)
         return;
     if (!event->data.incantation.success) {
-        send_ko_to_participants(server, &event->data.incantation);
+        send_ko_to_participants(server, event->data.incantation.participants);
         return;
     }
 }
