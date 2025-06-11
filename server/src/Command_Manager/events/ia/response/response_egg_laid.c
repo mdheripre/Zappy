@@ -1,25 +1,25 @@
 /*
 ** EPITECH PROJECT, 2025
-** server
+** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
 ** File description:
-** forward
+** response_egg_laid
 */
 
+#include "game.h"
 #include "server.h"
-#include "utils.h"
-
 
 /****************************************************************************/
 /*                                                                          */
-/*                        COMMAND PRIVATE                                   */
+/*                        RESPONSE COMMAND                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void handle_command_forward(void *ctx, void *data)
+void on_response_egg_laid(void *ctx, void *data)
 {
-    client_t *client = data;
+    server_t *server = ctx;
+    game_event_t *event = data;
 
-    (void)ctx;
-    console_log(LOG_INFO, "Handling command: Forward (fd=%d)", client->fd);
-    write(client->fd, "ok\n", 3);
+    if (!server || !event)
+        return;
+    printf("fin\n");
 }

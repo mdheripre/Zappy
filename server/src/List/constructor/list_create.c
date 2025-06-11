@@ -29,7 +29,8 @@ static const list_methods_t LIST_METHODS = {
     .size = list_size,
     .contain = list_contain,
     .remove = list_remove,
-    .consume = list_consume
+    .consume = list_consume,
+    .front = list_peek_front
 };
 
 /**

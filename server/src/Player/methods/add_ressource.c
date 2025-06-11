@@ -7,6 +7,19 @@
 
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                           PLAYER METHOD                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Add resources to the player's inventory.
+ *
+ * @param self Pointer to the player.
+ * @param type Resource type index.
+ * @param amount Quantity to add.
+ */
 void player_add_resource(player_t *self, int type, int amount)
 {
     if (!self || type < 0 || type >= INVENTORY_SIZE)

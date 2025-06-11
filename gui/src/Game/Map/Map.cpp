@@ -6,6 +6,7 @@
 */
 
 #include "Map.hpp"
+#include "Error.hpp"
 
 /**
  * @brief Constructs a Map object with rendering capabilities.
@@ -29,12 +30,12 @@ gui::Map::Map(int width, int height, std::unique_ptr<render::IObject> tileObject
  *
  * @param pos Tile position.
  * @return The tile at the given position.
- * @throw std::runtime_error if position is out of bounds.
+ * @throw GameStateError if position is out of bounds.
  */
 const gui::Tile& gui::MapState::getTile(const tools::Vector2<int> &pos) const
 {
     if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height)
-        throw std::runtime_error("Invalid tile position");
+        throw GameStateError("Tile position (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ") out of map bounds [0-" + std::to_string(_width-1) + ", 0-" + std::to_string(_height-1) + "]");
     return _map[pos.y][pos.x];
 }
 
@@ -44,12 +45,12 @@ const gui::Tile& gui::MapState::getTile(const tools::Vector2<int> &pos) const
  *
  * @param tile Tile data to set.
  * @param pos Position to place the tile.
- * @throw std::runtime_error if position is out of bounds.
+ * @throw GameStateError if position is out of bounds.
  */
 void gui::Map::setTile(const Tile &tile, const tools::Vector2<int> &pos)
 {
     if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height)
-        throw std::runtime_error("Invalid tile position");
+        throw GameStateError("Tile position (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ") out of map bounds [0-" + std::to_string(_width-1) + ", 0-" + std::to_string(_height-1) + "]");
     _map[pos.y][pos.x] = tile;
 }
 
@@ -137,14 +138,14 @@ bool gui::Map::update(float dt)
  * @param res The resource to remove.
  * @param pos The position of the tile.
  * @return true if the resource was removed, false if invalid position or empty.
+ * @throw GameStateError if position is out of bounds.
  */
 bool gui::Map::popResource(Tile::Resource res, tools::Vector2<int> pos)
 {
-    if (pos.y < _map.size() && pos.x < _map[0].size()) {
-        return _map[pos.y][pos.x].popResource(res);
+    if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height) {
+        throw GameStateError("Cannot pop resource: tile position (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ") out of map bounds");
     }
-    std::cerr << "Invalid position for tile from popResource" << std::endl;
-    return false;
+    return _map[pos.y][pos.x].popResource(res);
 }
 
 
@@ -153,11 +154,12 @@ bool gui::Map::popResource(Tile::Resource res, tools::Vector2<int> pos)
  *
  * @param res The resource to add.
  * @param pos The position of the tile.
+ * @throw GameStateError if position is out of bounds.
  */
 void gui::Map::pushResource(Tile::Resource res, tools::Vector2<int> pos)
 {
-    if (pos.y < _map.size() && pos.x < _map[0].size()) {
-        _map[pos.y][pos.x].pushResource(res);
+    if (pos.x < 0 || pos.x >= _width || pos.y < 0 || pos.y >= _height) {
+        throw GameStateError("Cannot push resource: tile position (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ") out of map bounds");
     }
-    std::cerr << "Invalid position for tile from pushResource" << std::endl;
+    _map[pos.y][pos.x].pushResource(res);
 }

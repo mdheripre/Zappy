@@ -23,7 +23,8 @@
 static const command_manager_methods_t COMMAND_MANAGER_METHODS = {
     .register_all = register_all,
     .process_identify = process_identify,
-    .process_all = process_all
+    .process_all = process_all,
+    .process_responses = process_responses,
 };
 
 /**

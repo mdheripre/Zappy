@@ -45,6 +45,8 @@ static void update_game(server_t *self)
         return;
     self->game->methods->update(self->game);
     self->game->methods->dispatch_events(self->game);
+    self->command_manager->methods->process_responses(self->command_manager,
+        self->game);
 }
 
 static void on_tick(server_t *self, float delta, long *last_ms,

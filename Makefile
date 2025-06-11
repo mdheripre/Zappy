@@ -11,7 +11,7 @@ NAME_AI = zappy_ai
 
 DIR_SERVER = server
 DIR_GUI = gui
-DIR_AI = ai/bin
+DIR_AI = ai
 
 all: $(NAME_SERVER) $(NAME_GUI) $(NAME_AI)
 
@@ -21,7 +21,7 @@ $(NAME_SERVER):
 
 $(NAME_AI):
 	$(MAKE) -C $(DIR_AI)
-	@mv $(DIR_AI)/$(NAME_AI) ./
+	@mv $(DIR_AI)/bin/$(NAME_AI) ./
 
 $(NAME_GUI): gui/CMakeLists.txt $(shell find gui/src -name "*.cpp" -o -name "*.hpp")
 	@cmake --build $(DIR_GUI)/build

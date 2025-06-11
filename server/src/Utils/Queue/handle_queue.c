@@ -16,73 +16,62 @@
 /****************************************************************************/
 
 /**
- * @brief Enqueues a command into the client's command queue.
+ * @brief Add a command to the client's command queue.
  *
- * This function adds a command to the client's command queue with a specified
- * delay. If the queue is full, it returns false.
- *
- * @param client Pointer to the client structure.
+ * @param client Pointer to the client.
  * @param cmd Command string to enqueue.
- * @param delay Delay in seconds before the command should be executed.
- * @return true if the command was successfully enqueued, false otherwise.
+ * @param delay Time before the command is executed.
+ * @return true on success, false on failure.
  */
-bool client_enqueue_command(client_t *client,
-    const char *cmd, float delay)
+bool client_enqueue_command(client_t *client, const char *cmd, float delay)
 {
-    int next_tail = (client->command_tail + 1) % MAX_COMMANDS;
-    queued_command_t *slot = NULL;
+    queued_command_t *entry = NULL;
 
-    if (!client || !cmd)
+    if (!client || !cmd || !client->commands ||
+        client->commands->size >= MAX_COMMANDS)
         return false;
-    if (next_tail == client->command_head)
+    entry = malloc(sizeof(queued_command_t));
+    if (!entry)
         return false;
-    slot = &client->commands[client->command_tail];
-    memset(slot, 0, sizeof(queued_command_t));
-    strncpy(slot->content, cmd, BUFFER_COMMAND_SIZE - 1);
-    slot->time_remaining = delay;
-    client->command_tail = next_tail;
-    client->command_count++;
+    memset(entry, 0, sizeof(queued_command_t));
+    strncpy(entry->content, cmd, BUFFER_COMMAND_SIZE - 1);
+    entry->content[BUFFER_COMMAND_SIZE - 1] = '\0';
+    entry->time_remaining = delay;
+    client->commands->methods->push_back(client->commands, entry);
     return true;
 }
 
 /**
- * @brief Dequeues a command from the client's command queue.
+ * @brief Remove and return the next command from the queue.
  *
- * This function removes the next command from the client's command queue
- * and returns it through the out parameter. If the queue is empty, it returns
- * false.
- *
- * @param client Pointer to the client structure.
- * @param out Pointer to a queued_command_t structure to store the dequeued
- * command.
- * @return true if a command was successfully dequeued, false if the queue is
- * empty.
+ * @param client Pointer to the client.
+ * @param out Optional output to receive the command data.
+ * @return true on success, false if the queue is empty or invalid.
  */
 bool client_dequeue_command(client_t *client, queued_command_t *out)
 {
-    if (!client || client->command_count == 0)
+    queued_command_t *entry = NULL;
+
+    if (!client || !client->commands || client->commands->size == 0)
+        return false;
+    entry = client->commands->methods->pop_front(client->commands);
+    if (!entry)
         return false;
     if (out)
-        *out = client->commands[client->command_head];
-    client->command_head =
-        (client->command_head + 1) % MAX_COMMANDS;
-    client->command_count--;
+        memcpy(out, entry, sizeof(queued_command_t));
+    free(entry);
     return true;
 }
 
 /**
- * @brief Peeks at the next command in the client's command queue without
- * removing it.
+ * @brief Return the command at the front of the client's queue.
  *
- * This function returns a pointer to the next command in the queue.
- * If the queue is empty, it returns NULL.
- *
- * @param client Pointer to the client structure.
- * @return Pointer to the next queued_command_t, or NULL if the queue is empty.
+ * @param client Pointer to the client.
+ * @return Pointer to the queued command, or NULL if the queue is empty.
  */
 queued_command_t *client_peek_command(client_t *client)
 {
-    if (!client || client->command_count == 0)
+    if (!client || !client->commands || client->commands->size == 0)
         return NULL;
-    return &client->commands[client->command_head];
+    return (queued_command_t *)client->commands->head->data;
 }

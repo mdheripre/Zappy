@@ -23,6 +23,8 @@ SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
 SRC_CMD_MANAGER_EVENTS_IA = $(SRC_CMD_MANAGER_EVENTS)/ia
+SRC_CMD_MANAGER_EVENTS_HANDLER = $(SRC_CMD_MANAGER_EVENTS_IA)/handler
+SRC_CMD_MANAGER_EVENTS_RESPONSE = $(SRC_CMD_MANAGER_EVENTS_IA)/response
 SRC_CMD_MANAGER_EVENTS_GUI = $(SRC_CMD_MANAGER_EVENTS)/gui
 SRC_SHARED = $(SRC_DIR)/Shared
 SRC_UTILS = $(SRC_DIR)/Utils
@@ -46,6 +48,7 @@ SRC_GAME = $(SRC_DIR)/Game
 SRC_GAME_CTOR = $(SRC_GAME)/constructor
 SRC_GAME_DTOR = $(SRC_GAME)/destructor
 SRC_GAME_METHODS = $(SRC_GAME)/methods
+SRC_GAME_EVENT = $(SRC_GAME)/event
 
 SRCS = \
 	$(SRC_DIR)/main.c \
@@ -62,7 +65,6 @@ SRCS = \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
-	$(SRC_SERV_METHODS)/broadcast_gui.c \
 	$(SRC_SERV_METHODS)/setup_poll.c \
 	$(SRC_SERV_METHODS)/reject_client.c \
 	$(SRC_CMD_MANAGER_CTOR)/command_manager_create.c \
@@ -70,8 +72,28 @@ SRCS = \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_identify.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_all.c \
 	$(SRC_CMD_MANAGER_METHODS)/command_manager_register_all.c \
-	$(SRC_CMD_MANAGER_EVENTS_IA)/forward.c \
-	$(SRC_CMD_MANAGER_EVENTS_IA)/connect_nbr.c \
+	$(SRC_CMD_MANAGER_METHODS)/command_manager_process_response.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/forward.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/left.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/right.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/look.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/inventory.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/take.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/drop.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/fork.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/broadcast.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/connect_nbr.c \
+	$(SRC_CMD_MANAGER_EVENTS_HANDLER)/incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_moved_player.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_died.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_connect_player.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -82,6 +104,11 @@ SRCS = \
 	$(SRC_UTILS_LOG)/print_log.c \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
+	$(SRC_UTILS_HELPERS)/find_player_by_id.c \
+	$(SRC_UTILS_HELPERS)/parsing_command.c \
+	$(SRC_UTILS_HELPERS)/event_type_name.c \
+	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
+	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
@@ -95,6 +122,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \
 	$(SRC_LIST_METHODS)/list_remove.c \
+	$(SRC_LIST_METHODS)/list_front.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
@@ -113,13 +141,23 @@ SRCS = \
 	$(SRC_CONFIG_METHODS_EVT)/width_arg.c \
 	$(SRC_GAME_CTOR)/game_create.c \
 	$(SRC_GAME_DTOR)/game_destroy.c \
-	$(SRC_GAME_METHODS)/game_add_event.c \
-	$(SRC_GAME_METHODS)/game_pop_event.c \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/count_team_members.c \
 	$(SRC_GAME_METHODS)/update_players.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_GAME_METHODS)/get_player_on_tile.c \
+	$(SRC_GAME_METHODS)/game_update_incantation.c \
+	$(SRC_GAME_METHODS)/check_incantate.c \
+	$(SRC_GAME_EVENT)/player_moved.c \
+	$(SRC_GAME_EVENT)/player_died.c \
+	$(SRC_GAME_EVENT)/number_player.c \
+	$(SRC_GAME_EVENT)/look_around.c \
+	$(SRC_GAME_EVENT)/eject.c \
+	$(SRC_GAME_EVENT)/start_incantation.c \
+	$(SRC_GAME_EVENT)/end_incantation.c \
+	$(SRC_GAME_EVENT)/inventory.c \
+	$(SRC_GAME_EVENT)/egg_laid.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \

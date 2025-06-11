@@ -6,6 +6,7 @@
 */
 
 #include "Trantorian.hpp"
+#include "Error.hpp"
 
 /**
  * @brief Draws the Trantorian on screen.
@@ -52,14 +53,14 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
  * If it goes below zero, resets it to zero.
  *
  * @param res Resource to remove.
- * @throw std::runtime_error if the resource index is invalid.
+ * @throw EntityError if the resource index is invalid.
  */
 void gui::Trantorian::removeFromInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
     if (index > _inventory.size() || index < 0)
-        throw std::runtime_error("Invalid ressource index " + std::to_string(index));
+        throw EntityError("Invalid resource index " + std::to_string(index));
     _inventory[index]--;
     if (_inventory[index] < 0)
         _inventory[index] = 0;
@@ -71,14 +72,14 @@ void gui::Trantorian::removeFromInventory(Tile::Resource res)
  * Increments the quantity of the specified resource.
  *
  * @param res Resource to add.
- * @throw std::runtime_error if the resource index is invalid.
+ * @throw EntityError if the resource index is invalid.
  */
 void gui::Trantorian::addToInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
     if (index > _inventory.size() || index < 0)
-        throw std::runtime_error("Invalid ressource index " + std::to_string(index));
+        throw EntityError("Invalid resource index " + std::to_string(index));
     _inventory[index]++;
 }
 

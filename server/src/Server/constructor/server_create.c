@@ -33,7 +33,6 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .accept_client = accept_client,
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
-    .broadcast_gui = server_broadcast_gui,
     .reject_client = reject_client,
 };
 
