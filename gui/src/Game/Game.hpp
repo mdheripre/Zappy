@@ -27,19 +27,16 @@ namespace game
         public:
             Game(std::shared_ptr<tools::MessageQueue> incoming,
                 std::shared_ptr<tools::MessageQueue> outgoing,
-                std::unique_ptr<render::IRenderer> render,
-                std::unique_ptr<render::IObjectFactory> _objFactory);
+                std::unique_ptr<render::IRenderer> render);
             ~Game() = default;
             void gameLoop();
             void stopLoop() {_running = false;};
         private:
             std::shared_ptr<tools::MessageQueue> _incoming;
             std::shared_ptr<tools::MessageQueue> _outgoing;
-            std::unique_ptr<render::IObjectFactory> _objFactory;
             state::GameState _gm;
             bool _running = true;
             tools::CommandManager _cm;
-            std::shared_ptr<render::Camera> _cam;
             std::unique_ptr<render::IRenderer> _renderer;
             tools::TeamBrandingManager _tbManager;
 
@@ -106,7 +103,5 @@ namespace game
                 { tools::KeyCode::W,     [this]() { _cam->move(0.f, 0.2f, 0.f); }},
                 { tools::KeyCode::S,     [this]() { _cam->move(0.f, -0.2f, 0.f); }},
             };
-            
-            
     };
 } // namespace Game

@@ -55,8 +55,6 @@ namespace tools
                     AssetDefinition(
                         //Model Path
                         "gui/src/Asset/Trantorian/scene.gltf",
-                        //Texture Path
-                        "gui/src/Asset/Trantorian/Starmie_emissive.png",
                         // Animation Mapping
                         {
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 12},
@@ -72,8 +70,6 @@ namespace tools
                     AssetDefinition(
                         //Model Path
                         "gui/src/Asset/Incantation/Magic_ring/scene.gltf",
-                        //Texture Path
-                        "gui/src/Asset/Incantation/Magic_ring/textures/Material.001_diffuse.png",
                         //Animation Mapping
                         {
         
@@ -84,9 +80,7 @@ namespace tools
                     //Egg Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/src/Asset/Egg/SharkSquid/scene.gltf", 
-                        //Texture Path
-                        "gui/src/Asset/Egg/SharkSquid/textures/DefaultMaterial_baseColor.jpeg",
+                        "gui/src/Asset/Egg/SharkSquid/scene.gltf",
                         //Animation Mapping
                         {
 

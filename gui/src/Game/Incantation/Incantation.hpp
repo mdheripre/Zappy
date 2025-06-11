@@ -7,7 +7,7 @@
 
 #pragma once
 #include "Game/GameState/EntityState/EntityState.hpp"
-#include "Game/Renderer/Object/IAnimatedObject.hpp"
+#include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include <vector>
 #include <memory>
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
@@ -16,18 +16,18 @@
 namespace gui {
     class IncantationState {
         public:
-            IncantationState(tools::Position<int> pos,
+            IncantationState(tools::Vector2<int> pos,
                 int level,
                 const std::vector<int>& playerIds)
                 : _position(pos), _targetLevel(level), _playerIds(playerIds) {}
             virtual ~IncantationState() = default;
-            const tools::Position<int>& getPosition() const { return _position; }
+            const tools::Vector2<int>& getPosition() const { return _position; }
             int getTargetLevel() const { return _targetLevel; }
             const std::vector<int>& getPlayerIds() const { return _playerIds; }
             virtual void succeed() = 0;
             virtual void failed() = 0;
         protected:
-            tools::Position<int> _position;
+            tools::Vector2<int> _position;
             int _targetLevel;
             std::vector<int> _playerIds;
             bool _finished = false;
@@ -35,13 +35,13 @@ namespace gui {
     class Incantation : public render::IRenderEntity, public IncantationState
     {
         public:
-            Incantation(tools::Position<int> pos,
+            Incantation(tools::Vector2<int> pos,
                 int level,
                 const std::vector<int>& playerIds,
-                std::unique_ptr<render::IAnimatedObject> incObject = nullptr);
+                std::unique_ptr<render::IAnimatedSprite> incObject = nullptr);
             ~Incantation() = default;
         private:
-            std::unique_ptr<render::IAnimatedObject> _incObject;
+            std::unique_ptr<render::IAnimatedSprite> _incObject;
             void draw() const;
             bool update(float);
             void succeed();

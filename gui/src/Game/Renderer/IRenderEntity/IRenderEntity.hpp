@@ -6,7 +6,6 @@
 */
 
 #pragma once
-#include "Tools/Position/Position.hpp"
 
 namespace render
 {

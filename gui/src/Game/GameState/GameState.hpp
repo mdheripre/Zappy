@@ -41,6 +41,6 @@ namespace state
         std::unordered_map<int, Player> players;
         std::unordered_map<int, std::shared_ptr<gui::TrantorianState>> trantorians;
         std::unordered_map<int, std::shared_ptr<EntityState>> eggs;
-        std::unordered_map<tools::Position<int>, std::shared_ptr<gui::IncantationState>> incantations;
+        std::unordered_map<tools::Vector2<int>, std::shared_ptr<gui::IncantationState>> incantations;
     };
 }

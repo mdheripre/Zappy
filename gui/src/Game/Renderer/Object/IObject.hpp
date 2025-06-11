@@ -6,7 +6,7 @@
 */
 
 #pragma once
-#include "Tools/BoundingBox/BoundingBox.hpp"
+#include "Tools/Vector/Vector.hpp"
 
 namespace render
 {
@@ -14,9 +14,9 @@ namespace render
     {
         public:
             virtual ~IObject() = default;
-            virtual const tools::Position3D<float> &getPosition() const = 0;
-            virtual const tools::BoundingBox &getBoundingBox() const = 0; 
-            virtual void setPosition(const tools::Position3D<float> &pos) = 0;
+            virtual const tools::Vector2<float> &getPosition() const = 0;
+            virtual const tools::Vector2<float> &getSize() const = 0;
+            virtual void setPosition(const tools::Vector2<float> &pos) = 0;
             virtual void drawObject() const = 0;
     };
 } // namespace render
