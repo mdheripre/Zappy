@@ -6,6 +6,7 @@
 */
 
 #include "Game/Game.hpp"
+#include "Error/Error.hpp"
 
 /**
  * @brief Handles the WELCOME command from the server.
@@ -297,7 +298,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     int firstId = std::stoi(token[3]);
     auto itInit = _gm.trantorians.find(firstId);
     if (itInit == _gm.trantorians.end()) {
-        throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
+        throw EntityError("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
     }
 
     tools::TeamBranding tb = _tbManager.getTeamBranding(itInit->second->getTeamName());
@@ -308,7 +309,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
 
         auto it = _gm.trantorians.find(pid);
         if (it == _gm.trantorians.end()) {
-            throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(pid) + " in pic command.");
+            throw EntityError("Error: Unknown Trantorian ID " + std::to_string(pid) + " in pic command.");
         }
 
         it->second->startIncantation();
@@ -675,9 +676,9 @@ void game::Game::sbpCommand(const std::vector<std::string> &token)
  *
  * @param cm The command name.
  * @param token The full token list received.
- * @throw std::runtime_error with constructed error message.
+ * @throw DataParsingError with constructed error message.
  */
-void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
+ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
 {
     std::string tokens;
 
@@ -686,5 +687,5 @@ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std:
         tokens += " ";
         tokens += i;
     }
-    throw std::runtime_error("Error " + tokens);
+    throw DataParsingError("Invalid command format: " + tokens);
 }

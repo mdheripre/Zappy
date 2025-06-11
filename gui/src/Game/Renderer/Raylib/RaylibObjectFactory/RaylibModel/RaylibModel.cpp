@@ -72,12 +72,12 @@ const tools::BoundingBox &RaylibModel::getBoundingBox() const
  *
  * @param animIndex Index of the animation.
  * @return Number of frames in the animation.
- * @throw std::runtime_error if the animation index is invalid.
+ * @throw RenderError if the animation index is invalid.
  */
 int RaylibModel::getAnimationFrameCount(int animIndex) const
 {
     if (!_animations || animIndex < 0 || animIndex >= _animationCount) {
-        throw std::runtime_error("[RaylibModel] Invalid animation index");
+        throw RenderError("[RaylibModel] Invalid animation index");
     }
     return _animations[animIndex].frameCount;
 }

@@ -9,6 +9,7 @@
 
 #include "Game/Renderer/Object/IModel.hpp"
 #include "Tools/BoundingBox/BoundingBox.hpp"
+#include "Error/Error.hpp"
 #include <raylib.h>
 #include <string>
 #include <cmath>

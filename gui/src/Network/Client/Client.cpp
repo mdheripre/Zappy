@@ -6,6 +6,7 @@
 */
 
 #include "Client.hpp"
+#include "Error/Error.hpp"
 
 void net::Client::sendMessage(const std::string &message) const
 {
@@ -14,9 +15,9 @@ void net::Client::sendMessage(const std::string &message) const
     pfd.events = POLLOUT;
 
     if (poll(&pfd, 1, 0) <= 0 || (pfd.revents & POLLHUP) || !(pfd.revents & POLLOUT))
-        throw std::runtime_error("Socket isn't ready or has been closed");
+        throw NetworkError("Socket isn't ready or has been closed");
     if (write(this->_sock->getFd(), message.c_str(), message.length()) < 0)
-        throw std::runtime_error("Impossible to send message");
+        throw NetworkError("Impossible to send message");
 }
 
 bool net::Client::readCommand()
@@ -28,11 +29,11 @@ bool net::Client::readCommand()
     size_t pos;
 
     if (poll(&pfd, 1, 100) < 0)
-        throw std::runtime_error("Error during readCommand call (poll failed)");
+        throw NetworkError("Error during readCommand call (poll failed)");
     if (pfd.revents & POLLIN) {
         ssize_t bytes_read = read(this->_sock->getFd(), buffer, sizeof(buffer) - 1);
         if (bytes_read <= 0)
-            throw std::runtime_error("Error in readCommand: unable to read command or connection closed");
+            throw NetworkError("Error in readCommand: unable to read command or connection closed");
         buffer[bytes_read] = '\0';
         this->_commandBuffer += buffer;
         pos = this->_commandBuffer.find("\n");
