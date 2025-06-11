@@ -47,14 +47,14 @@ const tools::Position3D<float>& RaylibAnimatedObject::getPosition() const
  *
  * @param clipIndex Logical clip index defined in the animation map.
  * @param loop Whether the animation should loop.
- * @throw std::runtime_error if the clip index is invalid.
+ * @throw RenderError if the clip index is invalid.
  */
 
 void RaylibAnimatedObject::playClip(int clipIndex, bool loop)
 {
     auto it = _animationMap.find(clipIndex);
     if (it == _animationMap.end()) {
-        throw std::runtime_error(
+        throw RenderError(
             "[RaylibAnimatedObject] Unknown animation logical ID: " + std::to_string(clipIndex));
             _currentAnim = 0;
     }

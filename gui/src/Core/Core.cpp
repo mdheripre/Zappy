@@ -7,6 +7,7 @@
 
 #include "Core.hpp"
 
+
 /**
  * @brief Constructs the GUI Core object.
  *
@@ -15,7 +16,8 @@
  *
  * @param args Command-line arguments.
  * @param env Environment variables.
- * @throw std::runtime_error if invalid arguments or no graphical environment.
+ * @throw DataParsingError if invalid arguments.
+ * @throw RenderError if no graphical environment is detected.
  */
 
 gui::Core::Core(std::vector<std::string> args, char **env)
@@ -37,11 +39,11 @@ gui::Core::Core(std::vector<std::string> args, char **env)
         }
     }
     if ((port == 0 || addr.empty()) && !_help)
-        throw std::runtime_error("USAGE: ./zappy_gui -p port -h machine");
+        throw DataParsingError("USAGE: ./zappy_gui -p port -h machine");
     if (_help)
         return;
     if (!isEnvGraphics(env))
-        throw std::runtime_error("Error: There is no graphical environment, sorry :)");
+        throw RenderError("Error: There is no graphical environment, sorry :)");
     _incoming = std::make_shared<tools::MessageQueue>();
     _outgoing = std::make_shared<tools::MessageQueue>();
     _net = std::make_unique<net::Network>(_incoming, _outgoing, port, addr);

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Game/Renderer/Object/IAnimatedObject.hpp"
+#include "Error/Error.hpp"
 #include <memory>
 #include <stdexcept>
 
