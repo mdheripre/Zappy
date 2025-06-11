@@ -1,0 +1,26 @@
+/*
+** EPITECH PROJECT, 2025
+** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
+** File description:
+** get_player_on_tile
+*/
+
+#include "game.h"
+#include "server.h"
+#include "utils.h"
+#include "player.h"
+
+list_t *get_players_on_tile(game_t *game, int x, int y, int level)
+{
+    list_t *participants = NEW(list, NULL);
+    player_t *p = NULL;
+
+    if (!game || !participants)
+        return NULL;
+    for (list_node_t *node = game->players->head; node; node = node->next) {
+        p = node->data;
+        if (p && p->is_alive && p->x == x && p->y == y && p->level == level)
+            participants->methods->push_back(participants, p);
+    }
+    return participants;
+}

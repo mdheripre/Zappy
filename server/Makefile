@@ -88,6 +88,12 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_moved_player.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_died.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_connect_player.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
@@ -140,11 +146,18 @@ SRCS = \
 	$(SRC_GAME_METHODS)/update_players.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_GAME_METHODS)/get_player_on_tile.c \
 	$(SRC_GAME_METHODS)/game_update_incantation.c \
 	$(SRC_GAME_METHODS)/check_incantate.c \
 	$(SRC_GAME_EVENT)/player_moved.c \
 	$(SRC_GAME_EVENT)/player_died.c \
 	$(SRC_GAME_EVENT)/number_player.c \
+	$(SRC_GAME_EVENT)/look_around.c \
+	$(SRC_GAME_EVENT)/eject.c \
+	$(SRC_GAME_EVENT)/start_incantation.c \
+	$(SRC_GAME_EVENT)/end_incantation.c \
+	$(SRC_GAME_EVENT)/inventory.c \
+	$(SRC_GAME_EVENT)/egg_laid.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \
