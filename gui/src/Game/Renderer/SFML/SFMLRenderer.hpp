@@ -8,6 +8,7 @@
 #pragma once
 #include "Game/Renderer/IRenderer.hpp"
 #include "Game/Renderer/SFML/SFMLObjectFactory/SFMLObjectFactory.hpp"
+#include "Tools/Error/Error.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <list>

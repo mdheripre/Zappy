@@ -12,6 +12,7 @@
 #include "Game/Renderer/IRenderer.hpp"
 #include "Tools/TeamBranding/TeamBrandingManager/TeamBrandingManager.hpp"
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
+#include "Tools/MapAssetManager/MapAssetManager.hpp"
 #include "Tools/Input/Input.hpp"
 #include <chrono>
 #include <sstream>
@@ -39,6 +40,7 @@ namespace game
             tools::CommandManager _cm;
             std::unique_ptr<render::IRenderer> _renderer;
             tools::TeamBrandingManager _tbManager;
+            tools::MapAssetManager _maManager;
 
             void welcomeCm(const std::vector<std::string> &token);
             void mszCommand(const std::vector<std::string> &token);

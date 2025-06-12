@@ -6,6 +6,7 @@
 */
 
 #include "SFMLStaticSprite.hpp"
+#include <iostream>
 
 namespace sfml
 {
@@ -44,8 +45,9 @@ void SFMLStaticSprite::setPosition(const tools::Vector2<float>& pos)
 
 void SFMLStaticSprite::drawObject() const
 {
-    if (_window && _window->isOpen())
+    if (_window && _window->isOpen()) {
         _window->draw(_sprite);
+    }
 }
 
 } // namespace sfml

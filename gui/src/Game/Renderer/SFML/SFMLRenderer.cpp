@@ -9,13 +9,16 @@
 
 sfml::SFMLRenderer::SFMLRenderer()
 {
+    _rWindow = std::make_shared<sf::RenderWindow>();
     _objFactory = std::make_unique<SFMLObjectFactory>(_rWindow);
 }
 
 
 void sfml::SFMLRenderer::init(std::string title, int width, int height, int frameRate)
 {
-    _rWindow = std::make_shared<sf::RenderWindow>(
+    if (!_rWindow)
+        throw RenderError("Access to a null window in renderer init");
+    _rWindow->create(
         sf::VideoMode(width, height),
         title,
         sf::Style::Close | sf::Style::Titlebar

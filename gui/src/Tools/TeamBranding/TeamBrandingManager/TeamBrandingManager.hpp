@@ -54,7 +54,7 @@ namespace tools
                     //Trantorian Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         // Animation Mapping
                         {
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
@@ -68,7 +68,7 @@ namespace tools
                     //Incantation Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Effects/Fire/Fire.png",
+                        "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
         
@@ -82,7 +82,7 @@ namespace tools
                     //Egg Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         //Animation Mapping
                         {
 

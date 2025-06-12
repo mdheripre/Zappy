@@ -35,9 +35,11 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 2)
         printErrorCommand("msz", token);
+
     std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
         std::stoi(token[0]),
-        std::stoi(token[1])
+        std::stoi(token[1]),
+        _maManager.getTileSprites(_renderer->getFactory())
     );
     _gm.map = map;
     _renderer->pushEntity(map);
