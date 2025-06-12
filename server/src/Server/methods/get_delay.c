@@ -49,7 +49,7 @@ float get_command_delay(server_t *server, const char *command)
     if (!extract_command_name(command, cmd_name, sizeof(cmd_name)))
         return 0.0f;
     for (size_t i = 0;
-            i < sizeof(COMMAND_DELAYS) / sizeof(COMMAND_DELAYS[0]); i++) {
+        i < sizeof(COMMAND_DELAYS) / sizeof(COMMAND_DELAYS[0]); i++) {
         if (strcmp(COMMAND_DELAYS[i].content, cmd_name) == 0) {
             return COMMAND_DELAYS[i].time_remaining / server->game->frequency;
         }

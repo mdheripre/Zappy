@@ -44,8 +44,6 @@ typedef enum game_event_type_e {
     // (produits par IA ou déclenchés par le jeu)
     GAME_EVENT_START_INCANTATION,  // Début d'incantation
     GAME_EVENT_END_INCANTATION,    // Fin d'incantation (tick 300)
-    GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
-    GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
     GAME_EVENT_LOOK_AROUND,        // Regarder autour
     GAME_EVENT_BROADCAST_MESSAGE,  // Diffuser un message
     GAME_EVENT_CONNECT_NBR,        // Nombre de connexions disponibles
@@ -54,6 +52,9 @@ typedef enum game_event_type_e {
     GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
     GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
     GAME_EVENT_EGG_LAID,           // Œuf pondu
+    // todo
+    GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
+    GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
     GAME_EVENT_TILE_UPDATED,       // Changement de ressource sur une case
 
     // === Réponses (à destination des IA et/ou GUI)
@@ -64,11 +65,12 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
     GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
-    GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
     GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
+    //todo
+    GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
 } game_event_type_t;
@@ -91,10 +93,9 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
     { GAME_EVENT_PLAYER_DIED, "PLAYER_DIED" },
     { GAME_EVENT_EGG_LAID, "EGG_LAID" },
-    // TODO
+    { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
     { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
     { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
-    { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
     { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
 
     // Réponses
@@ -108,7 +109,6 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_CONNECT_NBR, "RESPONSE_CONNECT_NBR" },
     { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
     { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
-    // TODO
     { GAME_EVENT_RESPONSE_DROP, "RESPONSE_DROP" },
     { GAME_EVENT_RESPONSE_TAKE, "RESPONSE_TAKE" },
     { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
