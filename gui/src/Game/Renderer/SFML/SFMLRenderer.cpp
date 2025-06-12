@@ -25,11 +25,12 @@ void sfml::SFMLRenderer::init(std::string title, int width, int height, int fram
 
 void sfml::SFMLRenderer::update(float dt)
 {
+    auto shouldRemove = [dt](const std::shared_ptr<render::IRenderEntity>& entity) {
+        return entity && !entity->update(dt);
+    };
+
     _entities.erase(
-        std::remove_if(_entities.begin(), _entities.end(),
-            [dt](const std::shared_ptr<render::IRenderEntity>& entity) {
-                return entity && !entity->update(dt);
-            }),
+        std::remove_if(_entities.begin(), _entities.end(), shouldRemove),
         _entities.end()
     );
 }
@@ -73,12 +74,19 @@ void sfml::SFMLRenderer::poll()
         if (event.type == sf::Event::Closed)
             _rWindow->close();
         else if (event.type == sf::Event::KeyPressed) {
-            for (const auto& [keyCode, sfKey] : _keyMap) {
-                if (event.key.code == sfKey) {
-                    if (_bindings.find(keyCode) != _bindings.end())
-                        _bindings[keyCode]();
-                }
-            }
+            manageKeyCode(event);
         }
+    }
+}
+
+void sfml::SFMLRenderer::manageKeyCode(const sf::Event &event)
+{
+    auto it = _keyMap.find(event.key.code);
+
+    if (it != _keyMap.end()) {
+        auto bindIt = _bindings.find(it->second);
+
+        if (bindIt != _bindings.end())
+            bindIt->second();
     }
 }

@@ -27,13 +27,14 @@ namespace sfml
         void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>> bindings) {_bindings = bindings;};
         render::IObjectFactory &getFactory();
         void poll();
-        const std::unordered_map<tools::KeyCode, sf::Keyboard::Key> _keyMap = {
-            { tools::KeyCode::Right, sf::Keyboard::Right },
-            { tools::KeyCode::Left,  sf::Keyboard::Left },
-            { tools::KeyCode::Up,    sf::Keyboard::Up },
-            { tools::KeyCode::Down,  sf::Keyboard::Down },
-            { tools::KeyCode::W,     sf::Keyboard::W },
-            { tools::KeyCode::S,     sf::Keyboard::S }
+        void manageKeyCode(const sf::Event &event);
+        const std::unordered_map<sf::Keyboard::Key, tools::KeyCode> _keyMap = {
+            { sf::Keyboard::Right, tools::KeyCode::Right },
+            { sf::Keyboard::Left,  tools::KeyCode::Left },
+            { sf::Keyboard::Up,    tools::KeyCode::Up },
+            { sf::Keyboard::Down,  tools::KeyCode::Down },
+            { sf::Keyboard::W,     tools::KeyCode::W },
+            { sf::Keyboard::S,     tools::KeyCode::S }
         };
     private:
         std::unordered_map<tools::KeyCode, std::function<void()>> _bindings;
