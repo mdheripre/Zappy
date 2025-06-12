@@ -2,12 +2,12 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** get_fd_by_player
+** get_client_index_by_player
 */
 
 #include "game.h"
-#include "player.h"
 #include "server.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -16,20 +16,19 @@
 /****************************************************************************/
 
 /**
- * @brief Get the client file descriptor for a given player.
+ * @brief Retrieves the index of a client associated with a player.
  *
- * @param server Pointer to the server.
- * @param player Pointer to the player.
- * @param index Optional pointer to store the client index.
- * @return File descriptor, or -1 if not found.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player to search for.
+ * @return Index of the client, or -1 if not found or on error.
  */
-int get_client_fd_by_player(server_t *server, player_t *player, int *index)
+int get_client_index_by_player(server_t *server, player_t *player)
 {
-    int idx = get_client_index_by_player(server, player);
-
-    if (idx == -1)
+    if (!server || !player)
         return -1;
-    if (index)
-        *index = idx;
-    return server->clients[idx].fd;
+    for (int i = 0; i < server->client_count; i++) {
+        if (server->clients[i].player == player)
+            return i;
+    }
+    return -1;
 }

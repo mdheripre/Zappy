@@ -60,6 +60,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_MOVED,       // ppo + "ok"
     GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
     GAME_EVENT_RESPONSE_EGG_LAID,           // enw
+    GAME_EVENT_RESPONSE_EGG_DIE,            // edi
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
     GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
@@ -99,6 +100,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_PLAYER_MOVED, "RESPONSE_PLAYER_MOVED" },
     { GAME_EVENT_RESPONSE_PLAYER_DIED, "RESPONSE_PLAYER_DIED" },
     { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
+    { GAME_EVENT_RESPONSE_EGG_DIE, "RESPONSE_EGG_DIE" },
     { GAME_EVENT_RESPONSE_START_INCANTATION, "RESPONSE_START_INCANTATION" },
     { GAME_EVENT_RESPONSE_END_INCANTATION, "RESPONSE_END_INCANTATION" },
     { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
@@ -138,7 +140,7 @@ typedef struct {
             int x;
             int y;
             const char *team_name;
-        } egg_laid;
+        } egg;
         struct {
             int x;
             int y;

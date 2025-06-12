@@ -68,5 +68,6 @@ void on_response_eject(void *ctx, void *data);
 void on_response_egg_laid(void *ctx, void *data);
 void on_response_end_incantation(void *ctx, void *data);
 void on_response_start_incantation(void *ctx, void *data);
+void on_response_egg_die(void *ctx, void *data);
 
 #endif /* !COMMAND_MANAGER_H_ */
