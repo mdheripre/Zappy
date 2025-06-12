@@ -108,6 +108,10 @@ static void register_process_response_extend(command_manager_t *self,
         on_response_broadcast, server);
     REGISTER(self->dispatcher, "RESPONSE_TILE_UPDATED",
         on_response_tile_updated, server);
+    REGISTER(self->dispatcher, "RESPONSE_DROP",
+        on_response_drop, server);
+    REGISTER(self->dispatcher, "RESPONSE_TAKE",
+        on_response_take, server);
 }
 
 /**

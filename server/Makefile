@@ -91,11 +91,13 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_drop.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_broadcast.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_tile_updated.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_take.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_die.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
@@ -159,7 +161,9 @@ SRCS = \
 	$(SRC_GAME_EVENT)/player_died.c \
 	$(SRC_GAME_EVENT)/number_player.c \
 	$(SRC_GAME_EVENT)/look_around.c \
+	$(SRC_GAME_EVENT)/drop.c \
 	$(SRC_GAME_EVENT)/eject.c \
+	$(SRC_GAME_EVENT)/take.c \
 	$(SRC_GAME_EVENT)/start_incantation.c \
 	$(SRC_GAME_EVENT)/end_incantation.c \
 	$(SRC_GAME_EVENT)/broadcast.c \

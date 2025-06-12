@@ -52,7 +52,6 @@ typedef enum game_event_type_e {
     GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
     GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
     GAME_EVENT_EGG_LAID,           // Œuf pondu
-    // todo
     GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
     GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
 
@@ -69,7 +68,6 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
-    //todo
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
 } game_event_type_t;
@@ -233,6 +231,8 @@ void spawn_resources(game_t *self);
 void update_incantations(game_t *self);
 bool check_incantate(game_t *game, incantation_t *inc);
 list_t *get_players_on_tile(game_t *game, int x, int y, int level);
+void emit_tile_update(game_t *game, int x, int y);
+int resource_from_string(const char *name);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);
@@ -245,4 +245,6 @@ void on_egg_laid(void *ctx, void *data);
 void on_end_incantation(void *ctx, void *data);
 void on_start_incantation(void *ctx, void *data);
 void on_broadcast(void *ctx, void *data);
+void on_drop(void *ctx, void *data);
+void on_take(void *ctx, void *data);
 #endif /* !GAME_H_ */

@@ -50,6 +50,8 @@ static void register_event_game(dispatcher_t *dispatcher, game_t *game)
     REGISTER(dispatcher, "START_INCANTATION", on_start_incantation, game);
     REGISTER(dispatcher, "END_INCANTATION", on_end_incantation, game);
     REGISTER(dispatcher, "BROADCAST_MESSAGE", on_broadcast, game);
+    REGISTER(dispatcher, "PLAYER_DROP_ITEM", on_drop, game);
+    REGISTER(dispatcher, "PLAYER_TAKE_ITEM", on_take, game);
 }
 
 /****************************************************************************/
