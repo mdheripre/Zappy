@@ -91,6 +91,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_broadcast.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
@@ -159,6 +160,7 @@ SRCS = \
 	$(SRC_GAME_EVENT)/eject.c \
 	$(SRC_GAME_EVENT)/start_incantation.c \
 	$(SRC_GAME_EVENT)/end_incantation.c \
+	$(SRC_GAME_EVENT)/broadcast.c \
 	$(SRC_GAME_EVENT)/inventory.c \
 	$(SRC_GAME_EVENT)/egg_laid.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
@@ -172,7 +174,7 @@ SRCS = \
 
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Iinclude -g
+CFLAGS = -Wall -Wextra -Iinclude -g -lm
 
 all: $(NAME)
 

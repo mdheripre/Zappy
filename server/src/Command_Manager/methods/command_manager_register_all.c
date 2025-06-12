@@ -99,6 +99,21 @@ static void register_handler_ia_command(command_manager_t *self,
  * @param self Pointer to the command manager.
  * @param server Pointer to the server instance.
  */
+static void register_process_response_extend(command_manager_t *self,
+    server_t *server)
+{
+    REGISTER(self->dispatcher, "RESPONSE_EGG_DIE",
+        on_response_egg_die, server);
+    REGISTER(self->dispatcher, "RESPONSE_BROADCAST",
+        on_response_broadcast, server);
+}
+
+/**
+ * @brief Register response handlers to the dispatcher.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ */
 static void register_process_response(command_manager_t *self,
     server_t *server)
 {
@@ -120,8 +135,7 @@ static void register_process_response(command_manager_t *self,
         on_response_start_incantation, server);
     REGISTER(self->dispatcher, "RESPONSE_END_INCANTATION",
         on_response_end_incantation, server);
-    REGISTER(self->dispatcher, "RESPONSE_EGG_DIE",
-        on_response_egg_die, server);
+    register_process_response_extend(self, server);
 }
 
 /****************************************************************************/

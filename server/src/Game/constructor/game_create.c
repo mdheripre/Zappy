@@ -49,6 +49,7 @@ static void register_event_game(dispatcher_t *dispatcher, game_t *game)
     REGISTER(dispatcher, "EGG_LAID", on_egg_laid, game);
     REGISTER(dispatcher, "START_INCANTATION", on_start_incantation, game);
     REGISTER(dispatcher, "END_INCANTATION", on_end_incantation, game);
+    REGISTER(dispatcher, "BROADCAST_MESSAGE", on_broadcast, game);
 }
 
 /****************************************************************************/
