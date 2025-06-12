@@ -9,7 +9,7 @@
 
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
 #include "Game/GameState/EntityState/EntityState.hpp"
-#include "Game/Renderer/Object/IAnimatedObject.hpp"
+#include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include <string>
 #include <memory>
 #include <iostream>
@@ -19,15 +19,14 @@ namespace gui {
     public:
         enum class EggAnimation {
             IDLE,
-            HATCH,
             DIE
         };
-        Egg(int id, tools::Position<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedObject> eggObject = nullptr);
+        Egg(int id, tools::Vector2<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedSprite> eggObject = nullptr);
         ~Egg() override = default;
     private:
-        std::unique_ptr<render::IAnimatedObject> _eggObject;
+        std::unique_ptr<render::IAnimatedSprite> _eggObject;
         void setDead() override;
-        void setPosition(tools::Position<int>  pos) override;
+        void setPosition(tools::Vector2<int>  pos) override;
         bool update(float dt) override;
         void draw() const override;
     };

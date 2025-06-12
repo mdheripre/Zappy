@@ -7,10 +7,9 @@
 
 #pragma once
 #include "Network/Network.hpp"
-#include "Game/Renderer/Raylib/Raylib.hpp"
-#include "Game/Renderer/Raylib/RaylibObjectFactory/RaylibObjectFactory.hpp"
+#include "Game/Renderer/SFML/SFMLRenderer.hpp"
 #include "Game/Game.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 #include <memory>
 #include <vector>
 #include <string>

@@ -7,10 +7,11 @@
 
 #include "Egg.hpp"
 
-bool gui::Egg::update(float)
+bool gui::Egg::update(float dt)
 {
     if (!_alive)
         return false;
+    _eggObject->updateObject(dt);
     return true;
 }
 
@@ -20,20 +21,19 @@ void gui::Egg::draw() const
         _eggObject->drawObject();
 }
 
-void gui::Egg::setPosition(tools::Position<int> pos)
+void gui::Egg::setPosition(tools::Vector2<int> pos)
 {
-    tools::Position3D<float> bb = _eggObject->getBoundingBox().getSize();
+    tools::Vector2<float> size = _eggObject->getSize();
 
-    tools::Position3D<float> dPos(
-        static_cast<float>(pos.x),
-        bb.y,
-        static_cast<float>(pos.y)
+    tools::Vector2<float> dPos(
+        static_cast<float>(pos.x) * size.x,
+        static_cast<float>(pos.y) * size.y
     );
     _eggObject->setPosition(dPos);
     _pos = pos;
 }
 
-gui::Egg::Egg(int id, tools::Position<int> pos, const std::string &teamName, std::unique_ptr<render::IAnimatedObject> eggObject)
+gui::Egg::Egg(int id, tools::Vector2<int> pos, const std::string &teamName, std::unique_ptr<render::IAnimatedSprite> eggObject)
     : EntityState(id, pos, teamName), _eggObject(std::move(eggObject)) {
     setPosition(pos);
 }

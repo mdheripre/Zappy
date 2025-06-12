@@ -6,7 +6,7 @@
 */
 
 #include "Socket.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 net::Socket::Socket()
 {

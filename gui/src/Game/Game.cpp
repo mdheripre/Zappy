@@ -6,7 +6,7 @@
 */
 
 #include "Game.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Constructs the Game object.
@@ -20,16 +20,13 @@
  */
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     std::shared_ptr<tools::MessageQueue> outgoing,
-    std::unique_ptr<render::IRenderer> render,
-    std::unique_ptr<render::IObjectFactory> objFactory)
-    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render)), _objFactory(std::move(objFactory))
+    std::unique_ptr<render::IRenderer> render)
+    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render))
 {
     for (const auto& [name, handler] : commands) {
         _cm.addCommand(name, handler);
     }
-    _cam = std::make_shared<render::Camera>();
     _renderer->init("Zappy", 1920, 1080, 60);
-    _renderer->setCamera(_cam);
     _renderer->setBindings(bindings);
 }
 

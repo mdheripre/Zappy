@@ -6,7 +6,7 @@
 */
 
 #include "Trantorian.hpp"
-#include "Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Draws the Trantorian on screen.
@@ -31,7 +31,7 @@ void gui::Trantorian::draw() const
  */
 void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
 {
-    tools::Position<int> offset;
+    tools::Vector2<int> offset;
     switch (O) {
         case Orientation::NORTH: offset = {0, -1}; break;
         case Orientation::SOUTH: offset = {0, 1}; break;
@@ -42,7 +42,7 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
     int newX = (_pos.x + offset.x + maxWidth) % maxWidth;
     int newY = (_pos.y + offset.y + maxHeight) % maxHeight;
 
-    tools::Position<int> newPos(newX, newY);
+    tools::Vector2<int> newPos(newX, newY);
     setPosition(newPos);
 }
 
@@ -104,7 +104,7 @@ bool gui::Trantorian::update(float dt)
     if (anim_end && !_alive)
         return false;
     if (anim_end)
-        _trantorianObject->playClip(
+        _trantorianObject->playAnimation(
             static_cast<int>(TrantorianAnimation::IDLE), true);
     return true;
 }
@@ -116,16 +116,14 @@ bool gui::Trantorian::update(float dt)
  *
  * @param pos New map position (grid coordinates).
  */
-void gui::Trantorian::setPosition(tools::Position<int>  pos)
+void gui::Trantorian::setPosition(tools::Vector2<int>  pos)
 {
-    tools::Position3D<float> bb = _trantorianObject->getBoundingBox().getSize();
+    tools::Vector2<float> size = _trantorianObject->getSize();
 
-    tools::Position3D<float> dPos(
-        static_cast<float>(pos.x),
-        bb.y,
-        static_cast<float>(pos.y)
+    tools::Vector2<float> dPos(
+        static_cast<float>(pos.x) * size.x,
+        static_cast<float>(pos.y) * size.y
     );
-
     _trantorianObject->setPosition(dPos);
     _pos = pos;
 }

@@ -46,27 +46,54 @@ namespace tools
             std::unordered_map<std::string, TeamBranding> _brandMap;
             int _nextIndex = 0;
     
-            const std::array<TeamBranding, 3> _presetBrandings = {
-                //Example 1
-                TeamBranding("default1", Color(255, 0, 0, 0),
-                             AssetDefinition("player_red.glb",
-                                {
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::DIE), 0},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 2},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::INCANT), -1}, // if there is no animation available
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::TALK), 1},
-                                    {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK), 0},
-                                },
-                                1.0f),
-                             AssetDefinition("egg_red.glb", {{0, 3}}, 0.7f)),
-                //Example 2
-                TeamBranding("default2", Color(0, 255, 0, 0),
-                             AssetDefinition("player_green.glb", {{0, 1}}, 1.0f),
-                             AssetDefinition("egg_green.glb", {{0, 2}}, 0.7f)),
-                //Example 3
-                TeamBranding("default3", Color(0, 0, 255, 0),
-                             AssetDefinition("player_blue.glb", {{0, 1}}, 1.0f),
-                             AssetDefinition("egg_blue.glb", {{0, 2}}, 0.7f))
+            const std::array<TeamBranding, 1> _presetBrandings = {
+                //Team Starmie
+                TeamBranding(
+                    "Yellow Knight", 
+                    Color(255, 255, 0, 0),
+                    //Trantorian Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        // Animation Mapping
+                        {
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                        },
+                        // Scaling to apply
+                        1.0f,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    ),
+                    //Incantation Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords (Update 010)/Effects/Fire/Fire.png",
+                        //Animation Mapping
+                        {
+        
+                        },
+                        //Scaling to apply
+                        0.7f,
+                        //Rows en colonnes to cut texture for animation
+                        7,
+                        1
+                    ),
+                    //Egg Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        //Animation Mapping
+                        {
+
+                        },
+                        //Scaling to Apply
+                        0.2f,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    )
+                )
             };
     };
 } // namespace tools

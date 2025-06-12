@@ -22,6 +22,7 @@ namespace tools {
             teamName,
             branding.getColor(),
             branding.getPlayerAsset(),
+            branding.getIncantationAsset(),
             branding.getEggAsset()
         ));
     

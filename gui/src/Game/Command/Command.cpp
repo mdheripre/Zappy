@@ -6,7 +6,7 @@
 */
 
 #include "Game/Game.hpp"
-#include "Error/Error.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Handles the WELCOME command from the server.
@@ -37,11 +37,7 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
         printErrorCommand("msz", token);
     std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
         std::stoi(token[0]),
-        std::stoi(token[1]),
-        _objFactory->createCube(
-            tools::Color(0, 255, 0, 255),
-            tools::Position3D<float>(1.0, 1.0, 1.0)
-        )
+        std::stoi(token[1])
     );
     _gm.map = map;
     _renderer->pushEntity(map);
@@ -59,7 +55,7 @@ void game::Game::bctCommand(const std::vector<std::string> &token)
 {
     if (token.size() != 9)
         printErrorCommand("btc", token);
-    tools::Position<int> pos(std::stoi(token[0]), std::stoi(token[1]));
+    tools::Vector2<int> pos(std::stoi(token[0]), std::stoi(token[1]));
     std::array<int, 7> res;
     for (int i = 2; i < 9; i++) {
         res[i - 2] = std::stoi(token[i]); 
@@ -108,7 +104,7 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
         printErrorCommand("pnw", token);
 
     int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     int orientation = std::stoi(token[3]);
     int lvl = std::stoi(token[4]);
     auto it = _gm.trantorians.find(id);
@@ -120,18 +116,13 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     }
     tools::TeamBranding tb = _tbManager.getTeamBranding(tokens);
 
-    _objFactory->createAnimatedObject(
-        tb.getPlayerAsset().getModelPath(),
-        tb.getPlayerAsset().getAnimation());
     auto trantorian = std::make_shared<gui::Trantorian>(
         id,
         pos,
         tokens,
         static_cast<gui::Trantorian::Orientation>(orientation),
         lvl,
-        _objFactory->createAnimatedObject(
-            tb.getPlayerAsset().getModelPath(),
-            tb.getPlayerAsset().getAnimation())
+        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset())
     );
 
     std::shared_ptr<gui::TrantorianState> tranState = trantorian;
@@ -156,7 +147,7 @@ void game::Game::ppoCommand(const std::vector<std::string> &token)
         printErrorCommand("ppo", token);
 
     int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     int orientation = std::stoi(token[3]);
 
     auto it = _gm.trantorians.find(id);
@@ -209,7 +200,7 @@ void game::Game::pinCommand(const std::vector<std::string> &token)
     if (token.size() != 10)
         printErrorCommand("pin", token);
     int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     std::array<int, 7> res;
 
     for (int i = 3; i < 10; i++)
@@ -291,7 +282,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     int x = std::stoi(token[0]);
     int y = std::stoi(token[1]);
     int level = std::stoi(token[2]);
-    tools::Position<int> pos(x, y);
+    tools::Vector2<int> pos(x, y);
 
     std::vector<int> playerIds;
 
@@ -319,10 +310,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
         pos,
         level,
         playerIds,
-        _objFactory->createAnimatedObject(
-            tb.getPlayerAsset().getModelPath(),
-            tb.getPlayerAsset().getAnimation()
-        )
+        _renderer->getFactory().createAnimatedSprite(tb.getIncantationAsset())
     );
 
     std::shared_ptr<render::IRenderEntity> renderPtr = incantation;
@@ -346,7 +334,7 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
         return;
     }
 
-    tools::Position<int> pos(std::stoi(token[0]), std::stoi(token[1]));
+    tools::Vector2<int> pos(std::stoi(token[0]), std::stoi(token[1]));
     int success = std::stoi(token[2]);
     auto it = _gm.incantations.find(pos);
 
@@ -413,7 +401,7 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
-        tools::Position<int> pos = it->getPosition();
+        tools::Vector2<int> pos = it->getPosition();
 
         _gm.map->popResource(res, pos);
         it->removeFromInventory(res);
@@ -439,7 +427,7 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
 
     if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
         auto it = _gm.trantorians.at(id);
-        tools::Position<int> pos = it->getPosition();
+        tools::Vector2<int> pos = it->getPosition();
 
         _gm.map->pushResource(res, pos);
         it->addToInventory(res);
@@ -489,7 +477,7 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
     int eggId = std::stoi(token[0]);
     int tranId = std::stoi(token[1]);
     std::string teamName;
-    tools::Position<int> pos(std::stoi (token[2]), std::stoi(token[3]));
+    tools::Vector2<int> pos(std::stoi (token[2]), std::stoi(token[3]));
 
     auto tran = _gm.trantorians.find(tranId);
     if (tran != _gm.trantorians.end()) {
@@ -504,9 +492,7 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
             eggId,
             pos,
             teamName,
-            _objFactory->createAnimatedObject(
-                tb.getEggAsset().getModelPath(),
-                tb.getEggAsset().getAnimation())
+            _renderer->getFactory().createAnimatedSprite(tb.getEggAsset())
         );
         std::shared_ptr<state::EntityState> eggState = egg;
         std::shared_ptr<render::IRenderEntity> eggRender = egg;
@@ -547,9 +533,7 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
             egg->getTeamName(),
             gui::Trantorian::Orientation::NORTH,
             1,
-            _objFactory->createAnimatedObject(
-                tb.getPlayerAsset().getModelPath(),
-                tb.getPlayerAsset().getAnimation())
+            _renderer->getFactory().createAnimatedSprite(tb.getEggAsset())
         );
 
         std::shared_ptr<gui::TrantorianState> tranState = trantorian;

@@ -49,8 +49,7 @@ gui::Core::Core(std::vector<std::string> args, char **env)
     _net = std::make_unique<net::Network>(_incoming, _outgoing, port, addr);
     _game = std::make_unique<game::Game>(_incoming,
         _outgoing,
-        std::make_unique<rl::Raylib>(),
-        std::make_unique<rl::RaylibObjectFactory>());
+        std::make_unique<sfml::SFMLRenderer>());
 }
 
 /**
