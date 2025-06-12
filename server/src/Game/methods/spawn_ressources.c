@@ -28,6 +28,20 @@ static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
     [RESOURCE_THYSTAME] = 0.05
 };
 
+
+static void add_tile_update_event(game_t *game, int x, int y)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return;
+    event->type = GAME_EVENT_RESPONSE_TILE_UPDATED;
+    event->data.tile.x = x;
+    event->data.tile.y = y;
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, event);
+}
+
 /**
  * @brief Spawn resources randomly on the game map based on density.
  *
@@ -50,6 +64,7 @@ void spawn_resources(game_t *self)
             x = rand() % self->width;
             y = rand() % self->height;
             self->map[y][x].resources[r]++;
+            add_tile_update_event(self, x, y);
         }
     }
 }

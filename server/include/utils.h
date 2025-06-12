@@ -59,4 +59,5 @@ client_t *get_client_by_fd(server_t *server, int fd);
 int get_client_index_by_player(server_t *server, player_t *player);
 client_t *get_client_by_player(server_t *server, player_t *player,
     int *index);
+client_t *get_gui_client(server_t *server);
 #endif /* !UTILS_H_ */

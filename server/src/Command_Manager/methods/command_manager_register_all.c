@@ -106,6 +106,8 @@ static void register_process_response_extend(command_manager_t *self,
         on_response_egg_die, server);
     REGISTER(self->dispatcher, "RESPONSE_BROADCAST",
         on_response_broadcast, server);
+    REGISTER(self->dispatcher, "RESPONSE_TILE_UPDATED",
+        on_response_tile_updated, server);
 }
 
 /**

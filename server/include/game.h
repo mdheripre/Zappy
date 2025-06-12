@@ -55,7 +55,6 @@ typedef enum game_event_type_e {
     // todo
     GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
     GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
-    GAME_EVENT_TILE_UPDATED,       // Changement de ressource sur une case
 
     // === Réponses (à destination des IA et/ou GUI)
     GAME_EVENT_RESPONSE_PLAYER_MOVED,       // ppo + "ok"
@@ -69,8 +68,8 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
-    //todo
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
+    //todo
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
 } game_event_type_t;
@@ -96,7 +95,6 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
     { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
     { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
-    { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
 
     // Réponses
     { GAME_EVENT_RESPONSE_PLAYER_MOVED, "RESPONSE_PLAYER_MOVED" },

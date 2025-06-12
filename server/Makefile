@@ -94,6 +94,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_broadcast.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_tile_updated.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_die.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
@@ -110,6 +111,7 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
 	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
+	$(SRC_UTILS_HELPERS)/get_gui_client.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_player.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
 	$(SRC_UTILS_HELPERS)/get_client_index_by_player.c \
