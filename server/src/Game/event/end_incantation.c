@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Prepare and validate an incantation from an event.
+ *
+ * @param game Pointer to the game instance.
+ * @param inc Output incantation structure.
+ * @param event Input game event with incantation data.
+ * @return true if the incantation is valid, false otherwise.
+ */
 static bool process_incantation(game_t *game, incantation_t *inc,
     game_event_t *event)
 {
@@ -29,6 +37,13 @@ static bool process_incantation(game_t *game, incantation_t *inc,
     return check_incantate(game, inc);
 }
 
+/**
+ * @brief Create a response event for an incantation result.
+ *
+ * @param inc Pointer to the incantation.
+ * @param success Whether the incantation succeeded.
+ * @return Pointer to the response event, or NULL on error.
+ */
 static game_event_t *create_incantation_response(incantation_t *inc,
     bool success)
 {
@@ -44,6 +59,11 @@ static game_event_t *create_incantation_response(incantation_t *inc,
     return response;
 }
 
+/**
+ * @brief Increase the level of all incantation participants.
+ *
+ * @param participants List of players in the incantation.
+ */
 static void update_participants_level(list_t *participants)
 {
     player_t *p;
@@ -57,6 +77,14 @@ static void update_participants_level(list_t *participants)
     }
 }
 
+/**
+ * @brief Handle the end of an incantation.
+ *
+ * Validates the result and updates levels if successful.
+ *
+ * @param ctx Pointer to the game instance.
+ * @param data Pointer to the end-incantation event.
+ */
 void on_end_incantation(void *ctx, void *data)
 {
     game_t *game = ctx;

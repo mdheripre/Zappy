@@ -56,4 +56,6 @@ char *extract_command_name(const char *line, char *out, size_t size);
 const char *extract_command_args(const char *line);
 bool extract_command_arguments(const char *line, char *out, size_t out_size);
 client_t *get_client_by_fd(server_t *server, int fd);
+client_t *get_client_by_player(server_t *server, player_t *player,
+    int *index);
 #endif /* !UTILS_H_ */

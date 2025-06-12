@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Send a response indicating the start of an incantation.
+ *
+ * @param game Pointer to the game instance.
+ * @param starter Pointer to the player who started the incantation.
+ * @param inc Pointer to the incantation data.
+ * @param success Whether the incantation was valid.
+ */
 static void send_incantation_response(game_t *game, player_t *starter,
     incantation_t *inc, bool success)
 {
@@ -32,6 +40,13 @@ static void send_incantation_response(game_t *game, player_t *starter,
         response);
 }
 
+/**
+ * @brief Create a new incantation object from a starter player.
+ *
+ * @param game Pointer to the game instance.
+ * @param starter Pointer to the player initiating the incantation.
+ * @return Pointer to the created incantation, or NULL on failure.
+ */
 static incantation_t *create_incantation(game_t *game, player_t *starter)
 {
     incantation_t *inc = malloc(sizeof(incantation_t));
@@ -47,6 +62,14 @@ static incantation_t *create_incantation(game_t *game, player_t *starter)
     return inc;
 }
 
+/**
+ * @brief Handle the start of an incantation event.
+ *
+ * Validates conditions and queues the incantation if valid.
+ *
+ * @param ctx Pointer to the game instance.
+ * @param data Pointer to the event triggering the incantation.
+ */
 void on_start_incantation(void *ctx, void *data)
 {
     game_t *game = ctx;
