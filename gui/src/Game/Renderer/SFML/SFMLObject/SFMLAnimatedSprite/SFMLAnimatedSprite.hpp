@@ -27,7 +27,7 @@ namespace sfml
             void playAnimation(int clipIndex, bool loop);
             bool updateObject(float dt);
             const tools::Vector2<float> &getPosition() const;
-            const tools::Vector2<float> &getSize() const;
+            tools::Vector2<float> getSize() const;
             void setPosition(const tools::Vector2<float> &pos);
             void drawObject() const;
         private:

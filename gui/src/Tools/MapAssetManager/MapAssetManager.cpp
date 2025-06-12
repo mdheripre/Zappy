@@ -15,7 +15,7 @@ namespace tools
         for (const auto& [type, filename] : _tileTypeToFilename) {
             _tiles.emplace(
                 type,
-                AssetDefinition(_basePathTinySword + filename, {}, 0.8f, 1, 1)
+                AssetDefinition(_basePathTinySword + filename, {}, TILE_SIZE, 1, 1)
             );
         }
     }

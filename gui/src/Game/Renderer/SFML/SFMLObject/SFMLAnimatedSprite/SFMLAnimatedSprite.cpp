@@ -6,25 +6,31 @@
 */
 
 #include "SFMLAnimatedSprite.hpp"
+#include <iostream>
 
 namespace sfml {
 
-SFMLAnimatedSprite::SFMLAnimatedSprite(const sf::Texture& texture,
-    std::shared_ptr<sf::RenderWindow> ctx,
-    int columns,
-    int rows,
-    float scale,
-    std::unordered_map<int, int> animationMap)
-    : _animationMap(std::move(animationMap)), _ctx(std::move(ctx))
-{
-    sprite.setTexture(texture);
-    auto texSize = texture.getSize();
-    int frameWidthPixels = texSize.x / columns;
-    int frameHeightPixels = texSize.y / rows;
-    sprite.setScale(sf::Vector2f(scale, scale));
-    sprite.setTextureRect(sf::IntRect(0, 0, frameWidthPixels, frameHeightPixels));
-    _rect = sf::FloatRect(0, 0, frameWidthPixels, frameHeightPixels);
-}
+    SFMLAnimatedSprite::SFMLAnimatedSprite(const sf::Texture& texture,
+        std::shared_ptr<sf::RenderWindow> ctx,
+        int columns,
+        int rows,
+        float pixelSize,
+        std::unordered_map<int, int> animationMap)
+        : _animationMap(std::move(animationMap)), _ctx(std::move(ctx))
+    {
+        sprite.setTexture(texture);
+    
+        auto texSize = texture.getSize();
+        int frameWidthPixels = texSize.x / columns;
+        int frameHeightPixels = texSize.y / rows;
+        float frameMax = static_cast<float>(std::max(frameWidthPixels, frameHeightPixels));
+        float scaleFactor = pixelSize / frameMax;
+    
+        sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
+        sprite.setTextureRect(sf::IntRect(0, 0, frameWidthPixels, frameHeightPixels));
+        _rect = sf::FloatRect(0, 0, frameWidthPixels, frameHeightPixels);
+    }
+    
 
 void SFMLAnimatedSprite::playAnimation(int, bool)
 {
@@ -45,11 +51,11 @@ const tools::Vector2<float>& SFMLAnimatedSprite::getPosition() const
     return pos;
 }
 
-const tools::Vector2<float>& SFMLAnimatedSprite::getSize() const
+tools::Vector2<float> SFMLAnimatedSprite::getSize() const
 {
-    static tools::Vector2<float> size;
-    auto bounds = sprite.getGlobalBounds();
+    tools::Vector2<float> size;
 
+    auto bounds = sprite.getGlobalBounds();
     size.x = bounds.width;
     size.y = bounds.height;
     return size;

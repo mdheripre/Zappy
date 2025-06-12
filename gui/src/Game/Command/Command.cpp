@@ -476,19 +476,20 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         return;
     }
 
-    int eggId = std::stoi(token[0]);
-    int tranId = std::stoi(token[1]);
+    int eggId = std::stoi(token[0].substr(1));
+    int tranId = std::stoi(token[1].substr(1));
     std::string teamName;
     tools::Vector2<int> pos(std::stoi (token[2]), std::stoi(token[3]));
 
     auto tran = _gm.trantorians.find(tranId);
     if (tran != _gm.trantorians.end()) {
         teamName = tran->second->getTeamName();
+    } else if (tranId == -1){
+        teamName = "";
     } else {
         printErrorCommand("Trantorian id don't exist in enw ", token);
     }
     if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
-
         tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
         auto egg = std::make_shared<gui::Egg>(
             eggId,

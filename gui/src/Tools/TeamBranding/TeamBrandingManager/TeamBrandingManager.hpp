@@ -12,6 +12,7 @@
 #include <array>
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Trantorian/Trantorian.hpp"
+#include "Tools/Define.hpp"
 
 namespace tools
 {
@@ -60,7 +61,7 @@ namespace tools
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
                         },
                         // Scaling to apply
-                        1.0f,
+                        TILE_SIZE,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8
@@ -74,7 +75,7 @@ namespace tools
         
                         },
                         //Scaling to apply
-                        0.7f,
+                        TILE_SIZE,
                         //Rows en colonnes to cut texture for animation
                         7,
                         1
@@ -88,7 +89,7 @@ namespace tools
 
                         },
                         //Scaling to Apply
-                        0.2f,
+                        TILE_SIZE,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8

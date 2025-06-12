@@ -20,7 +20,7 @@ namespace sfml
         ~SFMLStaticSprite() override = default;
 
         const tools::Vector2<float>& getPosition() const override;
-        const tools::Vector2<float>& getSize() const override;
+        tools::Vector2<float> getSize() const override;
         void setPosition(const tools::Vector2<float>& pos) override;
         void drawObject() const override;
 

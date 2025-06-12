@@ -17,8 +17,10 @@ bool gui::Egg::update(float dt)
 
 void gui::Egg::draw() const
 {
-    if (_eggObject)
+    if (_eggObject) {
+        
         _eggObject->drawObject();
+    }
 }
 
 void gui::Egg::setPosition(tools::Vector2<int> pos)

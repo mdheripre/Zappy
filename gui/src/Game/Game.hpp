@@ -102,7 +102,7 @@ namespace game
                 { tools::KeyCode::Left,  [this]() {std::cout << "Left pressed" << std::endl;}},
                 { tools::KeyCode::Up,    [this]() {std::cout << "Up pressed" << std::endl;}},
                 { tools::KeyCode::Down,  [this]() {std::cout << "Down pressed" << std::endl;}},
-                { tools::KeyCode::W,     [this]() {std::cout << "W pressed" << std::endl;}},
+                { tools::KeyCode::W,     [this]() {_outgoing->push("mct\n");}},
                 { tools::KeyCode::S,     [this]() {std::cout << "S pressed" << std::endl;}},
             };
     };

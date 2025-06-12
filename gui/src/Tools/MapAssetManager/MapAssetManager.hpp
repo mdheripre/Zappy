@@ -12,6 +12,7 @@
 #include "Game/Renderer/Object/IStaticSprite.hpp"
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Game/Map/Map.hpp"
+#include "Tools/Define.hpp"
 
 namespace tools
 {
