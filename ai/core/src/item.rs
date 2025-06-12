@@ -1,5 +1,6 @@
 use crate::{CoreError, Result};
 use std::fmt;
+use std::str::FromStr;
 
 /// All existing items in the game
 ///
@@ -50,5 +51,47 @@ impl fmt::Display for Item {
             Item::Thystame => "thystame"
         };
         write!(f, "{}", s)
+    }
+}
+
+impl FromStr for Item {
+    type Err = CoreError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        match s.to_lowercase().as_str() {
+            "food" => Ok(Item::Food),
+            "linemate" => Ok(Item::Linemate),
+            "deraumere" => Ok(Item::Deraumere),
+            "sibur" => Ok(Item::Sibur),
+            "mendiane" => Ok(Item::Mendiane),
+            "phiras" => Ok(Item::Phiras),
+            "thystame" => Ok(Item::Thystame),
+            _ => Err(CoreError::InvalidResponse(format!("Unknown item: {}", s))),
+        }
+    }}
+
+impl Item {
+    pub fn probability(&self) -> f64 {
+        match self {
+            Item::Food => 0.5,
+            Item::Linemate => 0.3,
+            Item::Deraumere => 0.15,
+            Item::Sibur => 0.1,
+            Item::Mendiane => 0.1,
+            Item::Phiras => 0.08,
+            Item::Thystame => 0.05,
+        }
+    }
+
+    pub fn needed(&self) -> i32 {
+        match self {
+            Item::Food => 100,
+            Item::Linemate => 9,
+            Item::Deraumere => 8,
+            Item::Sibur => 10,
+            Item::Mendiane => 5,
+            Item::Phiras => 6,
+            Item::Thystame => 1,
+        }
     }
 }

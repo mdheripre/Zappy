@@ -8,6 +8,7 @@ mod prelude;
 mod server_response;
 mod tile;
 mod utils;
+mod ai_role;
 
 use crate::{ai_core::AiCore, prelude::*};
 use clap::Parser;

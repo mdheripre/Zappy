@@ -10,6 +10,7 @@ use crate::packet::{Packet, PacketSender};
 use crate::server_response::ServerResponse;
 use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
+use crate::ai_role::Role;
 
 /// Zappy game state
 ///
@@ -41,6 +42,8 @@ pub struct AiState {
     pub inventory: Vec<Item>,
     pub world_map: Vec<Tile>,
     pub is_running: bool,
+    pub role: Role,
+    pub time: i32,
 }
 
 impl AiState {
@@ -51,6 +54,12 @@ impl AiState {
             inventory: Vec::new(),
             world_map: Vec::new(),
             is_running: true,
+            role: match ci.client_num {
+                1 => Role::Alpha,
+                2..=5 => Role::Beta,
+                _ => Role::Gamma,
+            },
+            time: 0,
         }
     }
 }
@@ -310,16 +319,50 @@ impl AiCore {
     async fn handle_server_response(&self, response: ServerResponse) -> Result<()>{
         println!("Received: {:?}", response);
 
-        let _state = self.state.lock().await;
+        let mut state = self.state.lock().await;
         match &response {
             ServerResponse::Look(items) => {
-                // update tiles
+                let position = state.position;
+                let time = state.time;
+                let tile = state.world_map.iter_mut().find(|t| t.position() == position);
+                let mut tile = match tile {
+                    Some(t) => t,
+                    None => {
+                        let new_tile = Tile::new(state.time);
+                        state.world_map.push(new_tile);
+                        state.world_map.last_mut().unwrap()
+                    }
+                };
+                let mut items_counts = std::collections::HashMap::new();
+                let mut nb_items = 0;
+                let mut nb_players = 0;
+                for entry in items {
+                    for word in entry.split_whitespace() {
+                        if word == "player" {
+                            nb_players += 1;
+                        } else if let Ok(item) = word.parse::<Item>() {
+                            *items_counts.entry(item).or_insert(0) += 1;
+                            nb_items += 1;
+                        }
+                    }
+                }
+                tile.clear_items();
+                tile.set_look_time(time);
+                tile.nb_players = nb_players;
+                tile.nb_items = nb_items;
+                tile.set_position(position);
+                for (item, count) in items_counts {
+                    for _ in 0..count {
+                        tile.set(item.clone());
+                    }
+                }
             }
             ServerResponse::Dead => {
                 // you died XDDD
             }
             ServerResponse::ClientNum(num) => {
                 // update client num
+                state.client_num = *num;
             }
             ServerResponse::Inventory(items) => {
                 // update inventory

@@ -24,17 +24,44 @@ pub struct Tile {
     pub nb_items: i32,
     pub nb_players: i32,
     items: HashMap<Item, usize>,
+    look_time: i32,
 }
 
 impl Tile {
+    pub fn new(time: i32) -> Self {
+        Tile {
+            position: (0, 0),
+            nb_items: 0,
+            nb_players: 0,
+            items: HashMap::new(),
+            look_time: time,
+        }
+    }
     pub fn position(&self) -> (i32, i32) {
         self.position
+    }
+
+    pub fn set_position(&mut self, pos: (i32, i32)) {
+        self.position = pos;
+    }
+
+    pub fn clear_items(&mut self) {
+        self.items.clear();
+        self.nb_items = 0;
     }
 
     pub fn get_items(&self) -> &HashMap<Item, usize> {
         &self.items
     }
 
+    pub fn get_look_time(&self) -> i32 {
+        self.look_time
+    }
+    
+    pub fn set_look_time(&mut self, time: i32) {
+        self.look_time = time;
+    }
+    
     pub fn set(&mut self, item: Item) {
         *self.items.entry(item).or_insert(0) += 1;
     }
@@ -47,5 +74,11 @@ impl Tile {
                 self.items.remove(&item);
             }
         }
+    }
+    
+    pub fn distance(&self, pos: (i32, i32)) -> f64 {
+        let dx = (self.position.0 - pos.0).abs();
+        let dy = (self.position.1 - pos.1).abs();
+        ((dx * dx + dy * dy) as f64).sqrt()
     }
 }
