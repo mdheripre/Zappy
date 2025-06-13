@@ -35,11 +35,15 @@ static void send_end_incantation(game_t *self, incantation_t *inc)
 }
 
 /**
- * @brief Update ongoing incantations and end those that are finished.
+ * @brief Update all ongoing incantations and complete those that have ended.
+ *
+ * Decrements the remaining ticks for each incantation. If finished, triggers
+ * end event and removes it from the list.
  *
  * @param self Pointer to the game instance.
+ * @param ticks Number of ticks to subtract.
  */
-void update_incantations(game_t *self)
+void update_incantations(game_t *self, int ticks)
 {
     list_node_t *curr = NULL;
     list_node_t *next = NULL;
@@ -48,15 +52,16 @@ void update_incantations(game_t *self)
     if (!self || !self->incantations)
         return;
     curr = self->incantations->head;
-    for (; curr; curr = next) {
+    while (curr) {
         next = curr->next;
         inc = (incantation_t *)curr->data;
         if (!inc)
             continue;
-        inc->tick_remaining--;
+        inc->tick_remaining -= ticks;
         if (inc->tick_remaining <= 0) {
             send_end_incantation(self, inc);
             self->incantations->methods->remove(self->incantations, inc);
         }
+        curr = next;
     }
 }

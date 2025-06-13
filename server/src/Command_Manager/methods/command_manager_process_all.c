@@ -52,49 +52,57 @@ static void execute_ready_command(command_manager_t *self,
 }
 
 /**
- * @brief Processes a queued command for a client if it is
- *        ready to be executed.
+ * @brief Process a command if its remaining time is up.
  *
- * This function checks the time remaining for the command and executes it
- * if the time has elapsed. It also logs the command execution.
+ * Logs progress and calls execution when ticks_remaining reaches zero.
  *
- * @param self Pointer to the command manager instance.
- * @param client Pointer to the client that owns the command.
- * @param cmd Pointer to the queued command to process.
- * @param delta Time elapsed since last update, used for command execution.
+ * @param self Pointer to the command manager.
+ * @param client Pointer to the client.
+ * @param cmd Pointer to the queued command.
+ * @param ticks Number of ticks passed since last update.
  */
 static void process_command_if_ready(command_manager_t *self,
-    client_t *client, queued_command_t *cmd, float delta)
+    client_t *client, queued_command_t *cmd, int ticks)
 {
     char cmd_name[BUFFER_SIZE] = {0};
 
     extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
-    cmd->time_remaining -= delta;
-    console_log(LOG_INFO, "Client %d command: \"%s\" (%.2fs left)",
-        client->fd, cmd_name, cmd->time_remaining);
-    if (cmd->time_remaining <= 0.0f)
+    cmd->ticks_remaining -= ticks;
+    if (cmd->ticks_remaining > 0) {
+        console_log(LOG_INFO,
+            "Client %d | Waiting: %s (%d ticks left)",
+            client->fd, cmd_name, cmd->ticks_remaining);
+    } else {
+        console_log(LOG_SUCCESS,
+            "Client %d | Executing: %s",
+            client->fd, cmd_name);
         execute_ready_command(self, client, cmd);
+    }
 }
 
 /**
- * @brief Processes and executes the next queued command for all connected
- * IA clients.
+ * @brief Update and process commands for all connected clients.
  *
- * @param server Pointer to the server structure.
- * @param delta Time elapsed since last update, used for command execution.
+ * Skips clients that are disconnected or stuck.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ * @param ticks Number of ticks passed since last update.
  */
-void process_all(command_manager_t *self, server_t *server, float delta)
+void process_all(command_manager_t *self, server_t *server, int ticks)
 {
-    int i = 0;
     client_t *client = NULL;
     queued_command_t *cmd = NULL;
 
-    for (i = 0; i < server->client_count; i++) {
+    if (!self || !server)
+        return;
+    for (int i = 0; i < server->client_count; i++) {
         client = &server->clients[i];
         if (!client || !client->connected || client->stuck)
             continue;
         cmd = client_peek_command(client);
-        if (cmd)
-            process_command_if_ready(self, client, cmd, delta);
+        if (cmd && (cmd->scheduled_tick != server->game->tick_counter - ticks
+            || cmd->ticks_remaining <= 0))
+            process_command_if_ready(self, client, cmd, ticks);
     }
 }

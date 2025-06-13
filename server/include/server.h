@@ -13,6 +13,8 @@
     #include <stdlib.h>
     #include <errno.h>
     #include <string.h>
+    #include <limits.h>
+    #include <math.h>
     #include <unistd.h>
     #include <poll.h>
     #include <signal.h>
@@ -44,7 +46,7 @@ typedef struct server_methods_s {
     void (*handle_poll)(server_t *self, struct pollfd *fds);
     void (*accept_client)(server_t *self);
     void (*remove_client)(server_t *self, int index);
-    float (*get_command_delay)(server_t *self, const char *command);
+    int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
 } server_methods_t;
@@ -76,8 +78,9 @@ void accept_client(server_t *self);
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
-float get_command_delay(server_t *server, const char *command);
 void reject_client(server_t *server, client_t *client, const char *reason);
+int get_command_delay(server_t *self, const char *command);
+
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);

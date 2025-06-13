@@ -51,10 +51,13 @@ static void init_player_from_egg(server_t *server, client_t *client,
  */
 static void send_player_init(server_t *server, client_t *client)
 {
+    int used = server->game->methods->count_team_members(server->game,
+        client->player->team_name);
+    int available = server->game->team_size - used;
+
     console_log(LOG_SUCCESS, "Client %d joined team \"%s\" as player #%d",
         client->fd, client->player->team_name, client->player->id);
-    EMIT(server->command_manager->dispatcher, "command_ia_Connect_nbr",
-        client);
+    dprintf(client->fd, "%d\n", available);
     dprintf(client->fd, "%d %d\n", server->game->width, server->game->height);
 }
 

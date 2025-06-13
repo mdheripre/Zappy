@@ -196,8 +196,9 @@ game_t *game_create(config_game_t *config)
     game->frequency = config->frequency;
     game->team_size = config->team_size;
     game->team_name = config->team_name;
+    game->tick_counter_tiled = 0;
     game->last_tick_time = 0;
-    game->started = false;
+    game->tick_counter = 0;
     game->methods = &GAME_METHODS;
     game->dispatcher = NEW(dispatcher, NULL);
     register_event_game(game->dispatcher, game);

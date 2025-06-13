@@ -164,11 +164,11 @@ typedef struct {
 
 struct game_methods_s {
     void (*dispatch_events)(game_t *self);
-    void (*update)(game_t *self);
+    void (*update)(game_t *self, int tick);
     int (*count_team_members)(game_t *self, const char *team_name);
-    void (*update_players)(game_t *self);
+    void (*update_players)(game_t *self, int tick);
     void (*spawn_resources)(game_t *self);
-    void (*update_incantations)(game_t *self);
+    void (*update_incantations)(game_t *self, int tick);
     bool (*check_incantate)(game_t *self, incantation_t *inc);
     list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
 };
@@ -199,8 +199,9 @@ struct game_s {
     int height;
     double frequency;
     long last_tick_time;
-    bool started;
     int team_size;
+    int tick_counter_tiled;
+    long tick_counter;
 
     tile_t **map;
     list_t *team_name;
@@ -224,11 +225,11 @@ struct config_game_s {
 game_t *game_create(config_game_t *config);
 void game_destroy(game_t *game);
 void game_dispatch_events(game_t *self);
-void game_update(game_t *self);
+void game_update(game_t *self, int tick);
 int count_team_members(game_t *self, const char *team_name);
-void update_players(game_t *self);
+void update_players(game_t *self, int tick);
 void spawn_resources(game_t *self);
-void update_incantations(game_t *self);
+void update_incantations(game_t *self, int tick);
 bool check_incantate(game_t *game, incantation_t *inc);
 list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 void emit_tile_update(game_t *game, int x, int y);

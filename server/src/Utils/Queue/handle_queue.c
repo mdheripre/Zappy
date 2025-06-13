@@ -16,14 +16,18 @@
 /****************************************************************************/
 
 /**
- * @brief Add a command to the client's command queue.
+ * @brief Enqueue a new command into the client's command queue.
+ *
+ * Initializes a queued_command_t with delay and current tick, then stores it.
  *
  * @param client Pointer to the client.
  * @param cmd Command string to enqueue.
- * @param delay Time before the command is executed.
- * @return true on success, false on failure.
+ * @param ticks Number of ticks before execution.
+ * @param game Pointer to the game instance (for current tick counter).
+ * @return true if the command was enqueued successfully, false otherwise.
  */
-bool client_enqueue_command(client_t *client, const char *cmd, float delay)
+bool client_enqueue_command(client_t *client, const char *cmd,
+    int ticks, game_t *game)
 {
     queued_command_t *entry = NULL;
 
@@ -36,7 +40,8 @@ bool client_enqueue_command(client_t *client, const char *cmd, float delay)
     memset(entry, 0, sizeof(queued_command_t));
     strncpy(entry->content, cmd, BUFFER_COMMAND_SIZE - 1);
     entry->content[BUFFER_COMMAND_SIZE - 1] = '\0';
-    entry->time_remaining = delay;
+    entry->ticks_remaining = ticks;
+    entry->scheduled_tick = game->tick_counter;
     client->commands->methods->push_back(client->commands, entry);
     return true;
 }

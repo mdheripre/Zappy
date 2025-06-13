@@ -40,12 +40,27 @@ typedef struct {
     char *buffer;
 } query_t;
 
+typedef struct {
+    int ticks;
+    const char *origin;
+} tick_info_t;
+
+typedef struct {
+    char *buf;
+    bool *first;
+} write_ctx_t;
+
+typedef struct {
+    game_t *game;
+    player_t *player;
+    write_ctx_t writer;
+} explore_ctx_t;
 
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);
-bool client_enqueue_command(client_t *client,
-    const char *cmd, float delay);
+bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
+    game_t *game);
 queued_command_t *client_peek_command(client_t *client);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
 const char *event_type_name(game_event_type_t type);
