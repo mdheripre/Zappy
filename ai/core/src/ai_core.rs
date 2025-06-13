@@ -10,6 +10,7 @@ use crate::packet::{Packet, PacketSender};
 use crate::server_response::ServerResponse;
 use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
+use crate::ai_direction::Direction;
 use crate::ai_role::Role;
 
 /// Zappy game state
@@ -44,6 +45,7 @@ pub struct AiState {
     pub is_running: bool,
     pub role: Role,
     pub time: i32,
+    pub direction: Direction,
 }
 
 impl AiState {
@@ -60,6 +62,7 @@ impl AiState {
                 _ => Role::Gamma,
             },
             time: 0,
+            direction: Direction::North,
         }
     }
 }
@@ -322,39 +325,12 @@ impl AiCore {
         let mut state = self.state.lock().await;
         match &response {
             ServerResponse::Look(items) => {
-                let position = state.position;
-                let time = state.time;
-                let tile = state.world_map.iter_mut().find(|t| t.position() == position);
-                let mut tile = match tile {
-                    Some(t) => t,
-                    None => {
-                        let new_tile = Tile::new(state.time);
-                        state.world_map.push(new_tile);
-                        state.world_map.last_mut().unwrap()
-                    }
-                };
-                let mut items_counts = std::collections::HashMap::new();
-                let mut nb_items = 0;
-                let mut nb_players = 0;
-                for entry in items {
-                    for word in entry.split_whitespace() {
-                        if word == "player" {
-                            nb_players += 1;
-                        } else if let Ok(item) = word.parse::<Item>() {
-                            *items_counts.entry(item).or_insert(0) += 1;
-                            nb_items += 1;
-                        }
-                    }
-                }
-                tile.clear_items();
-                tile.set_look_time(time);
-                tile.nb_players = nb_players;
-                tile.nb_items = nb_items;
-                tile.set_position(position);
-                for (item, count) in items_counts {
-                    for _ in 0..count {
-                        tile.set(item.clone());
-                    }
+                let mut i = 0;
+                for item in items {
+                    let tile = Tile::new_from_response(item.clone(), i, state.clone());
+                    state.world_map.retain(|t| t.position() != tile.position());
+                    state.world_map.push(tile);
+                    i += 1;
                 }
             }
             ServerResponse::Dead => {

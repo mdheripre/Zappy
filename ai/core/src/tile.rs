@@ -1,6 +1,8 @@
 use crate::item::Item;
 use crate::{CoreError, Result};
 use std::collections::HashMap;
+use crate::ai_core::AiState;
+
 /// Content of a Tile
 ///
 /// # Fields
@@ -37,6 +39,37 @@ impl Tile {
             look_time: time,
         }
     }
+
+    pub fn new_from_response(string: String, tile_number: i32, ai_state: AiState) -> Self {
+        let mut tile = Tile::new(ai_state.time);
+        let mut y = ai_state.position.0 + ((tile_number as f64).sqrt().floor() as i32);
+        let mut x = ai_state.position.1 + (tile_number - y * (y + 1));
+        match ai_state.direction {
+            crate::ai_direction::Direction::North => {
+                tile.set_position((x, y));
+            }
+            crate::ai_direction::Direction::East => {
+                tile.set_position((y, x));
+            },
+            crate::ai_direction::Direction::South => {
+                tile.set_position((-x, -y));
+            },
+            crate::ai_direction::Direction::West => {
+                tile.set_position((-y, -x));
+            },
+        }
+        for item in string.split(' ') {
+            if item == "player" {
+                tile.nb_players += 1;
+                continue;
+            } else if let Ok(item_enum) = item.parse::<Item>() {
+                tile.nb_items += 1;
+                tile.set(item_enum);
+            }
+        }
+        tile
+    }
+
     pub fn position(&self) -> (i32, i32) {
         self.position
     }
