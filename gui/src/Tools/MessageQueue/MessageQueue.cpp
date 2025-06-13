@@ -11,7 +11,6 @@
 void tools::MessageQueue::push(const std::string &message)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    std::cout<<message<< std::endl;
     _queue.push(message);
     _cond.notify_one();
 }

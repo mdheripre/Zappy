@@ -15,34 +15,73 @@ namespace sfml {
         int columns,
         int rows,
         float pixelSize,
-        std::unordered_map<int, int> animationMap)
-        : _animationMap(std::move(animationMap)), _ctx(std::move(ctx))
+        std::unordered_map<int, int> animationMap,
+        float fps,
+        int defaultAnimation)
+        : _animationMap(std::move(animationMap)), _rows(rows), _columns(columns), _ctx(std::move(ctx)), _fps(fps)
     {
         sprite.setTexture(texture);
-    
         auto texSize = texture.getSize();
-        int frameWidthPixels = texSize.x / columns;
-        int frameHeightPixels = texSize.y / rows;
-        float frameMax = static_cast<float>(std::max(frameWidthPixels, frameHeightPixels));
-        float scaleFactor = pixelSize / frameMax;
+        
+        _frameWidth = texSize.x / _columns;
+        _frameHeight = texSize.y / _rows;
     
+        float frameMax = static_cast<float>(std::max(_frameWidth, _frameHeight));
+        float scaleFactor = pixelSize / frameMax;
         sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
-        sprite.setTextureRect(sf::IntRect(0, 0, frameWidthPixels, frameHeightPixels));
-        _rect = sf::FloatRect(0, 0, frameWidthPixels, frameHeightPixels);
+        
+        _currentAnimation = defaultAnimation;
+        _defaultAnimation = defaultAnimation;
+        playAnimation(_currentAnimation, true);
     }
     
 
-void SFMLAnimatedSprite::playAnimation(int, bool)
-{
-   //TODO
-}
+    void SFMLAnimatedSprite::playAnimation(int keyAnim, bool loop)
+    {
+        auto animIt = _animationMap.find(keyAnim);
+        if (animIt == _animationMap.end()) {
+            throw RenderError("Error animation " + std::to_string(keyAnim) + " doesn't exist");
+        }
+        
+        _currentAnimRow = animIt->second;
+        _currentFrame = 0;
+        _loop = loop;
+        _currentAnimation = keyAnim;
+    
+        sprite.setTextureRect(sf::IntRect(
+            _currentFrame * _frameWidth,
+            _currentAnimRow * _frameHeight,
+            _frameWidth,
+            _frameHeight
+        ));
+    }
 
-bool SFMLAnimatedSprite::updateObject(float dt)
-{
-    return true;
-}
-
-const tools::Vector2<float>& SFMLAnimatedSprite::getPosition() const
+    bool SFMLAnimatedSprite::updateObject(float dt)
+    {
+        acc += dt;
+    
+        if (acc < (1.0f / _fps)) {
+            return false;
+        }
+        acc = 0.0f;
+        _currentFrame++;
+        if (_currentFrame >= _columns) {
+            if (_loop) {
+                _currentFrame = 0;
+            } else {
+                playAnimation(_defaultAnimation, true);
+                return true;
+            }
+        }
+        sprite.setTextureRect(sf::IntRect(
+            _currentFrame * _frameWidth,
+            _currentAnimRow * _frameHeight,
+            _frameWidth,
+            _frameHeight
+        ));
+        return false;
+    }
+tools::Vector2<float> SFMLAnimatedSprite::getPosition() const
 {
     static tools::Vector2<float> pos;
     sf::Vector2f sfPos = sprite.getPosition();

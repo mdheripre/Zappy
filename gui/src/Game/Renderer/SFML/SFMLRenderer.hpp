@@ -27,6 +27,8 @@ namespace sfml
         void pushEntity(std::shared_ptr<render::IRenderEntity> renderEntity);
         void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>> bindings) {_bindings = bindings;};
         render::IObjectFactory &getFactory();
+        void setPositionView(int offsetX, int offsetY);
+        void setZoomView(float factor);
         void poll();
         void manageKeyCode(const sf::Event &event);
         const std::unordered_map<sf::Keyboard::Key, tools::KeyCode> _keyMap = {

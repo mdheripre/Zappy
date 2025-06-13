@@ -21,9 +21,9 @@ namespace sfml
     _sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
 }
 
-const tools::Vector2<float>& SFMLStaticSprite::getPosition() const
+tools::Vector2<float> SFMLStaticSprite::getPosition() const
 {
-    static tools::Vector2<float> pos;
+    tools::Vector2<float> pos;
     sf::Vector2f sfPos = _sprite.getPosition();
     pos.x = sfPos.x;
     pos.y = sfPos.y;

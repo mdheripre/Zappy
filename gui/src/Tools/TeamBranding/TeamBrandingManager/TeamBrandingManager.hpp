@@ -12,6 +12,7 @@
 #include <array>
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Trantorian/Trantorian.hpp"
+#include "Game/Egg/Egg.hpp"
 #include "Tools/Define.hpp"
 
 namespace tools
@@ -61,7 +62,7 @@ namespace tools
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
                         },
                         // Scaling to apply
-                        TILE_SIZE,
+                        TILE_SIZE * 2,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8
@@ -86,10 +87,10 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         //Animation Mapping
                         {
-
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
                         },
                         //Scaling to Apply
-                        TILE_SIZE,
+                        TILE_SIZE * 1.2,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8

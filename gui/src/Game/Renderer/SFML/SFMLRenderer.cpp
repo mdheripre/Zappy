@@ -70,6 +70,22 @@ render::IObjectFactory &sfml::SFMLRenderer::getFactory()
     return *_objFactory;
 }
 
+void sfml::SFMLRenderer::setPositionView(int offsetX, int offsetY)
+{
+    sf::View view = _rWindow->getView();
+
+    view.move(offsetX, offsetY);
+    _rWindow->setView(view);
+}
+
+void sfml::SFMLRenderer::setZoomView(float factor)
+{
+    sf::View view = _rWindow->getView();
+
+    view.zoom(factor);
+    _rWindow->setView(view);
+}
+
 void sfml::SFMLRenderer::poll()
 {
     sf::Event event;

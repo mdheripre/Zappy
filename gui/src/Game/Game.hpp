@@ -98,12 +98,12 @@ namespace game
                 {"sbp",     std::bind(&Game::sbpCommand, this, std::placeholders::_1)}
             };
             const std::unordered_map<tools::KeyCode, std::function<void()>> bindings = {
-                { tools::KeyCode::Right, [this]() {std::cout << "Right pressed" << std::endl;}},
-                { tools::KeyCode::Left,  [this]() {std::cout << "Left pressed" << std::endl;}},
-                { tools::KeyCode::Up,    [this]() {std::cout << "Up pressed" << std::endl;}},
-                { tools::KeyCode::Down,  [this]() {std::cout << "Down pressed" << std::endl;}},
-                { tools::KeyCode::W,     [this]() {_outgoing->push("mct\n");}},
-                { tools::KeyCode::S,     [this]() {std::cout << "S pressed" << std::endl;}},
+                { tools::KeyCode::Right, [this]() { _renderer->setPositionView(-20, 0); }},
+                { tools::KeyCode::Left,  [this]() { _renderer->setPositionView(20, 0); }},
+                { tools::KeyCode::Up,    [this]() { _renderer->setPositionView(0, 20); }},
+                { tools::KeyCode::Down,  [this]() { _renderer->setPositionView(0, -20); }},
+                { tools::KeyCode::W,     [this]() { _renderer->setZoomView(1.1f);}},
+                { tools::KeyCode::S,     [this]() { _renderer->setZoomView(0.9f);}},
             };
     };
 } // namespace Game
