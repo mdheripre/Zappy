@@ -45,7 +45,7 @@ void player_update(player_t *self, game_t *game)
     if (!self || !self->is_alive || !game)
         return;
     self->nbr_tick++;
-    if (self->nbr_tick == 110)
+    if (self->nbr_tick == 110 && self->inventory[RESOURCE_FOOD] <= 0)
         console_log(LOG_WARNING, "Player %d is getting hungry!", self->id);
     if (self->nbr_tick < 126)
         return;

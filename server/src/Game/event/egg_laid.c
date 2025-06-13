@@ -68,10 +68,10 @@ static void send_egg_laid_event(game_t *game, egg_t *egg)
     if (!response)
         return;
     response->type = GAME_EVENT_RESPONSE_EGG_LAID;
-    response->data.egg_laid.player_id = egg->player_id;
-    response->data.egg_laid.team_name = egg->team_name;
-    response->data.egg_laid.x = egg->x;
-    response->data.egg_laid.y = egg->y;
+    response->data.egg.player_id = egg->player_id;
+    response->data.egg.team_name = egg->team_name;
+    response->data.egg.x = egg->x;
+    response->data.egg.y = egg->y;
     game->server_event_queue->methods->push_back(game->server_event_queue,
         response);
 }

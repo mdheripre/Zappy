@@ -72,26 +72,41 @@ static void eject_players(game_t *game, player_t *source, list_t *ejected)
     }
 }
 
-/**
- * @brief Handle an eject game event and compute the result.
- *
- * Moves other players and queues a response for the initiator.
- *
- * @param ctx Pointer to the game instance.
- * @param data Pointer to the eject event.
- */
-void on_eject(void *ctx, void *data)
+static void send_egg_death_event(game_t *game, egg_t *egg)
 {
-    game_t *game = ctx;
-    game_event_t *event = data;
-    game_event_t *response = malloc(sizeof(game_event_t));
-    player_t *player = find_player_by_id(game,
-        event->data.generic_response.player_id);
-    list_t *ejected = NEW(list, NULL);
+    game_event_t *egg_death = malloc(sizeof(game_event_t));
 
-    if (!game || !event || !player || !ejected)
+    if (!egg_death)
         return;
-    eject_players(game, player, ejected);
+    egg_death->type = GAME_EVENT_RESPONSE_EGG_DIE;
+    egg_death->data.egg.player_id = egg->id;
+    egg_death->data.egg.x = egg->x;
+    egg_death->data.egg.y = egg->y;
+    egg_death->data.egg.team_name = egg->team_name;
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, egg_death);
+}
+
+static void handle_egg_death(game_t *game, player_t *player)
+{
+    egg_t *egg = NULL;
+
+    for (list_node_t *node = game->eggs->head; node; node = node->next) {
+        egg = node->data;
+        if (!egg)
+            continue;
+        if (egg->x == player->x && egg->y == player->y)
+            send_egg_death_event(game, egg);
+    }
+}
+
+static void handle_eject_response(game_t *game, game_event_t *event,
+    player_t *player, list_t *ejected)
+{
+    game_event_t *response = malloc(sizeof(game_event_t));
+
+    if (!response)
+        return;
     response->type = GAME_EVENT_RESPONSE_PLAYER_EJECTED;
     response->data.generic_response.client_fd =
         event->data.generic_response.client_fd;
@@ -101,4 +116,19 @@ void on_eject(void *ctx, void *data)
         "ok\n" : "ko\n");
     game->server_event_queue->methods->push_back(game->server_event_queue,
         response);
+}
+
+void on_eject(void *ctx, void *data)
+{
+    game_t *game = ctx;
+    game_event_t *event = data;
+    player_t *player = find_player_by_id(game,
+        event->data.generic_response.player_id);
+    list_t *ejected = NEW(list, NULL);
+
+    if (!game || !event || !player || !ejected)
+        return;
+    eject_players(game, player, ejected);
+    handle_eject_response(game, event, player, ejected);
+    handle_egg_death(game, player);
 }

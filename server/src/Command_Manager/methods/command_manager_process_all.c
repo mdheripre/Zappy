@@ -91,8 +91,7 @@ void process_all(command_manager_t *self, server_t *server, float delta)
 
     for (i = 0; i < server->client_count; i++) {
         client = &server->clients[i];
-        if (!client || !client->connected || client->type != CLIENT_IA
-            || client->stuck)
+        if (!client || !client->connected || client->stuck)
             continue;
         cmd = client_peek_command(client);
         if (cmd)

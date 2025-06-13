@@ -1,12 +1,13 @@
 /*
 ** EPITECH PROJECT, 2025
-** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
+** server
 ** File description:
-** response_egg_laid
+** response_egg_die
 */
 
 #include "game.h"
 #include "server.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -14,7 +15,7 @@
 /*                                                                          */
 /****************************************************************************/
 
-void on_response_egg_laid(void *ctx, void *data)
+void on_response_egg_die(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;

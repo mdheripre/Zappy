@@ -44,8 +44,6 @@ typedef enum game_event_type_e {
     // (produits par IA ou déclenchés par le jeu)
     GAME_EVENT_START_INCANTATION,  // Début d'incantation
     GAME_EVENT_END_INCANTATION,    // Fin d'incantation (tick 300)
-    GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
-    GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
     GAME_EVENT_LOOK_AROUND,        // Regarder autour
     GAME_EVENT_BROADCAST_MESSAGE,  // Diffuser un message
     GAME_EVENT_CONNECT_NBR,        // Nombre de connexions disponibles
@@ -54,20 +52,22 @@ typedef enum game_event_type_e {
     GAME_EVENT_PLAYER_MOVED,       // Le joueur s'est déplacé
     GAME_EVENT_PLAYER_DIED,        // Mort d’un joueur
     GAME_EVENT_EGG_LAID,           // Œuf pondu
-    GAME_EVENT_TILE_UPDATED,       // Changement de ressource sur une case
+    GAME_EVENT_PLAYER_TAKE_ITEM,   // Prendre un objet
+    GAME_EVENT_PLAYER_DROP_ITEM,   // Déposer un objet
 
     // === Réponses (à destination des IA et/ou GUI)
     GAME_EVENT_RESPONSE_PLAYER_MOVED,       // ppo + "ok"
     GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
     GAME_EVENT_RESPONSE_EGG_LAID,           // enw
+    GAME_EVENT_RESPONSE_EGG_DIE,            // edi
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
     GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
-    GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
     GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
+    GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
 } game_event_type_t;
@@ -84,31 +84,31 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_START_INCANTATION, "START_INCANTATION" },
     { GAME_EVENT_END_INCANTATION, "END_INCANTATION" },
     { GAME_EVENT_PLAYER_TAKE_ITEM, "PLAYER_TAKE_ITEM" },
-    { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
-    { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
-    { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
     { GAME_EVENT_CONNECT_NBR, "CONNECT_NBR" },
     { GAME_EVENT_LOOK_AROUND, "LOOK_AROUND" },
     { GAME_EVENT_CHECK_INVENTORY, "CHECK_INVENTORY" },
     { GAME_EVENT_PLAYER_MOVED, "PLAYER_MOVED" },
     { GAME_EVENT_PLAYER_DIED, "PLAYER_DIED" },
     { GAME_EVENT_EGG_LAID, "EGG_LAID" },
-    { GAME_EVENT_TILE_UPDATED, "TILE_UPDATED" },
+    { GAME_EVENT_BROADCAST_MESSAGE, "BROADCAST_MESSAGE" },
+    { GAME_EVENT_PLAYER_EJECT, "PLAYER_EJECT" },
+    { GAME_EVENT_PLAYER_DROP_ITEM, "PLAYER_DROP_ITEM" },
 
     // Réponses
     { GAME_EVENT_RESPONSE_PLAYER_MOVED, "RESPONSE_PLAYER_MOVED" },
     { GAME_EVENT_RESPONSE_PLAYER_DIED, "RESPONSE_PLAYER_DIED" },
     { GAME_EVENT_RESPONSE_EGG_LAID, "RESPONSE_EGG_LAID" },
+    { GAME_EVENT_RESPONSE_EGG_DIE, "RESPONSE_EGG_DIE" },
     { GAME_EVENT_RESPONSE_START_INCANTATION, "RESPONSE_START_INCANTATION" },
     { GAME_EVENT_RESPONSE_END_INCANTATION, "RESPONSE_END_INCANTATION" },
     { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
     { GAME_EVENT_RESPONSE_CONNECT_NBR, "RESPONSE_CONNECT_NBR" },
-    { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
     { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
     { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
-    { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
-    { GAME_EVENT_RESPONSE_TAKE, "RESPONSE_TAKE" },
     { GAME_EVENT_RESPONSE_DROP, "RESPONSE_DROP" },
+    { GAME_EVENT_RESPONSE_TAKE, "RESPONSE_TAKE" },
+    { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
+    { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
 };
 
 typedef enum move_direction_e {
@@ -138,7 +138,7 @@ typedef struct {
             int x;
             int y;
             const char *team_name;
-        } egg_laid;
+        } egg;
         struct {
             int x;
             int y;
@@ -231,6 +231,8 @@ void spawn_resources(game_t *self);
 void update_incantations(game_t *self);
 bool check_incantate(game_t *game, incantation_t *inc);
 list_t *get_players_on_tile(game_t *game, int x, int y, int level);
+void emit_tile_update(game_t *game, int x, int y);
+int resource_from_string(const char *name);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);
@@ -242,4 +244,7 @@ void on_eject(void *ctx, void *data);
 void on_egg_laid(void *ctx, void *data);
 void on_end_incantation(void *ctx, void *data);
 void on_start_incantation(void *ctx, void *data);
+void on_broadcast(void *ctx, void *data);
+void on_drop(void *ctx, void *data);
+void on_take(void *ctx, void *data);
 #endif /* !GAME_H_ */
