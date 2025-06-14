@@ -40,7 +40,7 @@ typedef struct {
     char *buffer;
 } query_t;
 
-typedef struct {
+typedef struct tick_info_s {
     int ticks;
     const char *origin;
 } tick_info_t;

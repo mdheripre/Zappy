@@ -37,6 +37,7 @@ typedef struct server_s server_t;
 typedef struct response_payload_s response_payload_t;
 typedef struct command_manager_s command_manager_t;
 typedef struct client_s client_t;
+typedef struct tick_info_s tick_info_t;
 
 typedef struct server_methods_s {
     bool (*constructor)(server_t *self);
@@ -49,6 +50,7 @@ typedef struct server_methods_s {
     int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
+    tick_info_t (*get_next_tick_info)(server_t *self);
 } server_methods_t;
 
 struct server_s {
@@ -60,6 +62,8 @@ struct server_s {
     game_t *game;
     dispatcher_t *dispatcher;
     command_manager_t *command_manager;
+    float accumulated_ms;
+    long last_tick_time;
     const server_methods_t *vtable;
 };
 
@@ -80,6 +84,7 @@ void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 void reject_client(server_t *server, client_t *client, const char *reason);
 int get_command_delay(server_t *self, const char *command);
+tick_info_t get_next_tick_info(server_t *self);
 
 
 /* Event */

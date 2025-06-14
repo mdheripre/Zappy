@@ -37,6 +37,8 @@ void process_command_line(server_t *server, client_t *client,
     clean[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(clean);
     ticks = server->vtable->get_command_delay(server, clean);
+    console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
+        server->game->tick_counter);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
