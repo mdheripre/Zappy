@@ -194,17 +194,21 @@ struct incantation_s {
     int tick_remaining;
 };
 
+typedef struct team_info_s {
+    char *team_name;
+    int team_size;
+} team_info_t;
+
 struct game_s {
     int width;
     int height;
     double frequency;
     long last_tick_time;
-    int team_size;
     int tick_counter_tiled;
     long tick_counter;
 
     tile_t **map;
-    list_t *team_name;
+    list_t *teams;
     list_t *players;
     list_t *eggs;
     list_t *incantations;

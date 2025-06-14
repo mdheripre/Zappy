@@ -114,6 +114,7 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
 	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
+	$(SRC_UTILS_HELPERS)/find_team.c \
 	$(SRC_UTILS_HELPERS)/get_gui_client.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_player.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \

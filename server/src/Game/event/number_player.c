@@ -53,12 +53,20 @@ static game_event_t *prepare_connect_nbr_response(player_t *player,
  */
 static int get_team_available_slots(game_t *game, player_t *player)
 {
+    team_info_t *team = NULL;
     int used = 0;
 
     if (!game || !player || !player->team_name)
         return -1;
-    used = game->methods->count_team_members(game, player->team_name);
-    return game->team_size - used;
+    for (list_node_t *node = game->teams->head; node; node = node->next) {
+        team = node->data;
+        if (team && strcmp(team->team_name, player->team_name) == 0) {
+            used = game->methods->count_team_members(
+                game, player->team_name);
+            return team->team_size - used;
+        }
+    }
+    return -1;
 }
 
 /**
