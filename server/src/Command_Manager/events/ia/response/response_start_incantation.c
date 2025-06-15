@@ -54,10 +54,8 @@ void on_response_start_incantation(void *ctx, void *data)
     game_event_t *event = data;
     client_t *client = NULL;
 
-    printf("on_response_start_incantation\n");
     if (!server || !event)
         return;
-    printf("on_response_start_incantation\n");
     if (!event->data.incantation.success) {
         send_ko_to_participants(server, event->data.incantation.participants);
         return;

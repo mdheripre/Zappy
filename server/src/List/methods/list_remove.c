@@ -26,7 +26,7 @@
  */
 static void remove_node(list_t *self, list_node_t *node, list_node_t *prev)
 {
-    if (!self || !node || !prev)
+    if (!self || !node)
         return;
     if (prev)
         prev->next = node->next;

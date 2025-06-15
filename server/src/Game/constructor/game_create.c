@@ -212,7 +212,7 @@ static bool game_init_lists(game_t *game)
 {
     game->players = NEW(list, NULL);
     game->eggs = NEW(list, free);
-    game->incantations = NEW(list, NULL);
+    game->incantations = NEW(list, free);
     game->event_queue = NEW(list, free);
     game->server_event_queue = NEW(list, free);
     return game->players && game->eggs && game->event_queue &&

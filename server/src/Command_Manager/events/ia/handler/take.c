@@ -26,7 +26,6 @@
 static bool extract_item_from_command(client_t *client, char *item,
     size_t item_size)
 {
-    printf("Extracting item from command\n");
     if (!client || !client->commands)
         return false;
     return extract_command_arguments(
@@ -49,7 +48,6 @@ void handle_command_take(void *ctx, void *data)
 
     if (!server || !client || !player)
         return;
-    printf("take\n");
     if (!extract_item_from_command(client, item, sizeof(item)))
         return;
     event = malloc(sizeof(game_event_t));
