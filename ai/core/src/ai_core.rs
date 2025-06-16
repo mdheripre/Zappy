@@ -12,10 +12,11 @@ use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
+use crate::inventory::Inventory;
 
 /// Zappy game state
 ///
-/// # Fields
+/// # Fields  
 ///
 /// - `client_num` (`i32`) - number of available slots.
 /// - `position` (`(i32`) - position on the map.
@@ -40,12 +41,14 @@ use crate::ai_role::Role;
 pub struct AiState {
     pub client_num: i32,
     pub position: (i32, i32),
-    pub inventory: Vec<Item>,
+    pub inventory: Inventory,
     pub world_map: Vec<Tile>,
     pub is_running: bool,
     pub role: Role,
     pub time: i32,
     pub direction: Direction,
+    pub last_command: Option<AiCommand>,
+    pub previous_command: Option<AiCommand>,
 }
 
 impl AiState {
@@ -53,7 +56,7 @@ impl AiState {
         Self {
             client_num: ci.client_num,
             position: (ci.x, ci.y),
-            inventory: Vec::new(),
+            inventory: Inventory::new(),
             world_map: Vec::new(),
             is_running: true,
             role: match ci.client_num {
@@ -63,6 +66,25 @@ impl AiState {
             },
             time: 0,
             direction: Direction::North,
+            last_command: None,
+            previous_command: None,
+        }
+    }
+    
+    pub fn forward(&mut self) {
+        match self.direction {
+            Direction::North => {
+                self.position.1 += 1
+            }
+            Direction::South => {
+                self.position.1 -= 1
+            }
+            Direction::East => {
+                self.position.0 += 1
+            }
+            Direction::West => {
+                self.position.0 -= 1
+            }
         }
     }
 }
@@ -323,7 +345,30 @@ impl AiCore {
         println!("Received: {:?}", response);
 
         let mut state = self.state.lock().await;
+        let last_command = state.last_command.clone();
+        state.last_command = None;
+        state.previous_command = last_command.clone();
         match &response {
+            ServerResponse::Ok => {
+                match last_command {
+                    Some(AiCommand::Take(item)) => {
+                        state.inventory.add_item(&item);
+                    }
+                    Some(AiCommand::Set(item)) => {
+                        state.inventory.remove_item(&item);
+                    }
+                    Some(AiCommand::Forward) => {
+                        state.forward();
+                    }
+                    Some(AiCommand::Left) => {
+                        state.direction.left();
+                    }
+                    Some(AiCommand::Right) => {
+                        state.direction.right();
+                    }
+                    _ => {}
+                }
+            }
             ServerResponse::Look(items) => {
                 let mut i = 0;
                 for item in items {
@@ -337,11 +382,10 @@ impl AiCore {
                 // you died XDDD
             }
             ServerResponse::ClientNum(num) => {
-                // update client num
                 state.client_num = *num;
             }
-            ServerResponse::Inventory(items) => {
-                // update inventory
+            ServerResponse::Inventory(food) => {
+                state.inventory.food = *food as usize;
             }
             ServerResponse::Message(msg) => {
                 // send message to AI
