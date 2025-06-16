@@ -105,13 +105,12 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
         tokens += " ";
         tokens += i;
     }
+    std::string teamName = tokens.substr(1);
+    tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
 
-    std::string teamName = token[0];
-
-    if (_gm.teams.insert(teamName.substr(1)).second) {
-        std::cout << "[TNA] --- Team registered ---" << std::endl;
-        std::cout << "    Name : " << teamName.substr(1) << std::endl;
-    }
+    _gm.teams.insert_or_assign(teamName, tb);
+    std::cout << "[TNA] --- Team registered ---" << std::endl;
+    std::cout << "    Name : " << teamName << std::endl;
 }
 
 

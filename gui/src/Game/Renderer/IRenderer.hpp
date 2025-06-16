@@ -7,7 +7,7 @@
 
 #pragma once
 #include <memory>
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Tools/Input/Input.hpp"
 #include <functional>
@@ -26,6 +26,7 @@ namespace render
         virtual void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>>) = 0;
         virtual void setPositionView(int offsetX, int offsetY) = 0;
         virtual void setZoomView(float factor) = 0;
+        virtual void setUI(std::shared_ptr<IRenderEntity> ui) = 0;
         virtual IObjectFactory &getFactory() = 0;
         virtual void poll() = 0;
     };

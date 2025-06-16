@@ -10,6 +10,8 @@
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Game/Renderer/SFML/SFMLObject/SFMLAnimatedSprite/SFMLAnimatedSprite.hpp"
 #include "Game/Renderer/SFML/SFMLObject/SFMLStaticSprite/SFMLStaticSprite.hpp"
+#include "Game/Renderer/SFML/SFMLObject/SFMLText/SFMLText.hpp"
+#include "Game/Renderer/SFML/SFMLObject/SFMLCanva/SFMLCanva.hpp"
 #include <memory>
 #include <unordered_map>
 
@@ -23,8 +25,12 @@ namespace sfml
             ~SFMLObjectFactory() = default;
             std::unique_ptr<render::IAnimatedSprite> createAnimatedSprite(const tools::AssetDefinition &definition);
             std::unique_ptr<render::IStaticSprite> createStaticSprite(const tools::AssetDefinition &definition);
+            std::unique_ptr<render::IStaticSprite> createStaticSprite(const std::string &texturePath);
+            std::unique_ptr<render::ICanva> createCanva() const;
+            std::unique_ptr<render::IText> createText(std::string fontPath);
         private:
             std::unordered_map<std::string, sf::Texture> _textureMap;
+            std::unordered_map<std::string, sf::Font> _fontMap;
             std::shared_ptr<sf::RenderWindow> _rWindow;
     };
 } // namespace sfml

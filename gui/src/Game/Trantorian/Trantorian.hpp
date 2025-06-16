@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Game/GameState/EntityState/EntityState.hpp"
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Map/Tile/Tile.hpp"

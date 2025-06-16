@@ -26,8 +26,10 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     for (const auto& [name, handler] : commands) {
         _cm.addCommand(name, handler);
     }
-    _renderer->init("Zappy", 1920, 1080, 60);
+    _renderer->init("Zappy", WIDTH_WINDOW, HEIGHT_WINDOW, 60);
     _renderer->setBindings(bindings);
+    _ui = std::make_shared<gui::UI>(_renderer->getFactory());
+    _renderer->setUI(_ui);
 }
 
 /**

@@ -14,6 +14,8 @@
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Tools/MapAssetManager/MapAssetManager.hpp"
 #include "Tools/Input/Input.hpp"
+#include "Tools/Define.hpp"
+#include "Game/UI/UI.hpp"
 #include <chrono>
 #include <sstream>
 #include <thread>
@@ -39,6 +41,7 @@ namespace game
             bool _running = true;
             tools::CommandManager _cm;
             std::unique_ptr<render::IRenderer> _renderer;
+            std::shared_ptr<gui::UI> _ui;
             tools::TeamBrandingManager _tbManager;
             tools::MapAssetManager _maManager;
 

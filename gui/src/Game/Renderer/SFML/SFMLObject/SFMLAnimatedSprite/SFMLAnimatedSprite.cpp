@@ -100,6 +100,17 @@ tools::Vector2<float> SFMLAnimatedSprite::getSize() const
     return size;
 }
 
+void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
+{
+    sf::FloatRect bounds = sprite.getLocalBounds();
+    if (bounds.width == 0 || bounds.height == 0)
+        return;
+
+    float scaleX = size.x / bounds.width;
+    float scaleY = size.y / bounds.height;
+    sprite.setScale(scaleX, scaleY);
+}
+
 void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
 {
     sprite.setPosition(pos.x, pos.y);

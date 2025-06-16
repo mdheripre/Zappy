@@ -25,6 +25,7 @@ namespace sfml
         void render();
         bool isClose() const;
         void pushEntity(std::shared_ptr<render::IRenderEntity> renderEntity);
+        void setUI(std::shared_ptr<render::IRenderEntity> ui);
         void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>> bindings) {_bindings = bindings;};
         render::IObjectFactory &getFactory();
         void setPositionView(int offsetX, int offsetY);
@@ -44,5 +45,6 @@ namespace sfml
         std::shared_ptr<sf::RenderWindow> _rWindow;
         std::unique_ptr<SFMLObjectFactory> _objFactory;
         std::list<std::shared_ptr<render::IRenderEntity>> _entities;
+        std::shared_ptr<render::IRenderEntity> _ui;
     }; 
 } // namespace sfml

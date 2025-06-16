@@ -31,6 +31,7 @@ namespace sfml
             bool updateObject(float dt);
             tools::Vector2<float> getPosition() const;
             tools::Vector2<float> getSize() const;
+            void setSize(const tools::Vector2<float>& size);
             void setPosition(const tools::Vector2<float> &pos);
             void drawObject() const;
         private:

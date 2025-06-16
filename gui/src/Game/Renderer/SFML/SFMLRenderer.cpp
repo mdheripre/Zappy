@@ -36,6 +36,8 @@ void sfml::SFMLRenderer::update(float dt)
         std::remove_if(_entities.begin(), _entities.end(), shouldRemove),
         _entities.end()
     );
+    if (_ui)
+        _ui->update(dt);
 }
 
 /**
@@ -48,10 +50,13 @@ void sfml::SFMLRenderer::update(float dt)
 void sfml::SFMLRenderer::render()
 {
     _rWindow->clear(sf::Color::Black);
+
     for (auto& entity : _entities) {
         if (entity)
             entity->draw();
     }
+    if (_ui)
+        _ui->draw();
     _rWindow->display();
 }
 
@@ -63,6 +68,11 @@ bool sfml::SFMLRenderer::isClose() const
 void sfml::SFMLRenderer::pushEntity(std::shared_ptr<render::IRenderEntity> renderEntity)
 {
     _entities.push_back(renderEntity);
+}
+
+void sfml::SFMLRenderer::setUI(std::shared_ptr<render::IRenderEntity> ui)
+{
+    _ui = ui;
 }
 
 render::IObjectFactory &sfml::SFMLRenderer::getFactory()
