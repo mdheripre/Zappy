@@ -33,6 +33,29 @@ static bool extract_item_from_command(client_t *client, char *item,
 }
 
 /**
+ * @brief Queues a take item event for the player.
+ *
+ * @param server Pointer to the server structure.
+ * @param client_fd File descriptor of the client.
+ * @param player_id ID of the player.
+ * @param item Name of the item to take.
+ */
+static void queue_take_item_event(server_t *server, int client_fd,
+    int player_id, const char *item)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return;
+    event->type = GAME_EVENT_PLAYER_TAKE_ITEM;
+    event->data.player_item.client_fd = client_fd;
+    event->data.player_item.player_id = player_id;
+    event->data.player_item.item_name = strdup(item);
+    server->game->event_queue->methods->push_back(server->game->event_queue,
+        event);
+}
+
+/**
  * @brief Handles the "take" command from a client.
  *
  * @param ctx Pointer to the server context.
@@ -43,20 +66,13 @@ void handle_command_take(void *ctx, void *data)
     server_t *server = (server_t *)ctx;
     client_t *client = (client_t *)data;
     player_t *player = client ? client->player : NULL;
-    game_event_t *event = NULL;
     char item[BUFFER_SIZE] = {0};
 
     if (!server || !client || !player)
         return;
-    if (!extract_item_from_command(client, item, sizeof(item)))
+    if (!extract_item_from_command(client, item, sizeof(item))) {
+        dprintf(client->fd, "ko\n");
         return;
-    event = malloc(sizeof(game_event_t));
-    if (!event)
-        return;
-    event->type = GAME_EVENT_PLAYER_TAKE_ITEM;
-    event->data.player_item.client_fd = client->fd;
-    event->data.player_item.player_id = player->id;
-    event->data.player_item.item_name = strdup(item);
-    server->game->event_queue->methods->push_back(server->game->event_queue,
-        event);
+    }
+    queue_take_item_event(server, client->fd, player->id, item);
 }

@@ -54,7 +54,7 @@ static int count_existing_resource(game_t *game, int type)
  * @param x X coordinate of the tile.
  * @param y Y coordinate of the tile.
  */
-static void add_tile_update_event(game_t *game, int x, int y)
+void add_tile_update_event(game_t *game, int x, int y)
 {
     game_event_t *event = malloc(sizeof(game_event_t));
 

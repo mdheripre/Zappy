@@ -76,4 +76,5 @@ client_t *get_client_by_player(server_t *server, player_t *player,
     int *index);
 client_t *get_gui_client(server_t *server);
 team_info_t *find_team(game_t *game, const char *team_name);
+void add_tile_update_event(game_t *game, int x, int y);
 #endif /* !UTILS_H_ */

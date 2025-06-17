@@ -35,15 +35,16 @@ static const char *TICK_EVENT_NAMES[4] = {
  * @param cli Pointer to the client.
  * @return Ticks remaining, or INT_MAX if invalid or no command.
  */
-static int get_ticks_remaining_command(server_t *self, client_t *cli)
+static int get_ticks_remaining_command(server_t *self, client_t *client)
 {
     queued_command_t *cmd = NULL;
     int delta = 0;
     int left = 0;
 
-    if (!cli || !cli->connected || cli->type != CLIENT_IA || !cli->commands)
+    if (!client || !client->connected || client->type != CLIENT_IA ||
+        !client->commands || client->stuck)
         return INT_MAX;
-    cmd = cli->commands->methods->front(cli->commands);
+    cmd = client->commands->methods->front(client->commands);
     if (!cmd)
         return INT_MAX;
     delta = self->game->tick_counter - cmd->last_tick_checked;
@@ -62,7 +63,7 @@ static int get_min_command_ticks(server_t *self)
     int min = INT_MAX;
     int remain = 0;
 
-    for (int i = 0; i < self->client_count; ++i) {
+    for (int i = 0; i < self->client_count; i++) {
         remain = get_ticks_remaining_command(self, &self->clients[i]);
         if (remain < min)
             min = remain;

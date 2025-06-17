@@ -42,6 +42,27 @@ static void init_player_from_egg(server_t *server, client_t *client,
 }
 
 /**
+ * @brief Count the number of available (unassigned) eggs for a given team.
+ *
+ * @param game Pointer to the game instance.
+ * @param team_name Name of the team to check for available eggs.
+ * @return Number of unassigned eggs for the team.
+ */
+static int count_available_eggs(game_t *game, const char *team_name)
+{
+    int count = 0;
+    egg_t *egg = NULL;
+
+    for (list_node_t *n = game->eggs->head; n; n = n->next) {
+        egg = n->data;
+        if (egg && strcmp(egg->team_name, team_name) == 0 &&
+                egg->player_id == -1)
+            count++;
+    }
+    return count;
+}
+
+/**
  * @brief Log and notify the client of their initial game state.
  *
  * Sends map size and slot remainging for the team client
@@ -52,10 +73,7 @@ static void init_player_from_egg(server_t *server, client_t *client,
 static void send_player_init(server_t *server, client_t *client)
 {
     const char *team_name = client->player->team_name;
-    int used = server->game->methods->count_team_members(
-        server->game, team_name);
-    team_info_t *team = find_team(server->game, team_name);
-    int available = (team ? team->team_size : 0) - used;
+    int available = count_available_eggs(server->game, team_name);
 
     console_log(LOG_SUCCESS,
         "Client %d joined team \"%s\" as player #%d",

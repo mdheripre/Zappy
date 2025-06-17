@@ -124,6 +124,7 @@ void read_from_client(server_t *server, int index)
     if (client->buffer_len + bytes >= CLIENT_BUFFER_SIZE) {
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
+        dprintf(client->fd, "ko\n");
         server->vtable->remove_client(server, index);
         return;
     }

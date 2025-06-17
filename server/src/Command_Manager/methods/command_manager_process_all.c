@@ -70,7 +70,7 @@ static void update_next_command_tick(client_t *client, int current_tick)
     queued_command_t *next = client_peek_command(client);
 
     if (next && next->ticks_remaining > 0)
-        next->last_tick_checked = current_tick;
+        next->last_tick_checked = current_tick + 1;
 }
 
 /**

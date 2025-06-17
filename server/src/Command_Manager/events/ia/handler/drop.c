@@ -33,7 +33,42 @@ static bool extract_drop_item_name(client_t *client, char *item,
 }
 
 /**
- * @brief Handle the 'Drop' command from a client.
+ * @brief Prepare a drop item event from a client's command.
+ *
+ * Extracts the item name and fills a game_event_t structure. If extraction
+ * fails, sends "ko" to the client.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client issuing the drop.
+ * @param event_out Output pointer to the created event.
+ * @return true on success, false on failure.
+ */
+static bool prepare_drop_event(server_t *server, client_t *client,
+    game_event_t **event_out)
+{
+    player_t *player = client ? client->player : NULL;
+    char item[BUFFER_SIZE] = {0};
+    game_event_t *event = NULL;
+
+    if (!server || !client || !player)
+        return false;
+    if (!extract_drop_item_name(client, item, sizeof(item))) {
+        dprintf(client->fd, "ko\n");
+        return false;
+    }
+    event = malloc(sizeof(game_event_t));
+    if (!event)
+        return false;
+    event->type = GAME_EVENT_PLAYER_DROP_ITEM;
+    event->data.player_item.client_fd = client->fd;
+    event->data.player_item.player_id = player->id;
+    event->data.player_item.item_name = strdup(item);
+    *event_out = event;
+    return true;
+}
+
+/**
+ * @brief Handle the 'Set' command from a client.
  *
  * Adds a GAME_EVENT_PLAYER_DROP_ITEM event to the queue.
  *
@@ -44,21 +79,10 @@ void handle_command_drop(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;
     client_t *client = (client_t *)data;
-    player_t *player = client ? client->player : NULL;
     game_event_t *event = NULL;
-    char item[BUFFER_SIZE] = {0};
 
-    if (!server || !client || !player)
+    if (!prepare_drop_event(server, client, &event))
         return;
-    if (!extract_drop_item_name(client, item, sizeof(item)))
-        return;
-    event = malloc(sizeof(game_event_t));
-    if (!event)
-        return;
-    event->type = GAME_EVENT_PLAYER_DROP_ITEM;
-    event->data.player_item.client_fd = client->fd;
-    event->data.player_item.player_id = player->id;
-    event->data.player_item.item_name = strdup(item);
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);
 }

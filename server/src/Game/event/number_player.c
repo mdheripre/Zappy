@@ -45,28 +45,28 @@ static game_event_t *prepare_connect_nbr_response(player_t *player,
 }
 
 /**
- * @brief Calculates the number of available slots for a player's team.
+ * @brief Count the number of unassigned eggs available for a player's team.
  *
- * @param game The game context.
- * @param player The player whose team is being checked.
- * @return int The number of available slots, or -1 on error.
+ * Only eggs with a matching team name and no assigned player are counted.
+ *
+ * @param game Pointer to the game instance.
+ * @param player Pointer to the player whose team is checked.
+ * @return Number of available slots (eggs), or -1 on error.
  */
 static int get_team_available_slots(game_t *game, player_t *player)
 {
-    team_info_t *team = NULL;
-    int used = 0;
+    egg_t *egg = NULL;
+    int count = 0;
 
-    if (!game || !player || !player->team_name)
+    if (!game || !player || !player->team_name || !game->eggs)
         return -1;
-    for (list_node_t *node = game->teams->head; node; node = node->next) {
-        team = node->data;
-        if (team && strcmp(team->team_name, player->team_name) == 0) {
-            used = game->methods->count_team_members(
-                game, player->team_name);
-            return team->team_size - used;
-        }
+    for (list_node_t *node = game->eggs->head; node; node = node->next) {
+        egg = node->data;
+        if (egg && strcmp(egg->team_name, player->team_name) == 0
+            && egg->player_id == -1)
+            count++;
     }
-    return -1;
+    return count;
 }
 
 /**

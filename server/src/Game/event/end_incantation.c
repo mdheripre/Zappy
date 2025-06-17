@@ -16,6 +16,35 @@
 /*                                                                          */
 /****************************************************************************/
 
+static const incantation_rule_t INCANTATION_RULES[] = {
+    {1, {0, 1, 0, 0, 0, 0, 0}},  // 1 -> 2
+    {2, {0, 1, 1, 1, 0, 0, 0}},  // 2 -> 3
+    {2, {0, 2, 0, 1, 0, 2, 0}},  // 3 -> 4
+    {4, {0, 1, 1, 2, 0, 1, 0}},  // 4 -> 5
+    {4, {0, 1, 2, 1, 3, 0, 0}},  // 5 -> 6
+    {6, {0, 1, 2, 3, 0, 1, 0}},  // 6 -> 7
+    {6, {0, 2, 2, 2, 2, 2, 1}},  // 7 -> 8
+};
+
+/**
+ * @brief Consume the resources required for an incantation on the tile.
+ *
+ * Subtracts resources from the tile based on the incantation rule and
+ * emits a tile update event.
+ *
+ * @param game Pointer to the game instance.
+ * @param inc Pointer to the incantation containing position and level.
+ */
+static void consume_resources(game_t *game, incantation_t *inc)
+{
+    const incantation_rule_t *rule = &INCANTATION_RULES[inc->target_level - 2];
+    tile_t *tile = &game->map[inc->y][inc->x];
+
+    for (int i = 0; i < RESOURCE_COUNT; i++)
+        tile->resources[i] -= rule->resources[i];
+    add_tile_update_event(game, inc->x, inc->y);
+}
+
 /**
  * @brief Prepare and validate an incantation from an event.
  *
@@ -95,8 +124,10 @@ void on_end_incantation(void *ctx, void *data)
 
     success = process_incantation(game, &inc, event);
     response = create_incantation_response(&inc, success);
-    if (success && inc.participants)
+    if (success && inc.participants) {
+        consume_resources(game, &inc);
         update_participants_level(inc.participants);
+    }
     if (response)
         game->server_event_queue->methods->push_back(game->server_event_queue,
             response);
