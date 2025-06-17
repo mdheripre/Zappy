@@ -79,6 +79,7 @@ static game_event_t *create_egg_event(const egg_t *egg)
     event->data.egg.team_name = egg->team_name;
     event->data.egg.x = egg->x;
     event->data.egg.y = egg->y;
+    event->data.egg.egg_id = egg->id;
     return event;
 }
 

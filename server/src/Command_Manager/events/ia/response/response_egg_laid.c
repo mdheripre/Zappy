@@ -26,4 +26,5 @@ void on_response_egg_laid(void *ctx, void *data)
     if (!server || !event || !client)
         return;
     dprintf(client->fd, "ok\n");
+    EMIT(server->command_manager->dispatcher, "gui_enw", event);
 }

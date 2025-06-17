@@ -140,6 +140,7 @@ typedef struct {
             int x;
             int y;
             const char *team_name;
+            int egg_id;
         } egg;
         struct {
             int x;

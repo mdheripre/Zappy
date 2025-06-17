@@ -60,6 +60,7 @@ void handle_command_gui_mct(void *ctx, void *data);
 void handle_gui_pnw(void *ctx, void *data);
 void handle_gui_suc(void *ctx, void *);
 void handle_gui_sbp(void *ctx, void *);
+void handle_gui_enw(void *ctx, void *data);
 
 /* Responses */
 void on_response_player_moved(void *ctx, void *data);
