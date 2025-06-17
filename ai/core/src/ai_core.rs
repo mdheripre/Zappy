@@ -19,10 +19,16 @@ use crate::inventory::Inventory;
 /// # Fields  
 ///
 /// - `client_num` (`i32`) - number of available slots.
-/// - `position` (`(i32`) - position on the map.
-/// - `inventory` (`Vec<Item>`) - inventory content.
-/// - `world_map` (`Vec<Vec<Tile>>`) - map empty at start.
+/// - `position` ((`i32`, `i32`)) - position on the map.
+/// - `inventory` (`Inventory`) - inventory content.
+/// - `world_map` (`Vec<Tile>`) - map empty at start.
 /// - `is_running` (`bool`) - checker.
+/// - `role` (`Role`) - AI role.
+/// - `time` (`i32`) - time since the start of the game. (to implement)
+/// - `direction` (`Direction`) - current direction.
+/// - `last_command` (`Option<AiCommand>`) - last command sent to the server (resets when receiving the response).
+/// - `previous_command` (`Option<AiCommand>`) - previous command sent to the server (resets at new command).
+/// - `destination` (`Option<Tile>`) - destination tile to reach.
 ///
 /// # Examples
 ///
@@ -35,6 +41,12 @@ use crate::inventory::Inventory;
 ///     inventory: value,
 ///     world_map: value,
 ///     is_running: value,
+///     role: value,
+///     time: value,
+///     direction: value,
+///     last_command: value,
+///     previous_command: value,
+///     destination: value,
 /// };
 /// ```
 #[derive(Debug, Clone)]
@@ -73,6 +85,7 @@ impl AiState {
         }
     }
     
+    /// Make the AI move forward in the current direction
     pub fn forward(&mut self) {
         match self.direction {
             Direction::North => {
@@ -90,6 +103,9 @@ impl AiState {
         }
     }
     
+    /// Choose a destination tile based on the items needed in the inventory
+    /// # Returns
+    /// - `Option<Tile>` - The tile with the highest value based on the items needed and distance.
     pub fn chose_destination_tile(&self) -> Option<Tile> {
         let mut max_value: f64 = 0.0;
         let mut selected_tile: Option<Tile> = None;
@@ -110,6 +126,11 @@ impl AiState {
         selected_tile
     }
     
+    /// Choose the best item to take based on the items needed in the inventory
+    /// # Arguments
+    /// - `items` (`Vec<Item>`) - List of items to choose from.
+    /// # Returns
+    /// - `Option<AiCommand>` - The command to take the best item.
     pub fn chose_best_item(&self, items: Vec<Item>) -> Option<AiCommand> {
         let mut max_value: f64 = 0.0;
         let mut selected_item: Option<Item> = None;
@@ -126,6 +147,9 @@ impl AiState {
         Some(AiCommand::Take(selected_item.unwrap()))
     }
     
+    /// Check if there are items in the map
+    /// # Returns
+    /// - `bool` - True if there are items in the map, false otherwise.
     pub fn is_there_things_in_map(&self) -> bool {
         for tile in &self.world_map {
             if !tile.get_items().is_empty() {
@@ -135,6 +159,9 @@ impl AiState {
         false
     }
 
+    /// Remove a given item from the map
+    /// # Arguments
+    /// - `item` (`&Item`) - Item to remove from the map.
     pub fn remove_item_from_map(&mut self, item: &Item) {
         for tile in &mut self.world_map {
             if tile.position() == self.position {
@@ -151,6 +178,9 @@ impl AiState {
         }
     }
 
+    /// Add a given item to the map
+    /// # Arguments
+    /// - `item` (`&Item`) - Item to add to the map.
     pub fn add_item_to_map(&mut self, item: &Item) {
         for tile in &mut self.world_map {
             if tile.position() == self.position {

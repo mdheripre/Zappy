@@ -1,5 +1,17 @@
 use crate::item::Item;
 
+/// Inventory struct to hold the resources collected by an AI player.
+/// 
+/// # Fields
+/// 
+/// - `food` - Amount of food collected.
+/// - `linemate` - Amount of linemate collected.
+/// - `deraumere` - Amount of deraumere collected.
+/// - `sibur` - Amount of sibur collected.
+/// - `mendiane` - Amount of mendiane collected.
+/// - `phiras` - Amount of phiras collected.
+/// - `thystame` - Amount of thystame collected.
+///
 #[derive(Clone, Debug)]
 pub struct Inventory {
     pub food: usize,
@@ -24,6 +36,9 @@ impl Inventory {
         }
     }
     
+    /// Add an item to the inventory.
+    /// # Arguments
+    /// - `item` - The item to add to the inventory.
     pub fn add_item(&mut self, item: &Item) {
         match item {
             Item::Food => self.food += 1,
@@ -36,6 +51,11 @@ impl Inventory {
         }
     }
 
+    /// Remove an item from the inventory.
+    /// # Arguments
+    /// - `item` - The item to remove from the inventory.
+    /// # Returns
+    /// - `Result<(), String>` - Ok if the item was removed, Err if the item was not found or not enough items to remove.
     pub fn remove_item(&mut self, item: &Item) -> Result<(), String> {
         match item {
             Item::Food if self.food > 0 => {
@@ -70,6 +90,11 @@ impl Inventory {
         }
     }
     
+    /// Get the count of a specific item in the inventory.
+    /// # Arguments
+    /// - `item` - The item to get the count for.
+    /// # Returns
+    /// - `usize` - The count of the item in the inventory.
     pub fn get_count(&self, item: &Item) -> usize {
         match item {
             Item::Food => self.food,

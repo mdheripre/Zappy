@@ -1,5 +1,12 @@
 use crate::ai::AiCommand;
 
+/// Represents the direction of the AI in the game.
+/// # Variants
+/// - `North` - Facing north.
+/// - `East` - Facing east.
+/// - `South` - Facing south.
+/// - `West` - Facing west.
+/// 
 #[derive(Debug, Clone)]
 pub enum Direction {
     North,
@@ -9,6 +16,9 @@ pub enum Direction {
 }
 
 impl Direction {
+    /// Turn the direction to the right
+    /// # Returns
+    /// - `Direction` - The new direction after turning right.
     pub fn right(&self) -> Self {
         match self {
             Direction::North => Direction::East,
@@ -18,6 +28,9 @@ impl Direction {
         }
     }
     
+    /// Turn the direction to the left
+    /// # Returns
+    /// - `Direction` - The new direction after turning left.
     pub fn left(&self) -> Self {
         match self {
             Direction::North => Direction::West,
@@ -27,6 +40,11 @@ impl Direction {
         }
     }
     
+    /// Checks if the given position is along the direction
+    /// # Arguments
+    /// - `pos` - The position to check, represented as a tuple (x, y).
+    /// # Returns
+    /// - `bool` - `true` if the position is along the direction, `false` otherwise.
     pub fn is_along(&self, pos: (i32, i32)) -> bool {
         match self {
             Direction::North => pos.1 < 0,
@@ -37,6 +55,10 @@ impl Direction {
     }
     
     // Get the best turn to orient to the given position
+    /// # Arguments
+    /// - `pos` - The position to orient towards, represented as a tuple (x, y).
+    /// # Returns
+    /// - `AiCommand` - The best command to turn towards the position.
     pub fn get_best_turn_to(&self, pos: (i32, i32)) -> AiCommand {
         match self {
             Direction::North => {

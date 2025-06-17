@@ -71,6 +71,9 @@ impl FromStr for Item {
     }}
 
 impl Item {
+    /// Get the probability of finding the item on a tile.
+    /// # Returns
+    /// - `f64` - The probability of finding the item.
     pub fn probability(&self) -> f64 {
         match self {
             Item::Food => 0.5,
@@ -83,6 +86,9 @@ impl Item {
         }
     }
 
+    /// Get the number of items needed by an  AI.
+    /// # Returns
+    /// - `i32` - The number of items needed.
     pub fn needed(&self) -> i32 {
         match self {
             Item::Food => 10,

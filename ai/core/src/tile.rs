@@ -9,6 +9,7 @@ use crate::ai_core::AiState;
 /// - `nb_items` (`i32`) - items on the tile.
 /// - `nb_players` (`i32`) - players on the tile.
 /// - `items` (`HashMap<Item, usize>`) - actual items on the tile.
+/// - `look_time` (`i32`) - time the tile was last looked (to implement).
 ///
 /// # Examples
 /// ```
@@ -18,6 +19,7 @@ use crate::ai_core::AiState;
 ///     nb_items: value,
 ///     nb_players: value,
 ///     items: value,
+///     look_time: value,
 /// };
 /// ```
 #[derive(Debug, Clone)]
@@ -39,7 +41,14 @@ impl Tile {
             look_time: time,
         }
     }
-
+    
+    /// Create a new Tile from a response
+    /// # Arguments
+    /// - `string` - The response string containing items and players.
+    /// - `tile_number` - The tile number to calculate the position.
+    /// - `ai_state` - The AI state containing the position and direction.
+    /// # Returns
+    /// - `Tile` - A new Tile instance with the parsed items and position.
     pub fn new_from_response(string: String, tile_number: i32, ai_state: AiState) -> Self {
         let mut tile = Tile::new(ai_state.time);
         let mut y = ((tile_number as f64).sqrt().floor() as i32);
