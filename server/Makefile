@@ -63,6 +63,7 @@ SRCS = \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_next_tick.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
+	$(SRC_SERV_METHODS)/get_gui.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
@@ -105,6 +106,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/pnw.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
@@ -134,6 +136,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_remove.c \
 	$(SRC_LIST_METHODS)/list_front.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
+	$(SRC_LIST_METHODS)/list_index.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
 	$(SRC_CONFIG_METHODS)/help_message.c \

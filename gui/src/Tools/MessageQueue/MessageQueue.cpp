@@ -6,6 +6,7 @@
 */
 
 #include "MessageQueue.hpp"
+#include <iostream>
 
 void tools::MessageQueue::push(const std::string &message)
 {

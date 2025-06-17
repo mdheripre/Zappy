@@ -23,21 +23,21 @@ void net::Network::startLoop()
     while (_running) {
         try {
             std::string allMessage;
-            while (true) {
-                std::string message;
-                if (!_outgoing->tryPop(message))
-                    break;
+            std::string message;
+            while (_outgoing->tryPop(message))
                 allMessage += message;
-            }
 
-            if (_client->readCommand())
-                _incoming->push(_client->getCommand());
-
-            if (!allMessage.empty()) {
+            if (!allMessage.empty())
                 _client->sendMessage(allMessage);
-            }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(15));
+            while (_client->readCommand()) {
+                std::string command = _client->getCommand();
+                while (!command.empty())
+                {
+                    _incoming->push(command);
+                    command = _client->getCommand();
+                }
+            }
         }
         catch (const std::exception& e) {
             std::cerr << "Network " << e.what() << std::endl;
@@ -45,3 +45,4 @@ void net::Network::startLoop()
         }
     }
 }
+

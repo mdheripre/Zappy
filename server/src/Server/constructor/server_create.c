@@ -34,6 +34,7 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
     .reject_client = reject_client,
+    .get_gui = server_get_gui,
     .get_next_tick_info = get_next_tick_info,
 };
 

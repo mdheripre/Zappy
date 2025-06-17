@@ -7,6 +7,19 @@
 
 #include "Core.hpp"
 
+
+/**
+ * @brief Constructs the GUI Core object.
+ *
+ * Parses command-line arguments, initializes network and game components,
+ * and validates the graphical environment. Throws on invalid or missing arguments.
+ *
+ * @param args Command-line arguments.
+ * @param env Environment variables.
+ * @throw DataParsingError if invalid arguments.
+ * @throw RenderError if no graphical environment is detected.
+ */
+
 gui::Core::Core(std::vector<std::string> args, char **env)
 {
     int port = 0;
@@ -26,16 +39,27 @@ gui::Core::Core(std::vector<std::string> args, char **env)
         }
     }
     if ((port == 0 || addr.empty()) && !_help)
-        throw std::runtime_error("USAGE: ./zappy_gui -p port -h machine");
+        throw DataParsingError("USAGE: ./zappy_gui -p port -h machine");
     if (_help)
         return;
     if (!isEnvGraphics(env))
-        throw std::runtime_error("Error: There is no graphical environment, sorry :)");
+        throw RenderError("Error: There is no graphical environment, sorry :)");
     _incoming = std::make_shared<tools::MessageQueue>();
     _outgoing = std::make_shared<tools::MessageQueue>();
     _net = std::make_unique<net::Network>(_incoming, _outgoing, port, addr);
-    _game = std::make_unique<game::Game>(_incoming, _outgoing);
+    _game = std::make_unique<game::Game>(_incoming,
+        _outgoing,
+        std::make_unique<sfml::SFMLRenderer>());
 }
+
+/**
+ * @brief Checks if a graphical environment is available.
+ *
+ * Verifies the presence of a valid DISPLAY variable in the environment.
+ *
+ * @param env The environment variables array.
+ * @return true if a graphical environment is detected, false otherwise.
+ */
 
 bool gui::Core::isEnvGraphics(char **env)
 {
@@ -51,6 +75,13 @@ bool gui::Core::isEnvGraphics(char **env)
     return false;
 }
 
+/**
+ * @brief Runs the GUI core loop.
+ *
+ * Starts the networking thread and executes the main game loop.
+ * Also handles the `-help` case and shutdown.
+ */
+
 void gui::Core::run()
 {
     if (_help) {
@@ -58,8 +89,14 @@ void gui::Core::run()
         return;
     }
     std::thread netThread(&net::Network::startLoop, _net.get());
-    _game->gameLoop();
+    try
+    {
+        _game->gameLoop();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     _net->stopLoop();
     netThread.join();
-    _game->stopLoop();
 }
