@@ -89,20 +89,47 @@ static game_event_t *create_incantation_response(incantation_t *inc,
 }
 
 /**
- * @brief Increase the level of all incantation participants.
+ * @brief Increments the player's level and updates the team's max level
+ * count if needed.
  *
- * @param participants List of players in the incantation.
+ * If the player's level reaches 6 after incrementing, the team's
+ * max_level_players counter is increased.
+ *
+ * @param game Pointer to the game structure.
+ * @param player Pointer to the player whose level is to be incremented.
  */
-static void update_participants_level(list_t *participants)
+static void increment_player_level_and_team(game_t *game, player_t *player)
 {
-    player_t *p;
+    team_info_t *team;
+
+    if (!player)
+        return;
+    player->level++;
+    if (player->level == 6) {
+        team = find_team(game, player->team_name);
+        if (team)
+            team->max_level_players++;
+    }
+}
+
+/**
+ * @brief Updates the level of all players in the given participants list.
+ *
+ * Iterates through the participants list and increments the level
+ * of each player, updating their team as needed.
+ *
+ * @param game Pointer to the game structure.
+ * @param participants List of players to update.
+ */
+static void update_participants_level(game_t *game, list_t *participants)
+{
+    player_t *player = NULL;
 
     if (!participants)
         return;
     for (list_node_t *n = participants->head; n; n = n->next) {
-        p = n->data;
-        if (p)
-            p->level++;
+        player = n->data;
+        increment_player_level_and_team(game, player);
     }
 }
 
@@ -126,7 +153,7 @@ void on_end_incantation(void *ctx, void *data)
     response = create_incantation_response(&inc, success);
     if (success && inc.participants) {
         consume_resources(game, &inc);
-        update_participants_level(inc.participants);
+        update_participants_level(game, inc.participants);
     }
     if (response)
         game->server_event_queue->methods->push_back(game->server_event_queue,

@@ -88,23 +88,26 @@ static int compute_timeout(server_t *self)
 /****************************************************************************/
 
 /**
- * @brief Apply game updates if any ticks have been applied.
+ * @brief Update the game state if at least one tick has passed.
  *
- * Updates the game state, processes commands and responses.
+ * Applies game updates, processes commands and responses,
+ * and checks if the game has finished.
  *
  * @param self Pointer to the server instance.
  * @param ticks Number of ticks to apply.
+ * @return true if the game has ended, false otherwise.
  */
-static void update_game_if_needed(server_t *self, int ticks)
+static bool update_game_if_needed(server_t *self, int ticks)
 {
     if (ticks <= 0)
-        return;
+        return false;
     self->game->methods->update(self->game, ticks);
     self->command_manager->methods->process_all(
         self->command_manager, self, self->game->tick_counter);
     self->game->methods->dispatch_events(self->game);
     self->command_manager->methods->process_responses(
         self->command_manager, self->game);
+    return self->game->methods->has_finished(self->game);
 }
 
 /****************************************************************************/
@@ -185,6 +188,7 @@ void run_server(server_t *self)
         update_time(self);
         ticks_applied += apply_ticks(self);
         handle_after_poll(self, fds);
-        update_game_if_needed(self, ticks_applied);
+        if (update_game_if_needed(self, ticks_applied))
+            break;
     }
 }

@@ -173,6 +173,7 @@ struct game_methods_s {
     void (*update_incantations)(game_t *self, int tick);
     bool (*check_incantate)(game_t *self, incantation_t *inc);
     list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
+    bool (*has_finished)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -199,6 +200,7 @@ struct incantation_s {
 typedef struct team_info_s {
     char *team_name;
     int team_size;
+    int max_level_players;
 } team_info_t;
 
 struct game_s {
@@ -208,6 +210,7 @@ struct game_s {
     long last_tick_time;
     int tick_counter_tiled;
     long tick_counter;
+    bool has_finished;
 
     tile_t **map;
     list_t *teams;
@@ -240,6 +243,7 @@ bool check_incantate(game_t *game, incantation_t *inc);
 list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 void emit_tile_update(game_t *game, int x, int y);
 int resource_from_string(const char *name);
+bool has_finished(game_t *self);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);

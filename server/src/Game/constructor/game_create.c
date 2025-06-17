@@ -30,6 +30,7 @@ static const game_methods_t GAME_METHODS = {
     .update_incantations = update_incantations,
     .check_incantate = check_incantate,
     .get_players_on_tile = get_players_on_tile,
+    .has_finished = has_finished
 };
 
 /**
@@ -105,6 +106,7 @@ static bool game_init_teams(game_t *game, config_game_t *config)
     team_info_t *team = NULL;
     char *name = NULL;
 
+    game->has_finished = false;
     game->teams = NEW(list, free_team_info);
     if (!game->teams || !config->team_name)
         return false;
@@ -115,6 +117,7 @@ static bool game_init_teams(game_t *game, config_game_t *config)
             return false;
         team->team_name = strdup(name);
         team->team_size = config->team_size;
+        team->max_level_players = 0;
         list_push_back(game->teams, team);
     }
     return true;

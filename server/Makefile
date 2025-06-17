@@ -154,6 +154,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/count_team_members.c \
 	$(SRC_GAME_METHODS)/update_players.c \
+	$(SRC_GAME_METHODS)/has_finished.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_GAME_METHODS)/get_player_on_tile.c \
