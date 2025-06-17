@@ -33,6 +33,8 @@ static void register_gui_command(command_manager_t *self, server_t *server)
     REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
         server);
     REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
+    REGISTER(self->dispatcher, "gui_suc", handle_gui_suc, server);
+    REGISTER(self->dispatcher, "gui_sbp", handle_gui_sbp, server);
 }
 
 /****************************************************************************/

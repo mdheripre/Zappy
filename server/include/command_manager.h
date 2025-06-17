@@ -58,6 +58,8 @@ void handle_command_gui_tna(void *ctx, void *data);
 void handle_command_gui_bct(void *ctx, void *data);
 void handle_command_gui_mct(void *ctx, void *data);
 void handle_gui_pnw(void *ctx, void *data);
+void handle_gui_suc(void *ctx, void *);
+void handle_gui_sbp(void *ctx, void *);
 
 /* Responses */
 void on_response_player_moved(void *ctx, void *data);
