@@ -100,12 +100,8 @@ bool gui::Trantorian::update(float dt)
         anim_end = _trantorianObject->updateObject(dt);
     else
         return false;
-
-    if (anim_end && !_alive)
+    if (!_alive)
         return false;
-    if (anim_end)
-        _trantorianObject->playAnimation(
-            static_cast<int>(TrantorianAnimation::IDLE), true);
     return true;
 }
 
@@ -118,11 +114,10 @@ bool gui::Trantorian::update(float dt)
  */
 void gui::Trantorian::setPosition(tools::Vector2<int>  pos)
 {
-    tools::Vector2<float> size = _trantorianObject->getSize();
-
+    tools::Vector2<float> tranSize = _trantorianObject->getSize();
     tools::Vector2<float> dPos(
-        static_cast<float>(pos.x) * size.x,
-        static_cast<float>(pos.y) * size.y
+        (static_cast<float>(pos.x) * TILE_SIZE) + (TILE_SIZE - tranSize.x) / 2.0f,
+        (static_cast<float>(pos.y) * TILE_SIZE) + (TILE_SIZE - tranSize.y) / 2.0f
     );
     _trantorianObject->setPosition(dPos);
     _pos = pos;

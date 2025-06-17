@@ -33,68 +33,125 @@ static void build_full_command(char *dest,
 }
 
 /**
- * @brief Extracts the command name from a queued command content.
+ * @brief Log that a command is still waiting to be executed.
  *
- * @param content The content of the queued command.
- * @param out Buffer to store the extracted command name.
- * @param size Size of the output buffer.
+ * @param client Pointer to the client.
+ * @param cmd Name of the command.
+ * @param ticks_remaining Number of ticks remaining before execution.
  */
-static void execute_ready_command(command_manager_t *self,
-    client_t *client, queued_command_t *cmd)
+static void log_waiting(client_t *client, const char *cmd, int ticks_remaining)
+{
+    console_log(LOG_INFO,
+        "Client %d | Waiting: %s (%d ticks left)",
+        client->fd, cmd, ticks_remaining);
+}
+
+/**
+ * @brief Log that a command is now being executed.
+ *
+ * @param client Pointer to the client.
+ * @param cmd Name of the command.
+ */
+static void log_executing(client_t *client, const char *cmd)
+{
+    console_log(LOG_SUCCESS,
+        "Client %d | Executing: %s",
+        client->fd, cmd);
+}
+
+/**
+ * @brief Update the last_tick_checked of the next queued command.
+ *
+ * @param client Pointer to the client.
+ * @param current_tick Current game tick.
+ */
+static void update_next_command_tick(client_t *client, int current_tick)
+{
+    queued_command_t *next = client_peek_command(client);
+
+    if (next && next->ticks_remaining > 0)
+        next->last_tick_checked = current_tick + 1;
+}
+
+/**
+ * @brief Execute a command that is ready to run and dequeue it.
+ *
+ * Emits the command event and prepares the next command if available.
+ *
+ * @param mgr Pointer to the command manager.
+ * @param client Pointer to the client.
+ * @param cmd Pointer to the command to execute.
+ * @param current_tick Current game tick.
+ */
+static void execute_ready_command(command_manager_t *mgr,
+    client_t *client, queued_command_t *cmd, int current_tick)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
     char cmd_name[BUFFER_SIZE] = {0};
 
     extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
     build_full_command(built, sizeof(built), client->type, cmd_name);
-    EMIT(self->dispatcher, built, client);
+    EMIT(mgr->dispatcher, built, client);
     client_dequeue_command(client, NULL);
+    update_next_command_tick(client, current_tick);
 }
 
 /**
- * @brief Processes a queued command for a client if it is
- *        ready to be executed.
+ * @brief Handle tick countdown for a client's command.
  *
- * This function checks the time remaining for the command and executes it
- * if the time has elapsed. It also logs the command execution.
+ * Decrements ticks and logs state or triggers execution if ready.
  *
- * @param self Pointer to the command manager instance.
- * @param client Pointer to the client that owns the command.
- * @param cmd Pointer to the queued command to process.
- * @param delta Time elapsed since last update, used for command execution.
+ * @param mgr Pointer to the command manager.
+ * @param client Pointer to the client.
+ * @param cmd Pointer to the command.
+ * @param current_tick Current game tick.
  */
-static void process_command_if_ready(command_manager_t *self,
-    client_t *client, queued_command_t *cmd, float delta)
+static void handle_client_command(command_manager_t *mgr,
+    client_t *client, queued_command_t *cmd, int current_tick)
 {
     char cmd_name[BUFFER_SIZE] = {0};
+    int ticks_elapsed = current_tick - cmd->last_tick_checked;
 
+    if (current_tick <= cmd->last_tick_checked)
+        return;
     extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
-    cmd->time_remaining -= delta;
-    console_log(LOG_INFO, "Client %d command: \"%s\" (%.2fs left)",
-        client->fd, cmd_name, cmd->time_remaining);
-    if (cmd->time_remaining <= 0.0f)
-        execute_ready_command(self, client, cmd);
+    cmd->ticks_remaining -= ticks_elapsed;
+    cmd->last_tick_checked = current_tick;
+    if (cmd->ticks_remaining > 0)
+        log_waiting(client, cmd_name, cmd->ticks_remaining);
+    else {
+        log_executing(client, cmd->content);
+        execute_ready_command(mgr, client, cmd, current_tick);
+    }
 }
 
 /**
- * @brief Processes and executes the next queued command for all connected
- * IA clients.
+ * @brief Process all queued commands for every active client.
  *
- * @param server Pointer to the server structure.
- * @param delta Time elapsed since last update, used for command execution.
+ * Executes commands when ready or updates their remaining ticks.
+ *
+ * @param mgr Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ * @param current_tick Current game tick.
  */
-void process_all(command_manager_t *self, server_t *server, float delta)
+void process_all(command_manager_t *mgr, server_t *server, int current_tick)
 {
-    int i = 0;
     client_t *client = NULL;
     queued_command_t *cmd = NULL;
 
-    for (i = 0; i < server->client_count; i++) {
+    if (!mgr || !server)
+        return;
+    for (int i = 0; i < server->client_count; i++) {
         client = &server->clients[i];
+        cmd = NULL;
         if (!client || !client->connected || client->stuck)
             continue;
         cmd = client_peek_command(client);
-        if (cmd)
-            process_command_if_ready(self, client, cmd, delta);
+        if (!cmd)
+            continue;
+        if (cmd->ticks_remaining == 0)
+            execute_ready_command(mgr, client, cmd, current_tick);
+        else
+            handle_client_command(mgr, client, cmd, current_tick);
     }
 }

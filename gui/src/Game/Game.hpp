@@ -12,6 +12,7 @@
 #include "Game/Renderer/IRenderer.hpp"
 #include "Tools/TeamBranding/TeamBrandingManager/TeamBrandingManager.hpp"
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
+#include "Tools/MapAssetManager/MapAssetManager.hpp"
 #include "Tools/Input/Input.hpp"
 #include <chrono>
 #include <sstream>
@@ -39,6 +40,7 @@ namespace game
             tools::CommandManager _cm;
             std::unique_ptr<render::IRenderer> _renderer;
             tools::TeamBrandingManager _tbManager;
+            tools::MapAssetManager _maManager;
 
             void welcomeCm(const std::vector<std::string> &token);
             void mszCommand(const std::vector<std::string> &token);
@@ -96,12 +98,12 @@ namespace game
                 {"sbp",     std::bind(&Game::sbpCommand, this, std::placeholders::_1)}
             };
             const std::unordered_map<tools::KeyCode, std::function<void()>> bindings = {
-                { tools::KeyCode::Right, [this]() {std::cout << "Right pressed" << std::endl;}},
-                { tools::KeyCode::Left,  [this]() {std::cout << "Left pressed" << std::endl;}},
-                { tools::KeyCode::Up,    [this]() {std::cout << "Up pressed" << std::endl;}},
-                { tools::KeyCode::Down,  [this]() {std::cout << "Down pressed" << std::endl;}},
-                { tools::KeyCode::W,     [this]() {std::cout << "W pressed" << std::endl;}},
-                { tools::KeyCode::S,     [this]() {std::cout << "S pressed" << std::endl;}},
+                { tools::KeyCode::Right, [this]() { _renderer->setPositionView(-20, 0); }},
+                { tools::KeyCode::Left,  [this]() { _renderer->setPositionView(20, 0); }},
+                { tools::KeyCode::Up,    [this]() { _renderer->setPositionView(0, 20); }},
+                { tools::KeyCode::Down,  [this]() { _renderer->setPositionView(0, -20); }},
+                { tools::KeyCode::W,     [this]() { _renderer->setZoomView(1.1f);}},
+                { tools::KeyCode::S,     [this]() { _renderer->setZoomView(0.9f);}},
             };
     };
 } // namespace Game

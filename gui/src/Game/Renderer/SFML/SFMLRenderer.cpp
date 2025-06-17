@@ -9,13 +9,16 @@
 
 sfml::SFMLRenderer::SFMLRenderer()
 {
+    _rWindow = std::make_shared<sf::RenderWindow>();
     _objFactory = std::make_unique<SFMLObjectFactory>(_rWindow);
 }
 
 
 void sfml::SFMLRenderer::init(std::string title, int width, int height, int frameRate)
 {
-    _rWindow = std::make_shared<sf::RenderWindow>(
+    if (!_rWindow)
+        throw RenderError("Access to a null window in renderer init");
+    _rWindow->create(
         sf::VideoMode(width, height),
         title,
         sf::Style::Close | sf::Style::Titlebar
@@ -65,6 +68,22 @@ void sfml::SFMLRenderer::pushEntity(std::shared_ptr<render::IRenderEntity> rende
 render::IObjectFactory &sfml::SFMLRenderer::getFactory()
 {
     return *_objFactory;
+}
+
+void sfml::SFMLRenderer::setPositionView(int offsetX, int offsetY)
+{
+    sf::View view = _rWindow->getView();
+
+    view.move(offsetX, offsetY);
+    _rWindow->setView(view);
+}
+
+void sfml::SFMLRenderer::setZoomView(float factor)
+{
+    sf::View view = _rWindow->getView();
+
+    view.zoom(factor);
+    _rWindow->setView(view);
 }
 
 void sfml::SFMLRenderer::poll()

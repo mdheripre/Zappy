@@ -60,6 +60,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_PLAYER_DIED,        // pdi + "mort"
     GAME_EVENT_RESPONSE_EGG_LAID,           // enw
     GAME_EVENT_RESPONSE_EGG_DIE,            // edi
+    GAME_EVENT_RESPONSE_PLAYER_OWNER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_PLAYER_EJECTED,     // pex + "éjecté"
     GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
     GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
@@ -102,6 +103,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_START_INCANTATION, "RESPONSE_START_INCANTATION" },
     { GAME_EVENT_RESPONSE_END_INCANTATION, "RESPONSE_END_INCANTATION" },
     { GAME_EVENT_RESPONSE_PLAYER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
+    { GAME_EVENT_RESPONSE_PLAYER_OWNER_EJECTED, "RESPONSE_PLAYER_EJECTED" },
     { GAME_EVENT_RESPONSE_CONNECT_NBR, "RESPONSE_CONNECT_NBR" },
     { GAME_EVENT_RESPONSE_LOOK, "RESPONSE_LOOK" },
     { GAME_EVENT_RESPONSE_INVENTORY, "RESPONSE_INVENTORY" },
@@ -164,13 +166,14 @@ typedef struct {
 
 struct game_methods_s {
     void (*dispatch_events)(game_t *self);
-    void (*update)(game_t *self);
+    void (*update)(game_t *self, int tick);
     int (*count_team_members)(game_t *self, const char *team_name);
-    void (*update_players)(game_t *self);
+    void (*update_players)(game_t *self, int tick);
     void (*spawn_resources)(game_t *self);
-    void (*update_incantations)(game_t *self);
+    void (*update_incantations)(game_t *self, int tick);
     bool (*check_incantate)(game_t *self, incantation_t *inc);
     list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
+    bool (*has_finished)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -194,16 +197,23 @@ struct incantation_s {
     int tick_remaining;
 };
 
+typedef struct team_info_s {
+    char *team_name;
+    int team_size;
+    int max_level_players;
+} team_info_t;
+
 struct game_s {
     int width;
     int height;
     double frequency;
     long last_tick_time;
-    bool started;
-    int team_size;
+    int tick_counter_tiled;
+    long tick_counter;
+    bool has_finished;
 
     tile_t **map;
-    list_t *team_name;
+    list_t *teams;
     list_t *players;
     list_t *eggs;
     list_t *incantations;
@@ -224,15 +234,16 @@ struct config_game_s {
 game_t *game_create(config_game_t *config);
 void game_destroy(game_t *game);
 void game_dispatch_events(game_t *self);
-void game_update(game_t *self);
+void game_update(game_t *self, int tick);
 int count_team_members(game_t *self, const char *team_name);
-void update_players(game_t *self);
+void update_players(game_t *self, int tick);
 void spawn_resources(game_t *self);
-void update_incantations(game_t *self);
+void update_incantations(game_t *self, int tick);
 bool check_incantate(game_t *game, incantation_t *inc);
 list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 void emit_tile_update(game_t *game, int x, int y);
 int resource_from_string(const char *name);
+bool has_finished(game_t *self);
 
 /* Event */
 void on_player_moved(void *ctx, void *data);

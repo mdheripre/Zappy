@@ -21,17 +21,15 @@
  *
  * @param self Pointer to the game instance.
  */
-void game_update(game_t *self)
+void game_update(game_t *self, int ticks)
 {
-    static int tick_counter = 0;
-
     if (!self)
         return;
-    self->methods->update_players(self);
-    self->methods->update_incantations(self);
-    tick_counter++;
-    if (tick_counter >= 20) {
+    self->methods->update_players(self, ticks);
+    self->methods->update_incantations(self, ticks);
+    self->tick_counter_tiled += ticks;
+    if (self->tick_counter_tiled >= 20) {
         self->methods->spawn_resources(self);
-        tick_counter = 0;
+        self->tick_counter_tiled = 0;
     }
 }

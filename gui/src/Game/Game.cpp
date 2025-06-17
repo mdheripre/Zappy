@@ -72,8 +72,9 @@ void game::Game::gameLoop()
         try {
             if (!errorCaught) {
                 std::string message;
-                while (_incoming->tryPop(message))
+                while (_incoming->tryPop(message)) {
                     manageCommand(message);
+                }
             }
             _renderer->poll();
             _renderer->update(dt);
