@@ -16,24 +16,6 @@
 /****************************************************************************/
 
 /**
- * @brief Get the index of a client associated with a player.
- *
- * @param server Pointer to the server.
- * @param player Pointer to the player.
- * @return Client index, or -1 if not found.
- */
-int get_client_index_by_player(server_t *server, player_t *player)
-{
-    if (!server || !player)
-        return -1;
-    for (int i = 0; i < server->client_count; i++) {
-        if (server->clients[i].player == player)
-            return i;
-    }
-    return -1;
-}
-
-/**
  * @brief Get the client file descriptor for a given player.
  *
  * @param server Pointer to the server.

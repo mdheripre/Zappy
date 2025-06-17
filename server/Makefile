@@ -61,7 +61,9 @@ SRCS = \
 	$(SRC_SERV_EVENT)/on_gui_init.c \
 	$(SRC_SERV_EVENT)/on_ia_init.c \
 	$(SRC_SERV_METHODS)/accept_client.c \
+	$(SRC_SERV_METHODS)/get_next_tick.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
+	$(SRC_SERV_METHODS)/get_gui.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
@@ -88,11 +90,23 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_moved_player.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_died.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_connect_player.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_look.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_inventory.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_eject.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_drop.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_broadcast.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_laid.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_start_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_tile_updated.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_take.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_die.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/pnw.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
@@ -102,7 +116,11 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
 	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
+	$(SRC_UTILS_HELPERS)/find_team.c \
+	$(SRC_UTILS_HELPERS)/get_gui_client.c \
+	$(SRC_UTILS_HELPERS)/get_client_by_player.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
+	$(SRC_UTILS_HELPERS)/get_client_index_by_player.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \
@@ -118,6 +136,7 @@ SRCS = \
 	$(SRC_LIST_METHODS)/list_remove.c \
 	$(SRC_LIST_METHODS)/list_front.c \
 	$(SRC_LIST_METHODS)/list_contain.c \
+	$(SRC_LIST_METHODS)/list_index.c \
 	$(SRC_CONFIG_CTOR)/config_create.c \
 	$(SRC_CONFIG_DTOR)/config_destructor.c \
 	$(SRC_CONFIG_METHODS)/help_message.c \
@@ -138,13 +157,24 @@ SRCS = \
 	$(SRC_GAME_METHODS)/dispatch_game_event.c \
 	$(SRC_GAME_METHODS)/count_team_members.c \
 	$(SRC_GAME_METHODS)/update_players.c \
+	$(SRC_GAME_METHODS)/has_finished.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
 	$(SRC_GAME_METHODS)/game_update.c \
+	$(SRC_GAME_METHODS)/get_player_on_tile.c \
 	$(SRC_GAME_METHODS)/game_update_incantation.c \
 	$(SRC_GAME_METHODS)/check_incantate.c \
 	$(SRC_GAME_EVENT)/player_moved.c \
 	$(SRC_GAME_EVENT)/player_died.c \
 	$(SRC_GAME_EVENT)/number_player.c \
+	$(SRC_GAME_EVENT)/look_around.c \
+	$(SRC_GAME_EVENT)/drop.c \
+	$(SRC_GAME_EVENT)/eject.c \
+	$(SRC_GAME_EVENT)/take.c \
+	$(SRC_GAME_EVENT)/start_incantation.c \
+	$(SRC_GAME_EVENT)/end_incantation.c \
+	$(SRC_GAME_EVENT)/broadcast.c \
+	$(SRC_GAME_EVENT)/inventory.c \
+	$(SRC_GAME_EVENT)/egg_laid.c \
 	$(SRC_PLAYER_CTOR)/player_create.c \
 	$(SRC_PLAYER_DTOR)/player_destroy.c \
 	$(SRC_PLAYER_METHODS)/add_ressource.c \
@@ -156,7 +186,7 @@ SRCS = \
 
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Iinclude -g
+CFLAGS = -Wall -Wextra -Iinclude -g -lm
 
 all: $(NAME)
 

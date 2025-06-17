@@ -16,29 +16,33 @@
 /****************************************************************************/
 
 /**
- * @brief Processes a command line from the client.
+ * @brief Process a raw command line from a client.
  *
- * This function cleans the command line, retrieves the delay for the command,
- * and enqueues it into the client's command queue.
+ * Cleans the line, determines its delay, and enqueues it if possible.
+ * Logs a warning if the client's command queue is full.
  *
  * @param server Pointer to the server instance.
- * @param client Pointer to the client instance.
- * @param line The command line to process.
+ * @param client Pointer to the client sending the command.
+ * @param line Raw command line string.
  */
-static void process_command_line(server_t *server,
-    client_t *client, const char *line)
+void process_command_line(server_t *server, client_t *client,
+    const char *line)
 {
-    char clean_line[BUFFER_COMMAND_SIZE] = {0};
-    float delay = 0.0f;
+    char clean[BUFFER_COMMAND_SIZE] = {0};
+    int ticks = 0;
 
-    strncpy(clean_line, line, BUFFER_COMMAND_SIZE - 1);
-    clean_line[BUFFER_COMMAND_SIZE - 1] = '\0';
-    strip_linefeed(clean_line);
-    delay = server->vtable->get_command_delay(server, clean_line);
-    if (!client_enqueue_command(client, clean_line, delay)) {
+    if (!server || !client || !line)
+        return;
+    strncpy(clean, line, BUFFER_COMMAND_SIZE - 1);
+    clean[BUFFER_COMMAND_SIZE - 1] = '\0';
+    strip_linefeed(clean);
+    ticks = server->vtable->get_command_delay(server, clean);
+    console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
+        server->game->tick_counter);
+    if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
-            client->fd, clean_line);
+            client->fd, clean);
     }
 }
 
@@ -120,6 +124,7 @@ void read_from_client(server_t *server, int index)
     if (client->buffer_len + bytes >= CLIENT_BUFFER_SIZE) {
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
+        dprintf(client->fd, "ko\n");
         server->vtable->remove_client(server, index);
         return;
     }

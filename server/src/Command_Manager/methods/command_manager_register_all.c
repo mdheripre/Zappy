@@ -32,6 +32,7 @@ static void register_gui_command(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
         server);
+    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
 }
 
 /****************************************************************************/
@@ -99,6 +100,27 @@ static void register_handler_ia_command(command_manager_t *self,
  * @param self Pointer to the command manager.
  * @param server Pointer to the server instance.
  */
+static void register_process_response_extend(command_manager_t *self,
+    server_t *server)
+{
+    REGISTER(self->dispatcher, "RESPONSE_EGG_DIE",
+        on_response_egg_die, server);
+    REGISTER(self->dispatcher, "RESPONSE_BROADCAST",
+        on_response_broadcast, server);
+    REGISTER(self->dispatcher, "RESPONSE_TILE_UPDATED",
+        on_response_tile_updated, server);
+    REGISTER(self->dispatcher, "RESPONSE_DROP",
+        on_response_drop, server);
+    REGISTER(self->dispatcher, "RESPONSE_TAKE",
+        on_response_take, server);
+}
+
+/**
+ * @brief Register response handlers to the dispatcher.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ */
 static void register_process_response(command_manager_t *self,
     server_t *server)
 {
@@ -108,6 +130,19 @@ static void register_process_response(command_manager_t *self,
         on_response_player_died, server);
     REGISTER(self->dispatcher, "RESPONSE_CONNECT_NBR",
         on_response_connect_nbr, server);
+    REGISTER(self->dispatcher, "RESPONSE_LOOK",
+        on_response_look, server);
+    REGISTER(self->dispatcher, "RESPONSE_INVENTORY",
+        on_response_inventory, server);
+    REGISTER(self->dispatcher, "RESPONSE_PLAYER_EJECTED",
+        on_response_eject, server);
+    REGISTER(self->dispatcher, "RESPONSE_EGG_LAID",
+        on_response_egg_laid, server);
+    REGISTER(self->dispatcher, "RESPONSE_START_INCANTATION",
+        on_response_start_incantation, server);
+    REGISTER(self->dispatcher, "RESPONSE_END_INCANTATION",
+        on_response_end_incantation, server);
+    register_process_response_extend(self, server);
 }
 
 /****************************************************************************/

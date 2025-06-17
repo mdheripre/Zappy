@@ -6,6 +6,7 @@
 */
 
 #include "Socket.hpp"
+#include "Tools/Error/Error.hpp"
 
 net::Socket::Socket()
 {
@@ -20,7 +21,7 @@ net::Socket::Socket(int port, bool isListen)
     socklen_t addr_len = sizeof(_in);
 
     if (this->_fd < 0)
-        throw std::runtime_error("Error: Socket creation failed");
+        throw NetworkError("Error: Socket creation failed");
 
     _in.sin_family = AF_INET;
     _in.sin_addr.s_addr = INADDR_ANY;
@@ -28,18 +29,18 @@ net::Socket::Socket(int port, bool isListen)
 
     if (isListen) {
         if (bind(_fd, (struct sockaddr *)&_in, sizeof(_in)) != 0)
-            throw std::runtime_error("Error: Binding failed");
+            throw NetworkError("Error: Binding failed");
         if (getsockname(this->_fd, (struct sockaddr *)&_in, &addr_len) == -1)
-            throw std::runtime_error("Error: getsockname failed");
+            throw NetworkError("Error: getsockname failed");
         if (listen(_fd, SOMAXCONN) != 0)
-            throw std::runtime_error("Error: Listen failed");
+            throw NetworkError("Error: Listen failed");
     }
 }
 
 void net::Socket::cleanSockaddr()
 {
     if (!memset(&this->_in, 0, sizeof(this->_in)))
-        throw std::runtime_error("Error : can't memset addr_in");
+        throw NetworkError("Error : can't memset addr_in");
 }
 
 net::Socket net::Socket::acceptConnection() const
@@ -49,7 +50,7 @@ net::Socket net::Socket::acceptConnection() const
 
     newSocket._fd = accept(_fd, (sockaddr *)&newSocket._in, &len);
     if (newSocket._fd < 0)
-        throw std::runtime_error("Error: Accepting connection failed");
+        throw NetworkError("Error: Accepting connection failed");
     return newSocket;
 }
 
@@ -61,11 +62,11 @@ void net::Socket::connectSocket(const std::string &addr)
     hints.ai_socktype = SOCK_STREAM;
 
     if (getaddrinfo(addr.c_str(), getPortR().c_str(), &hints, &res) != 0) {
-        throw std::runtime_error("Error: Unable to resolve host: " + addr);
+        throw NetworkError("Error: Unable to resolve host: " + addr);
     }
     if (connect(_fd, res->ai_addr, res->ai_addrlen) < 0) {
         freeaddrinfo(res);
-        throw std::runtime_error("Error: Can't open data connection.");
+        throw NetworkError("Error: Can't open data connection.");
     }
     freeaddrinfo(res);
 }

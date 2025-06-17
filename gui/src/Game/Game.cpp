@@ -6,6 +6,7 @@
 */
 
 #include "Game.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Constructs the Game object.
@@ -19,16 +20,13 @@
  */
 game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     std::shared_ptr<tools::MessageQueue> outgoing,
-    std::unique_ptr<render::IRenderer> render,
-    std::unique_ptr<render::IObjectFactory> objFactory)
-    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render)), _objFactory(std::move(objFactory))
+    std::unique_ptr<render::IRenderer> render)
+    : _incoming(incoming), _outgoing(outgoing), _renderer(std::move(render))
 {
     for (const auto& [name, handler] : commands) {
         _cm.addCommand(name, handler);
     }
-    _cam = std::make_shared<render::Camera>();
     _renderer->init("Zappy", 1920, 1080, 60);
-    _renderer->setCamera(_cam);
     _renderer->setBindings(bindings);
 }
 
@@ -38,7 +36,7 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
  * Tokenizes the string and delegates handling to the CommandManager.
  *
  * @param command Raw command string.
- * @throw std::runtime_error if command is unknown.
+ * @throw CommandError if command is unknown.
  */
 void game::Game::manageCommand(const std::string &command)
 {
@@ -49,7 +47,7 @@ void game::Game::manageCommand(const std::string &command)
     while (iss >> token)
         tokens.push_back(token);
     if (!_cm.handleCommand(tokens))
-        throw std::runtime_error("Error Unknown Command " + command);
+        throw CommandError("Unknown Command: " + command).where("Game::manageCommand");
 }
 
 /**
@@ -74,15 +72,21 @@ void game::Game::gameLoop()
         try {
             if (!errorCaught) {
                 std::string message;
-                while (_incoming->tryPop(message))
+                while (_incoming->tryPop(message)) {
                     manageCommand(message);
+                }
             }
             _renderer->poll();
             _renderer->update(dt);
             if (_gm.map)
                 _renderer->render();
-        } catch (const std::exception& e) {
+        } catch (const Error& e) {
             std::cerr << "Game " << e.what() << std::endl;
+            errorCaught = true;
+            errorMessage = e.what();
+            _running = false;
+        } catch (const std::exception& e) {
+            std::cerr << "Game (Unexpected Error) " << e.what() << std::endl;
             errorCaught = true;
             errorMessage = e.what();
             _running = false;

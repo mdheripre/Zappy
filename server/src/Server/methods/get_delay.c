@@ -13,29 +13,46 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Static table of default delays (in ticks) for each command.
+ *
+ * Each entry contains the command name, its base execution time in ticks,
+ * and an unused field (set to 0).
+ */
 static const queued_command_t COMMAND_DELAYS[] = {
-    { "Forward", 7.0f },
-    { "Right", 7.0f },
-    { "Left", 7.0f },
-    { "Look", 7.0f },
-    { "Inventory", 1.0f },
-    { "Broadcast", 7.0f },
-    { "Connect_nbr", 0.0f },
-    { "Fork", 42.0f },
-    { "Eject", 7.0f },
-    { "Take", 7.0f },
-    { "Set", 7.0f },
-    { "Incantation", 0.0f },
+    { "Forward", 7, 0},
+    { "Right", 7, 0},
+    { "Left", 7, 0},
+    { "Look", 7, 0},
+    { "Inventory", 1, 0},
+    { "Broadcast", 7, 0},
+    { "Connect_nbr", 0, 0},
+    { "Fork", 42, 0},
+    { "Eject", 7, 0},
+    { "Take", 7, 0},
+    { "Set", 7, 0},
+    { "Incantation", 0, 0},
 };
 
-float get_command_delay(server_t *server, const char *command)
+/**
+ * @brief Get the base delay in ticks for a given command string.
+ *
+ * @param server Unused parameter (placeholder for future use).
+ * @param command Full command string (e.g., "Forward\n").
+ * @return Delay in ticks, or 0 if the command is unknown or invalid.
+ */
+int get_command_delay(server_t *, const char *command)
 {
-    if (!server || !command)
-        return 0.0f;
+    char name[BUFFER_COMMAND_SIZE] = {0};
+
+    if (!command)
+        return 0;
+    if (!extract_command_name(command, name, sizeof(name)))
+        return 0;
     for (size_t i = 0; i < sizeof(COMMAND_DELAYS) / sizeof(COMMAND_DELAYS[0]);
         i++) {
-        if (strcmp(COMMAND_DELAYS[i].content, command) == 0)
-            return COMMAND_DELAYS[i].time_remaining / server->game->frequency;
+        if (strcmp(COMMAND_DELAYS[i].content, name) == 0)
+            return COMMAND_DELAYS[i].ticks_remaining;
     }
-    return 0.0f;
+    return 0;
 }

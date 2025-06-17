@@ -9,7 +9,7 @@
 
 #include "Game/GameState/EntityState/EntityState.hpp"
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
-#include "Game/Renderer/Object/IAnimatedObject.hpp"
+#include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Map/Tile/Tile.hpp"
 #include "Game/Egg/Egg.hpp"
@@ -29,7 +29,7 @@ namespace gui {
             };
         
             TrantorianState(int id,
-                tools::Position<int>  pos,
+                tools::Vector2<int>  pos,
                 const std::string& teamName,
                 Orientation orientation = Orientation::NORTH)
                 : EntityState(id, pos, teamName), _orientation(orientation), _level(1) {
@@ -70,21 +70,20 @@ namespace gui {
                 };
             
                 Trantorian(int id,
-                        tools::Position<int>  pos,
+                        tools::Vector2<int>  pos,
                            const std::string& teamName,
                            Orientation orientation = Orientation::NORTH,
                            int level = 1,
-                           std::unique_ptr<render::IAnimatedObject> trantorianObject = nullptr)
+                           std::unique_ptr<render::IAnimatedSprite> trantorianObject = nullptr)
                     : TrantorianState(id, pos, teamName, orientation), _trantorianObject(std::move(trantorianObject)) {
                     _level = level;
                     setPosition(pos);
                 }
                 ~Trantorian() override = default;
             private:
-                std::unique_ptr<render::IAnimatedObject> _trantorianObject;
-                tools::Position3D<float> _targetPos;
+                std::unique_ptr<render::IAnimatedSprite> _trantorianObject;
                 void setDead() override { _alive = false; }
-                void setPosition(tools::Position<int>  pos) override;
+                void setPosition(tools::Vector2<int>  pos) override;
                 void setOrientation(Orientation ori) override { _orientation = ori; }
                 void setLevel(int lvl) override { _level = lvl; }
                 void setInventory(const std::array<int, 7>& inv) override {_inventory = inv;};

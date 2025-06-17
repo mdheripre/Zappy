@@ -6,6 +6,7 @@
 */
 
 #include "Game/Game.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Handles the WELCOME command from the server.
@@ -18,9 +19,12 @@ void game::Game::welcomeCm(const std::vector<std::string> &token)
 {
     if (!token.empty())
         printErrorCommand("WELCOME", token);
+
     _outgoing->push("GRAPHIC\n");
     _gm.state = state::GameState::State::CONNECTED;
-    std::cout << "Connected" << std::endl;
+
+    std::cout << "[WELCOME] --- Connected ---" << std::endl;
+    std::cout << "    Send Message : GRAPHIC\\n" << std::endl;
 }
 
 /**
@@ -32,20 +36,24 @@ void game::Game::welcomeCm(const std::vector<std::string> &token)
  */
 void game::Game::mszCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2)
+    if (token.size() != 2) {
         printErrorCommand("msz", token);
+        return;
+    }
+
+    tools::Vector2<int> size(std::stoi(token[0]), std::stoi(token[1]));
     std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
-        std::stoi(token[0]),
-        std::stoi(token[1]),
-        _objFactory->createCube(
-            tools::Color(0, 255, 0, 255),
-            tools::Position3D<float>(1.0, 1.0, 1.0)
-        )
+        size.x,
+        size.y,
+        _maManager.getTileSprites(_renderer->getFactory())
     );
     _gm.map = map;
     _renderer->pushEntity(map);
-    std::cout << "Map created" << std::endl;
+
+    std::cout << "[MSZ] --- Map created ---" << std::endl;
+    std::cout << "    Dimensions : " << size.x << " x " << size.y << std::endl;
 }
+
 
 /**
  * @brief Handles the BCT command (tile content).
@@ -56,16 +64,26 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
  */
 void game::Game::bctCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 9)
-        printErrorCommand("btc", token);
-    tools::Position<int> pos(std::stoi(token[0]), std::stoi(token[1]));
+    if (token.size() != 9) {
+        printErrorCommand("bct", token);
+        return;
+    }
+
+    tools::Vector2<int> pos(std::stoi(token[0]), std::stoi(token[1]));
     std::array<int, 7> res;
     for (int i = 2; i < 9; i++) {
         res[i - 2] = std::stoi(token[i]); 
     }
+
     gui::Tile newTile(res);
     _gm.map->setTile(newTile, pos);
-    std::cout << "Tile set" << std::endl;
+
+    std::cout << "[BCT] --- Tile updated ---" << std::endl;
+    std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+    std::cout << "    Content  : ";
+    for (int i = 0; i < 7; i++)
+        std::cout << res[i] << (i < 6 ? ", " : "");
+    std::cout << std::endl;
 }
 
 /**
@@ -77,12 +95,13 @@ void game::Game::bctCommand(const std::vector<std::string> &token)
  */
 void game::Game::tnaCommand(const std::vector<std::string> &token)
 {
-    if (token.empty())
-        return printErrorCommand("tna", token);
-    
-    std::string tokens;
+    if (token.empty()) {
+        printErrorCommand("tna", token);
+        return;
+    }
 
-    for (auto &i : token) {
+    std::string tokens;
+    for (const auto &i : token) {
         tokens += " ";
         tokens += i;
     }
@@ -90,9 +109,11 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
     std::string teamName = token[0];
 
     if (_gm.teams.insert(teamName.substr(1)).second) {
-        std::cout << "Team added: " << teamName << std::endl;
+        std::cout << "[TNA] --- Team registered ---" << std::endl;
+        std::cout << "    Name : " << teamName.substr(1) << std::endl;
     }
 }
+
 
 /**
  * @brief Handles the PNW command (new player).
@@ -107,7 +128,7 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
         printErrorCommand("pnw", token);
 
     int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     int orientation = std::stoi(token[3]);
     int lvl = std::stoi(token[4]);
     auto it = _gm.trantorians.find(id);
@@ -119,18 +140,13 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     }
     tools::TeamBranding tb = _tbManager.getTeamBranding(tokens);
 
-    _objFactory->createAnimatedObject(
-        tb.getPlayerAsset().getModelPath(),
-        tb.getPlayerAsset().getAnimation());
     auto trantorian = std::make_shared<gui::Trantorian>(
         id,
         pos,
         tokens,
         static_cast<gui::Trantorian::Orientation>(orientation),
         lvl,
-        _objFactory->createAnimatedObject(
-            tb.getPlayerAsset().getModelPath(),
-            tb.getPlayerAsset().getAnimation())
+        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset())
     );
 
     std::shared_ptr<gui::TrantorianState> tranState = trantorian;
@@ -139,7 +155,12 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     _renderer->pushEntity(tranRender);
     _gm.trantorians[id] = tranState;
 
-    std::cout << "Trantorian " << id << " was created." << std::endl;
+    std::cout << "[PNW] --- Trantorian Created ---" << std::endl;
+    std::cout << "    ID         : " << id << std::endl;
+    std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
+    std::cout << "    Orientation: " << orientation << std::endl;
+    std::cout << "    Level      : " << lvl << std::endl;
+    std::cout << "    Team       : " << tokens << std::endl;
 }
 
 /**
@@ -151,25 +172,36 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
  */
 void game::Game::ppoCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 4)
+    if (token.size() != 4) {
         printErrorCommand("ppo", token);
+        return;
+    }
 
     int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
     int orientation = std::stoi(token[3]);
 
     auto it = _gm.trantorians.find(id);
 
-    if (it == _gm.trantorians.end())
-        printErrorCommand("Unknown id in ppo for trantorian ", token);
-    if (orientation < 1 || orientation > 4)
+    if (it == _gm.trantorians.end()) {
+        printErrorCommand("Unknown id in ppo for trantorian", token);
+        return;
+    }
+
+    if (orientation < 1 || orientation > 4) {
         printErrorCommand("Invalid orientation id in ppo for trantorian", token);
-    
+        return;
+    }
+
     it->second->setOrientation(static_cast<gui::Trantorian::Orientation>(orientation));
     it->second->setPosition(pos);
 
-    std::cout << "Player #" << id << " moved to (" << pos.x << ", " << pos.y << ")\n";
+    std::cout << "[PPO] --- Trantorian moved ---" << std::endl;
+    std::cout << "    ID         : " << id << std::endl;
+    std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
+    std::cout << "    Orientation: " << orientation << std::endl;
 }
+
 
 /**
  * @brief Handles the PLV command (player level).
@@ -180,21 +212,30 @@ void game::Game::ppoCommand(const std::vector<std::string> &token)
  */
 void game::Game::plvCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2)
-        printErrorCommand("pdi", token);
+    if (token.size() != 2) {
+        printErrorCommand("plv", token);
+        return;
+    }
 
     int id = std::stoi(token[0].substr(1));
     int lvl = std::stoi(token[1]);
 
-    if (lvl > 10 || lvl < 0)
-        printErrorCommand("Invalid level in plv ", token);
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->setLevel(lvl);
+    if (lvl > 10 || lvl < 0) {
+        printErrorCommand("Invalid level in plv", token);
+        return;
+    }
+
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        it->second->setLevel(lvl);
+        std::cout << "[PLV] --- Trantorian level updated ---" << std::endl;
+        std::cout << "    ID    : " << id << std::endl;
+        std::cout << "    Level : " << lvl << std::endl;
     } else {
-        printErrorCommand("Unknown id in pdi for trantorian ", token);
+        printErrorCommand("Unknown id in plv for trantorian", token);
     }
 }
+
 
 /**
  * @brief Handles the PIN command (player inventory).
@@ -205,24 +246,34 @@ void game::Game::plvCommand(const std::vector<std::string> &token)
  */
 void game::Game::pinCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 10)
+    if (token.size() != 10) {
         printErrorCommand("pin", token);
-    int id = std::stoi(token[0].substr(1));
-    tools::Position<int> pos(std::stoi(token[1]), std::stoi(token[2]));
-    std::array<int, 7> res;
-
-    for (int i = 3; i < 10; i++)
-        res[i - 2] = std::stoi(token[i]); 
-
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->setInventory(res);
-        it->setPosition(pos);
-    } else {
-        printErrorCommand("Unknown id in pdi for trantorian ", token);
+        return;
     }
-    std::cout << "Inventory's Player " << id << " set" << std::endl;
+
+    int id = std::stoi(token[0].substr(1));
+    tools::Vector2<int> pos(std::stoi(token[1]), std::stoi(token[2]));
+    std::array<int, 7> res;
+    for (int i = 3; i < 10; i++)
+        res[i - 3] = std::stoi(token[i]);  // fix index: i - 3
+
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        it->second->setInventory(res);
+        it->second->setPosition(pos);
+
+        std::cout << "[PIN] --- Trantorian inventory updated ---" << std::endl;
+        std::cout << "    ID       : " << id << std::endl;
+        std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        std::cout << "    Inventory: ";
+        for (int i = 0; i < 7; ++i)
+            std::cout << res[i] << (i < 6 ? ", " : "");
+        std::cout << std::endl;
+    } else {
+        printErrorCommand("Unknown id in pin for trantorian", token);
+    }
 }
+
 
 /**
  * @brief Handles the PEX command (expulsion).
@@ -233,23 +284,33 @@ void game::Game::pinCommand(const std::vector<std::string> &token)
  */
 void game::Game::pexCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
-        printErrorCommand("pdi", token);
+    if (token.size() != 1) {
+        printErrorCommand("pex", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->expulse();
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        auto trantorian = it->second;
+        trantorian->expulse();
+
         for (auto &[otherId, other] : _gm.trantorians) {
-            if (other.get() != it.get() && other->getPosition() == it->getPosition()) {
-                other->expulseFrom(it->getOrientation(), _gm.map->getDim().x, _gm.map->getDim().y);
+            if (other.get() != trantorian.get() && other->getPosition() == trantorian->getPosition()) {
+                other->expulseFrom(trantorian->getOrientation(), _gm.map->getDim().x, _gm.map->getDim().y);
             }
         }
+
+        std::cout << "[PEX] --- Expulsion triggered ---" << std::endl;
+        std::cout << "    ID        : " << id << std::endl;
+        std::cout << "    Position  : (" << trantorian->getPosition().x << ", " << trantorian->getPosition().y << ")" << std::endl;
+        std::cout << "    Direction : " << static_cast<int>(trantorian->getOrientation()) << std::endl;
     } else {
-        printErrorCommand("Unknown id in pdi for trantorian ", token);
+        printErrorCommand("Unknown id in pex for trantorian", token);
     }
-    std::cout << "Trantorian " << id << " expulse" << std::endl;
 }
+
 
 /**
  * @brief Handles the PBC command (broadcast).
@@ -260,18 +321,26 @@ void game::Game::pexCommand(const std::vector<std::string> &token)
  */
 void game::Game::pbcCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2)
+    if (token.size() != 2) {
         printErrorCommand("pbc", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->broadcast(token[1]);
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        auto trantorian = it->second;
+        trantorian->broadcast(token[1]);
+
+        std::cout << "[PBC] --- Broadcast message ---" << std::endl;
+        std::cout << "    ID      : " << id << std::endl;
+        std::cout << "    Message : \"" << token[1] << "\"" << std::endl;
     } else {
-        printErrorCommand("Unknown id in pbc for trantorian ", token);
+        printErrorCommand("Unknown id in pbc for trantorian", token);
     }
-    std::cout << "Trantorian " << id << "broadcast: " <<token[1] << std::endl;
 }
+
 
 /**
  * @brief Handles the PIC command (start incantation).
@@ -290,14 +359,14 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     int x = std::stoi(token[0]);
     int y = std::stoi(token[1]);
     int level = std::stoi(token[2]);
-    tools::Position<int> pos(x, y);
+    tools::Vector2<int> pos(x, y);
 
     std::vector<int> playerIds;
 
     int firstId = std::stoi(token[3]);
     auto itInit = _gm.trantorians.find(firstId);
     if (itInit == _gm.trantorians.end()) {
-        throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
+        throw EntityError("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
     }
 
     tools::TeamBranding tb = _tbManager.getTeamBranding(itInit->second->getTeamName());
@@ -308,7 +377,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
 
         auto it = _gm.trantorians.find(pid);
         if (it == _gm.trantorians.end()) {
-            throw std::runtime_error("Error: Unknown Trantorian ID " + std::to_string(pid) + " in pic command.");
+            throw EntityError("Error: Unknown Trantorian ID " + std::to_string(pid) + " in pic command.");
         }
 
         it->second->startIncantation();
@@ -318,18 +387,22 @@ void game::Game::picCommand(const std::vector<std::string> &token)
         pos,
         level,
         playerIds,
-        _objFactory->createAnimatedObject(
-            tb.getPlayerAsset().getModelPath(),
-            tb.getPlayerAsset().getAnimation()
-        )
+        _renderer->getFactory().createAnimatedSprite(tb.getIncantationAsset())
     );
 
     std::shared_ptr<render::IRenderEntity> renderPtr = incantation;
     _renderer->pushEntity(renderPtr);
     _gm.incantations[pos] = incantation;
 
-    std::cout << "Incantation started at (" << x << ", " << y << ") for level " << level << std::endl;
+    std::cout << "[PIC] --- Incantation started ---" << std::endl;
+    std::cout << "    Position : (" << x << ", " << y << ")" << std::endl;
+    std::cout << "    Level    : " << level << std::endl;
+    std::cout << "    Players  : ";
+    for (size_t i = 0; i < playerIds.size(); ++i)
+        std::cout << playerIds[i] << (i < playerIds.size() - 1 ? ", " : "");
+    std::cout << std::endl;
 }
+
 
 /**
  * @brief Handles the PIE command (end incantation).
@@ -345,12 +418,14 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
         return;
     }
 
-    tools::Position<int> pos(std::stoi(token[0]), std::stoi(token[1]));
+    tools::Vector2<int> pos(std::stoi(token[0]), std::stoi(token[1]));
     int success = std::stoi(token[2]);
-    auto it = _gm.incantations.find(pos);
 
-    if (it == _gm.incantations.end())
+    auto it = _gm.incantations.find(pos);
+    if (it == _gm.incantations.end()) {
         printErrorCommand("Incantation doesn't exist in pie", token);
+        return;
+    }
 
     if (success <= 0) {
         it->second->failed();
@@ -359,7 +434,10 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
             if (jt != _gm.trantorians.end())
                 jt->second->incantationFailed();
         }
-        std::cout << "Incantation failed" << std::endl;
+
+        std::cout << "[PIE] --- Incantation result ---" << std::endl;
+        std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        std::cout << "    Result   : FAILED" << std::endl;
     } else {
         it->second->succeed();
         for (auto &i : it->second->getPlayerIds()) {
@@ -369,10 +447,15 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
                 jt->second->setLevel(it->second->getTargetLevel());
             }
         }
-        std::cout << "Incantation succeeded" << std::endl;
+
+        std::cout << "[PIE] --- Incantation result ---" << std::endl;
+        std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        std::cout << "    Result   : SUCCESS" << std::endl;
     }
+
     _gm.incantations.erase(pos);
 }
+
 
 /**
  * @brief Handles the PFK command (egg laid).
@@ -383,18 +466,24 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
  */
 void game::Game::pfkCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
+    if (token.size() != 1) {
         printErrorCommand("pfk", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->laidAnEgg();
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        it->second->laidAnEgg();
+
+        std::cout << "[PFK] --- Egg laying initiated ---" << std::endl;
+        std::cout << "    ID : " << id << std::endl;
     } else {
-        printErrorCommand("Unknown id in pfk for trantorian ", token);
+        printErrorCommand("Unknown id in pfk for trantorian", token);
     }
-    std::cout << "Trantorian" << id << "laid an egg" << std::endl;
 }
+
 
 /**
  * @brief Handles the PDR command (drop resource).
@@ -405,22 +494,30 @@ void game::Game::pfkCommand(const std::vector<std::string> &token)
  */
 void game::Game::pdrCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2)
+    if (token.size() != 2) {
         printErrorCommand("pdr", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
     gui::Tile::Resource res = static_cast<gui::Tile::Resource>(std::stoi(token[1]));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        tools::Position<int> pos = it->getPosition();
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        tools::Vector2<int> pos = it->second->getPosition();
 
         _gm.map->popResource(res, pos);
-        it->removeFromInventory(res);
+        it->second->removeFromInventory(res);
+
+        std::cout << "[PDR] --- Resource dropped ---" << std::endl;
+        std::cout << "    ID       : " << id << std::endl;
+        std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        std::cout << "    Resource : " << std::stoi(token[1]) << std::endl;
     } else {
-        printErrorCommand("Unknown id in pdr for trantorian ", token);
+        printErrorCommand("Unknown id in pdr for trantorian", token);
     }
-    std::cout << "Trantorian " << id << " droped " << std::stoi(token[1]) << std::endl;
 }
+
 
 /**
  * @brief Handles the PGT command (take resource).
@@ -431,23 +528,30 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
  */
 void game::Game::pgtCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2)
+    if (token.size() != 2) {
         printErrorCommand("pgt", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
     gui::Tile::Resource res = static_cast<gui::Tile::Resource>(std::stoi(token[1]));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        tools::Position<int> pos = it->getPosition();
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        tools::Vector2<int> pos = it->second->getPosition();
 
         _gm.map->pushResource(res, pos);
-        it->addToInventory(res);
+        it->second->addToInventory(res);
 
+        std::cout << "[PGT] --- Resource taken ---" << std::endl;
+        std::cout << "    ID       : " << id << std::endl;
+        std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        std::cout << "    Resource : " << std::stoi(token[1]) << std::endl;
     } else {
-        printErrorCommand("Unknown id in pgt for trantorian ", token);
+        printErrorCommand("Unknown id in pgt for trantorian", token);
     }
-    std::cout << "Trantorian " << id << " take " << std::stoi(token[1]) << std::endl;
 }
+
 
 /**
  * @brief Handles the PDI command (player death).
@@ -458,18 +562,25 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
  */
 void game::Game::pdiCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
+    if (token.size() != 1) {
         printErrorCommand("pdi", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
 
-    if (_gm.trantorians.find(id) != _gm.trantorians.end()) {
-        auto it = _gm.trantorians.at(id);
-        it->setDead();
+    auto it = _gm.trantorians.find(id);
+    if (it != _gm.trantorians.end()) {
+        it->second->setDead();
         _gm.trantorians.erase(id);
+
+        std::cout << "[PDI] --- Trantorian removed ---" << std::endl;
+        std::cout << "    ID : " << id << std::endl;
     } else {
-        printErrorCommand("Unknown id in pdi for trantorian ", token);
+        printErrorCommand("Unknown id in pdi for trantorian", token);
     }
 }
+
 
 /**
  * @brief Handles the ENW command (egg laid on map).
@@ -485,38 +596,46 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         return;
     }
 
-    int eggId = std::stoi(token[0]);
-    int tranId = std::stoi(token[1]);
+    int eggId = std::stoi(token[0].substr(1));
+    int tranId = std::stoi(token[1].substr(1));
     std::string teamName;
-    tools::Position<int> pos(std::stoi (token[2]), std::stoi(token[3]));
+    tools::Vector2<int> pos(std::stoi(token[2]), std::stoi(token[3]));
 
     auto tran = _gm.trantorians.find(tranId);
     if (tran != _gm.trantorians.end()) {
         teamName = tran->second->getTeamName();
+    } else if (tranId == -1) {
+        teamName = "";
     } else {
-        printErrorCommand("Trantorian id don't exist in enw ", token);
+        printErrorCommand("Trantorian id doesn't exist in enw", token);
+        return;
     }
-    if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
 
+    if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
         tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
         auto egg = std::make_shared<gui::Egg>(
             eggId,
             pos,
             teamName,
-            _objFactory->createAnimatedObject(
-                tb.getEggAsset().getModelPath(),
-                tb.getEggAsset().getAnimation())
+            _renderer->getFactory().createAnimatedSprite(tb.getEggAsset())
         );
+
         std::shared_ptr<state::EntityState> eggState = egg;
         std::shared_ptr<render::IRenderEntity> eggRender = egg;
 
         _renderer->pushEntity(eggRender);
         _gm.eggs[egg->getId()] = eggState;
-        std::cout << "Egg " << eggId << " was laid by a player." << std::endl;
+
+        std::cout << "[ENW] --- Egg laid ---" << std::endl;
+        std::cout << "    Egg ID     : " << eggId << std::endl;
+        std::cout << "    Trantorian : " << tranId << std::endl;
+        std::cout << "    Team       : " << (teamName.empty() ? "(unknown)" : teamName) << std::endl;
+        std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
     } else {
-        printErrorCommand("Id already exist in enw for egg", token);
+        printErrorCommand("Egg ID already exists in enw", token);
     }
 }
+
 
 /**
  * @brief Handles the EBO command (egg hatched).
@@ -538,33 +657,16 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
     if (it != _gm.eggs.end()) {
         const auto& egg = it->second;
 
-        tools::TeamBranding tb = _tbManager.getTeamBranding(egg->getTeamName());
-
-        auto trantorian = std::make_shared<gui::Trantorian>(
-            egg->getId(), 
-            egg->getPosition(), 
-            egg->getTeamName(),
-            gui::Trantorian::Orientation::NORTH,
-            1,
-            _objFactory->createAnimatedObject(
-                tb.getPlayerAsset().getModelPath(),
-                tb.getPlayerAsset().getAnimation())
-        );
-
-        std::shared_ptr<gui::TrantorianState> tranState = trantorian;
-        std::shared_ptr<render::IRenderEntity> tranRender = trantorian;
-
-        _renderer->pushEntity(tranRender);
-        _gm.trantorians[egg->getId()] = tranState;
-
         egg->setDead();
         _gm.eggs.erase(id);
 
-        std::cout << "Egg " << id << " hatched into a Trantorian." << std::endl;
+        std::cout << "[EBO] --- Egg hatched ---" << std::endl;
+        std::cout << "    Egg ID : " << id << std::endl;
     } else {
         printErrorCommand("Unknown id in ebo for egg", token);
     }
 }
+
 
 /**
  * @brief Handles the EDI command (egg dies).
@@ -575,19 +677,25 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
  */
 void game::Game::ediCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
+    if (token.size() != 1) {
         printErrorCommand("edi", token);
+        return;
+    }
+
     int id = std::stoi(token[0].substr(1));
 
-    if (_gm.eggs.find(id) != _gm.eggs.end()) {
-        auto it = _gm.eggs.at(id);
-        it->setDead();
+    auto it = _gm.eggs.find(id);
+    if (it != _gm.eggs.end()) {
+        it->second->setDead();
         _gm.eggs.erase(id);
+
+        std::cout << "[EDI] --- Egg removed ---" << std::endl;
+        std::cout << "    Egg ID : " << id << std::endl;
     } else {
-        printErrorCommand("Unknown id in edi for egg ", token);
+        printErrorCommand("Unknown id in edi for egg", token);
     }
-    std::cout << "Egg " << id << " died." << std::endl;
 }
+
 
 /**
  * @brief Handles the SGT command (get time unit).
@@ -598,12 +706,17 @@ void game::Game::ediCommand(const std::vector<std::string> &token)
  */
 void game::Game::sgtCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
+    if (token.size() != 1) {
         printErrorCommand("sgt", token);
+        return;
+    }
 
     _gm.time_unit = std::stof(token[0]);
-    std::cout << "Time unit has been change to " << _gm.time_unit << std::endl;
+
+    std::cout << "[SGT] --- Time unit updated ---" << std::endl;
+    std::cout << "    New time unit : " << _gm.time_unit << std::endl;
 }
+
 
 /**
  * @brief Handles the SST command (set time unit).
@@ -614,12 +727,17 @@ void game::Game::sgtCommand(const std::vector<std::string> &token)
  */
 void game::Game::sstCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 1)
+    if (token.size() != 1) {
         printErrorCommand("sst", token);
+        return;
+    }
 
     _gm.time_unit = std::stof(token[0]);
-    std::cout << "Time unit has been change to " << _gm.time_unit << std::endl;
+
+    std::cout << "[SST] --- Time unit set by client ---" << std::endl;
+    std::cout << "    New time unit : " << _gm.time_unit << std::endl;
 }
+
 
 /**
  * @brief Handles the SEG command (game end).
@@ -630,11 +748,17 @@ void game::Game::sstCommand(const std::vector<std::string> &token)
  */
 void game::Game::segCommand(const std::vector<std::string> &token)
 {
-    if (!token.empty())
+    if (!token.empty()) {
         printErrorCommand("seg", token);
+        return;
+    }
+
     _gm.state = state::GameState::State::END;
-    std::cout << "Game end;" << std::endl;
+
+    std::cout << "[SEG] --- Game ended ---" << std::endl;
+    std::cout << "    New state : END" << std::endl;
 }
+
 
 /**
  * @brief Handles the SMG command (server message).
@@ -645,39 +769,44 @@ void game::Game::segCommand(const std::vector<std::string> &token)
  */
 void game::Game::smgCommand(const std::vector<std::string> &token)
 {
-    std::string tokens;
-
-    for (auto &i : token) {
-        tokens += " ";
-        tokens += i;
+    std::string message;
+    for (const auto& word : token) {
+        message += " " + word;
     }
-    std::cout << "Message from server:" << tokens << std::endl;
+
+    std::cout << "[SMG] --- Server message ---" << std::endl;
+    std::cout << "    Content : " << message << std::endl;
 }
+
 
 /**
  * @brief Handles the SUC command (unknown command).
  */
 void game::Game::sucCommand(const std::vector<std::string> &token)
 {
-    std::cout << "Server don't know the last command" << std::endl;
+    std::cout << "[SUC] --- Unknown command ---" << std::endl;
+    std::cout << "    The last command was not recognized by the server." << std::endl;
 }
+
 
 /**
  * @brief Handles the SBP command (bad parameters).
  */
 void game::Game::sbpCommand(const std::vector<std::string> &token)
 {
-    std::cout << "Server don't accept params of the last command" << std::endl;
+    std::cout << "[SBP] --- Invalid parameters ---" << std::endl;
+    std::cout << "    The server rejected the parameters of the last command." << std::endl;
 }
+
 
 /**
  * @brief Utility to print and throw command error.
  *
  * @param cm The command name.
  * @param token The full token list received.
- * @throw std::runtime_error with constructed error message.
+ * @throw DataParsingError with constructed error message.
  */
-void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
+ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std::string> &token)
 {
     std::string tokens;
 
@@ -686,5 +815,5 @@ void game::Game::printErrorCommand(const std::string &cm, const std::vector<std:
         tokens += " ";
         tokens += i;
     }
-    throw std::runtime_error("Error " + tokens);
+    throw DataParsingError("Invalid command format: " + tokens);
 }

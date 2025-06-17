@@ -6,6 +6,7 @@
 */
 
 #include "Trantorian.hpp"
+#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Draws the Trantorian on screen.
@@ -30,7 +31,7 @@ void gui::Trantorian::draw() const
  */
 void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
 {
-    tools::Position<int> offset;
+    tools::Vector2<int> offset;
     switch (O) {
         case Orientation::NORTH: offset = {0, -1}; break;
         case Orientation::SOUTH: offset = {0, 1}; break;
@@ -41,7 +42,7 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
     int newX = (_pos.x + offset.x + maxWidth) % maxWidth;
     int newY = (_pos.y + offset.y + maxHeight) % maxHeight;
 
-    tools::Position<int> newPos(newX, newY);
+    tools::Vector2<int> newPos(newX, newY);
     setPosition(newPos);
 }
 
@@ -52,14 +53,14 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
  * If it goes below zero, resets it to zero.
  *
  * @param res Resource to remove.
- * @throw std::runtime_error if the resource index is invalid.
+ * @throw EntityError if the resource index is invalid.
  */
 void gui::Trantorian::removeFromInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
     if (index > _inventory.size() || index < 0)
-        throw std::runtime_error("Invalid ressource index " + std::to_string(index));
+        throw EntityError("Invalid resource index " + std::to_string(index));
     _inventory[index]--;
     if (_inventory[index] < 0)
         _inventory[index] = 0;
@@ -71,14 +72,14 @@ void gui::Trantorian::removeFromInventory(Tile::Resource res)
  * Increments the quantity of the specified resource.
  *
  * @param res Resource to add.
- * @throw std::runtime_error if the resource index is invalid.
+ * @throw EntityError if the resource index is invalid.
  */
 void gui::Trantorian::addToInventory(Tile::Resource res)
 {
     int index = static_cast<int>(res);
 
     if (index > _inventory.size() || index < 0)
-        throw std::runtime_error("Invalid ressource index " + std::to_string(index));
+        throw EntityError("Invalid resource index " + std::to_string(index));
     _inventory[index]++;
 }
 
@@ -99,12 +100,8 @@ bool gui::Trantorian::update(float dt)
         anim_end = _trantorianObject->updateObject(dt);
     else
         return false;
-
-    if (anim_end && !_alive)
+    if (!_alive)
         return false;
-    if (anim_end)
-        _trantorianObject->playClip(
-            static_cast<int>(TrantorianAnimation::IDLE), true);
     return true;
 }
 
@@ -115,16 +112,13 @@ bool gui::Trantorian::update(float dt)
  *
  * @param pos New map position (grid coordinates).
  */
-void gui::Trantorian::setPosition(tools::Position<int>  pos)
+void gui::Trantorian::setPosition(tools::Vector2<int>  pos)
 {
-    tools::Position3D<float> bb = _trantorianObject->getBoundingBox().getSize();
-
-    tools::Position3D<float> dPos(
-        static_cast<float>(pos.x),
-        bb.y,
-        static_cast<float>(pos.y)
+    tools::Vector2<float> tranSize = _trantorianObject->getSize();
+    tools::Vector2<float> dPos(
+        (static_cast<float>(pos.x) * TILE_SIZE) + (TILE_SIZE - tranSize.x) / 2.0f,
+        (static_cast<float>(pos.y) * TILE_SIZE) + (TILE_SIZE - tranSize.y) / 2.0f
     );
-
     _trantorianObject->setPosition(dPos);
     _pos = pos;
 }

@@ -6,24 +6,24 @@
 */
 
 #include "Incantation.hpp"
-gui::Incantation::Incantation(tools::Position<int> pos, int level, const std::vector<int> &playerIds, std::unique_ptr<render::IAnimatedObject> incObject)
+gui::Incantation::Incantation(tools::Vector2<int> pos, int level, const std::vector<int> &playerIds, std::unique_ptr<render::IAnimatedSprite> incObject)
     : IncantationState(pos, level, playerIds), _incObject(std::move(incObject))
 {
-    tools::Position3D<float> bb = _incObject->getBoundingBox().getSize();
+    tools::Vector2<float> size = _incObject->getSize();
 
-    tools::Position3D<float> dPos(
-        static_cast<float>(pos.x),
-        bb.y,
-        static_cast<float>(pos.y)
+    tools::Vector2<float> dPos(
+        static_cast<float>(pos.x) * size.x,
+        static_cast<float>(pos.y) * size.y
     );
     _incObject->setPosition(dPos);
     _position = pos;
 }
 
-bool gui::Incantation::update(float)
+bool gui::Incantation::update(float dt)
 {
     if (_finished || !_incObject)
         return false;
+    _incObject->updateObject(dt);
     return true;
 }
 

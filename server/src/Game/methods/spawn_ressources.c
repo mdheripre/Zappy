@@ -29,27 +29,88 @@ static const double RESOURCE_DENSITY[RESOURCE_COUNT] = {
 };
 
 /**
- * @brief Spawn resources randomly on the game map based on density.
+ * @brief Count the total amount of a specific resource on the map.
  *
- * @param self Pointer to the game instance.
+ * @param game Pointer to the game instance.
+ * @param type Resource type index.
+ * @return Total number of units of the resource found.
  */
-void spawn_resources(game_t *self)
+static int count_existing_resource(game_t *game, int type)
 {
-    int total_tiles = self->width * self->height;
-    int count[RESOURCE_COUNT];
+    int total = 0;
+
+    for (int y = 0; y < game->height; y++) {
+        for (int x = 0; x < game->width; x++) {
+            total += game->map[y][x].resources[type];
+        }
+    }
+    return total;
+}
+
+/**
+ * @brief Queue a tile update event for a specific coordinate.
+ *
+ * @param game Pointer to the game instance.
+ * @param x X coordinate of the tile.
+ * @param y Y coordinate of the tile.
+ */
+void add_tile_update_event(game_t *game, int x, int y)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return;
+    event->type = GAME_EVENT_RESPONSE_TILE_UPDATED;
+    event->data.tile.x = x;
+    event->data.tile.y = y;
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, event);
+}
+
+/**
+ * @brief Spawn a given amount of a resource type randomly on the map.
+ *
+ * Triggers tile update events for each spawned resource.
+ *
+ * @param game Pointer to the game instance.
+ * @param type Resource type index.
+ * @param to_spawn Number of resources to spawn.
+ */
+static void spawn_resource_type(game_t *game, int type, int to_spawn)
+{
     int x;
     int y;
 
-    for (int r = 0; r < RESOURCE_COUNT; r++) {
-        count[r] = (int)(RESOURCE_DENSITY[r] * total_tiles);
-        if (count[r] == 0)
-            count[r] = 1;
+    for (int i = 0; i < to_spawn; i++) {
+        x = rand() % game->width;
+        y = rand() % game->height;
+        game->map[y][x].resources[type]++;
+        add_tile_update_event(game, x, y);
     }
-    for (int r = 0; r < RESOURCE_COUNT; r++) {
-        for (int i = 0; i < count[r]; i++) {
-            x = rand() % self->width;
-            y = rand() % self->height;
-            self->map[y][x].resources[r]++;
-        }
+}
+
+/**
+ * @brief Ensure minimum resource count across the map.
+ *
+ * Spawns missing resources according to density configuration.
+ *
+ * @param game Pointer to the game instance.
+ */
+void spawn_resources(game_t *game)
+{
+    int total_tiles = game->width * game->height;
+    int max_per_type = 0;
+    int current = 0;
+    int to_spawn = 0;
+
+    for (int type = 0; type < RESOURCE_COUNT; type++) {
+        max_per_type = (int)(RESOURCE_DENSITY[type] * total_tiles);
+        if (max_per_type == 0)
+            max_per_type = 1;
+        current = count_existing_resource(game, type);
+        to_spawn = max_per_type - current;
+        if (to_spawn <= 0)
+            continue;
+        spawn_resource_type(game, type, to_spawn);
     }
 }
