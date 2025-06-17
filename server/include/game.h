@@ -207,9 +207,9 @@ struct game_s {
     int width;
     int height;
     double frequency;
-    long last_tick_time;
+    unsigned long last_tick_time;
     int tick_counter_tiled;
-    long tick_counter;
+    unsigned long tick_counter;
     bool has_finished;
 
     tile_t **map;
