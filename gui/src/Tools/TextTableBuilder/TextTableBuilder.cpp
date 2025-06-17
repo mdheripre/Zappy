@@ -31,10 +31,16 @@ std::string  tools::TextTableBuilder::build() const
             oss << std::left << std::setw(_colWidths[i] + 2) << row[i];
         oss << '\n';
     };
-
     formatRow(_columns);
     for (const auto& row : _rows)
         formatRow(row);
 
     return oss.str();
+}
+
+void tools::TextTableBuilder::clear() 
+{
+    _columns.clear();
+    _rows.clear();
+    _colWidths.clear();
 }

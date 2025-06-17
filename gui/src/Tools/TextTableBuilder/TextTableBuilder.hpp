@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include "Tools/Vector/Vector.hpp"
 
 namespace tools
 {
@@ -20,6 +21,7 @@ namespace tools
             void setColumns(const std::vector<std::string>& columns);
             void addRow(const std::vector<std::string>& row);
             std::string build() const;
+            void clear();
         private:
             std::vector<std::string> _columns;
             std::vector<std::vector<std::string>> _rows;

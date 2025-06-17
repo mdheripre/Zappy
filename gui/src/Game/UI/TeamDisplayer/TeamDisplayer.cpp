@@ -7,49 +7,81 @@
 
 #include "TeamDisplayer.hpp"
 
-gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory)
+gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory) :
+    TeamDisplayer::TableDisplayer<5>(
+        "Top 3",
+        0.5f, 0.2f, 0.7f, 0.2f,
+        factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
+        factory.createRectangle(),
+        std::array<std::string, 5> {"Name", "Players", "High", "Level 8", "Eggs"}
+    ) {}
+
+std::array<std::string, 5> gui::TeamDisplayer::buildTeamRow(const std::string &teamName, const state::GameState &gm)
 {
-    _textDisplayer = factory.createText(fontPath);
-    _background = factory.createRectangle();
+    int nbPlayers = 0;
+    int highLevel = 0;
+    int nbPlayersLvl8 = 0;
+    int nbEggs = 0;
 
-    tools::Vector2<float> absPos(
-        WIDTH_WINDOW * left,
-        HEIGHT_WINDOW * top
-    );
-    tools::Vector2<float> absSize(
-        WIDTH_WINDOW * width,
-        HEIGHT_WINDOW * height
-    );
-
-    _background->setPosition(absPos);
-    _background->setSize(absSize);
-
-    _textDisplayer->setPosition(absPos);
-    _textDisplayer->setSize(absSize);
-}
-
-void gui::TeamDisplayer::updateInfo(const std::vector<TeamInfo> &teamList)
-{
-    if (!_textDisplayer || !_background)
-        return;
-
-    tools::TextTableBuilder builder;
-    builder.setColumns({"Name", "Players", "High", "Level 8", "Eggs"});
-    
-    for (const auto& team : teamList) {
-        builder.addRow({
-            team.teamName,
-            std::to_string(team.nbPlayers),
-            std::to_string(team.highLevel),
-            std::to_string(team.nbPlayersLvl8),
-            std::to_string(team.nbEggs)
-        });
+    for (const auto& [_, t] : gm.trantorians) {
+        if (t->getTeamName() == teamName) {
+            nbPlayers++;
+            if (t->getLevel() == 8)
+                nbPlayersLvl8++;
+            highLevel = std::max(highLevel, t->getLevel());
+        }
     }
 
-    std::string finalText = _title + "\n\n" + builder.build();
-    _textDisplayer->setText(finalText);
+    for (const auto& [_, egg] : gm.eggs) {
+        if (egg->getTeamName() == teamName)
+            nbEggs++;
+    }
+    return {
+        teamName,
+        std::to_string(nbPlayers),
+        std::to_string(highLevel),
+        std::to_string(nbPlayersLvl8),
+        std::to_string(nbEggs)
+    };
+}
+
+bool gui::TeamDisplayer::sortFunction(const std::array<std::string, 5> &a, const std::array<std::string, 5> &b)
+{
+    int nbPlayersA = std::stoi(a[1]), nbPlayersB = std::stoi(b[1]);
+    if (nbPlayersA != nbPlayersB)
+        return nbPlayersA > nbPlayersB;
+
+    int highLevelA = std::stoi(a[2]), highLevelB = std::stoi(b[2]);
+    if (highLevelA != highLevelB)
+        return highLevelA > highLevelB;
+
+    int lvl8A = std::stoi(a[3]), lvl8B = std::stoi(b[3]);
+    return lvl8A > lvl8B;
+}
+
+void gui::TeamDisplayer::sortTeamRow(std::vector<std::array<std::string, 5>> &rows, std::size_t maxCount)
+{
+    std::sort(rows.begin(), rows.end(), sortFunction);
+
+    if (rows.size() > maxCount)
+        rows.resize(maxCount);
+}
+
+void gui::TeamDisplayer::updateInfo(const state::GameState &gm)
+{
+    std::vector<std::array<std::string, 5>> rows;
+    std::cout << "dez" << std::endl;
+
+
+    for (const auto &[teamName, _] : gm.teams)
+        rows.push_back(buildTeamRow(teamName, gm));
+
+    sortTeamRow(rows, 3);
+
+    clear();
+    for (const auto& row : rows)
+        pushRow(row);
     _background->setSize(_textDisplayer->getSize());
-    _background->setPosition(_textDisplayer->getPosition());
 }
 
 bool gui::TeamDisplayer::update(float)
@@ -65,4 +97,3 @@ void gui::TeamDisplayer::draw() const
     _background->drawObject();
     _textDisplayer->drawObject();
 }
-
