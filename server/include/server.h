@@ -20,6 +20,7 @@
     #include <sys/time.h>
     #include "client.h"
     #include "config.h"
+#include "player.h"
     #include "shared.h"
     #include "dispatcher.h"
     #include "game.h"
@@ -47,6 +48,7 @@ typedef struct server_methods_s {
     float (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
+    client_t *(*get_gui)(server_t *self);
 } server_methods_t;
 
 struct server_s {
@@ -78,6 +80,7 @@ void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 float get_command_delay(server_t *server, const char *command);
 void reject_client(server_t *server, client_t *client, const char *reason);
+client_t *server_get_gui(server_t *server);
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);

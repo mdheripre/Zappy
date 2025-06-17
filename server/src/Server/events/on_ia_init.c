@@ -55,6 +55,7 @@ static void send_player_init(server_t *server, client_t *client)
         client->fd, client->player->team_name, client->player->id);
     EMIT(server->command_manager->dispatcher, "command_ia_Connect_nbr",
         client);
+    EMIT(server->command_manager->dispatcher, "gui_pnw", client);
     dprintf(client->fd, "%d %d\n", server->game->width, server->game->height);
 }
 
