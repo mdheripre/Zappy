@@ -22,7 +22,8 @@ typedef enum client_type_e {
 
 typedef struct queued_command_s {
     char content[CLIENT_BUFFER_SIZE];
-    float time_remaining;
+    int ticks_remaining;
+    int last_tick_checked;
 } queued_command_t;
 
 typedef struct client_s {

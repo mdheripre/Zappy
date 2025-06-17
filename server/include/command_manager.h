@@ -19,7 +19,7 @@ struct command_manager_methods_s {
     void (*register_all)(command_manager_t *self, server_t *server);
     void (*process_identify)(command_manager_t *self, server_t *server);
     void (*process_all)(command_manager_t *self, server_t *server,
-        float delta);
+        int ticks);
     void (*process_responses)(command_manager_t *self, game_t *game);
 };
 
@@ -33,7 +33,7 @@ command_manager_t *command_manager_create(void);
 void command_manager_destroy(command_manager_t *self);
 void register_all(command_manager_t *self, server_t *server);
 void process_identify(command_manager_t *self, server_t *server);
-void process_all(command_manager_t *self, server_t *server, float delta);
+void process_all(command_manager_t *self, server_t *server, int ticks);
 void on_command_not_found(dispatcher_t *self, const char *event, void *data);
 void process_responses(command_manager_t *self, game_t *game);
 
@@ -68,5 +68,10 @@ void on_response_eject(void *ctx, void *data);
 void on_response_egg_laid(void *ctx, void *data);
 void on_response_end_incantation(void *ctx, void *data);
 void on_response_start_incantation(void *ctx, void *data);
+void on_response_egg_die(void *ctx, void *data);
+void on_response_broadcast(void *ctx, void *data);
+void on_response_tile_updated(void *ctx, void *data);
+void on_response_drop(void *ctx, void *data);
+void on_response_take(void *ctx, void *data);
 
 #endif /* !COMMAND_MANAGER_H_ */

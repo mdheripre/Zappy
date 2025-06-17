@@ -6,6 +6,7 @@
 */
 
 #include "game.h"
+#include "utils.h"
 #include "player.h"
 
 /****************************************************************************/
@@ -20,13 +21,28 @@
  * Each entry corresponds to a level-up requirement from level N to N+1.
  */
 static const incantation_rule_t INCANTATION_RULES[] = {
-    {1, {1, 0, 0, 0, 0, 0, 0}},  // 1 -> 2
-    {2, {1, 1, 1, 0, 0, 0, 0}},  // 2 -> 3
-    {2, {2, 0, 1, 0, 2, 0, 0}},  // 3 -> 4
-    {4, {1, 1, 2, 0, 1, 0, 0}},  // 4 -> 5
-    {4, {1, 2, 1, 3, 0, 0, 0}},  // 5 -> 6
-    {6, {1, 2, 3, 0, 1, 0, 0}},  // 6 -> 7
-    {6, {2, 2, 2, 2, 2, 1, 0}},  // 7 -> 8
+    {1, {0, 1, 0, 0, 0, 0, 0}},  // 1 -> 2
+    {2, {0, 1, 1, 1, 0, 0, 0}},  // 2 -> 3
+    {2, {0, 2, 0, 1, 0, 2, 0}},  // 3 -> 4
+    {4, {0, 1, 1, 2, 0, 1, 0}},  // 4 -> 5
+    {4, {0, 1, 2, 1, 3, 0, 0}},  // 5 -> 6
+    {6, {0, 1, 2, 3, 0, 1, 0}},  // 6 -> 7
+    {6, {0, 2, 2, 2, 2, 2, 1}},  // 7 -> 8
+};
+
+/**
+ * @brief Human-readable names for each resource type.
+ *
+ * Indexed by the corresponding resource enum.
+ */
+static const char *RESOURCE_NAMES[] = {
+    "food",
+    "linemate",
+    "deraumere",
+    "sibur",
+    "mendiane",
+    "phiras",
+    "thystame"
 };
 
 /**
@@ -46,26 +62,43 @@ static bool check_incantate_players(const incantation_t *inc,
         node = node->next) {
         p = (player_t *)node->data;
         if (p && p->is_alive && p->x == inc->x && p->y == inc->y &&
-            p->level == inc->target_level)
+            p->level == inc->target_level - 1)
             count++;
     }
     return count >= rule->players;
 }
 
 /**
- * @brief Check if the tile has required resources for the incantation.
+ * @brief Check if a tile has all the resources required for an incantation.
  *
- * @param tile Pointer to the tile to check.
- * @param rule Pointer to the incantation rule.
+ * Logs the required and available resources and validates sufficiency.
+ *
+ * @param tile Pointer to the tile being checked.
+ * @param rule Pointer to the incantation rule containing requirements.
  * @return true if all required resources are present, false otherwise.
  */
 static bool check_incantate_resources(const tile_t *tile,
     const incantation_rule_t *rule)
 {
+    int available = 0;
+    int required = 0;
+
     for (int r = 0; r < RESOURCE_COUNT; r++) {
-        if (tile->resources[r] < rule->resources[r])
+        available = tile->resources[r];
+        required = rule->resources[r];
+        if (required > 0) {
+            console_log(LOG_INFO,
+                "Resource check: need %d x %s, found %d",
+                required, RESOURCE_NAMES[r], available);
+        }
+        if (available < required) {
+            console_log(LOG_WARNING,
+                "Insufficient %s: required %d, available %d",
+                RESOURCE_NAMES[r], required, available);
             return false;
+        }
     }
+    console_log(LOG_SUCCESS, "All required resources are present.");
     return true;
 }
 
@@ -93,9 +126,11 @@ bool check_incantate(game_t *game, incantation_t *inc)
         return false;
     rule = &INCANTATION_RULES[inc->target_level - 2];
     tile = &game->map[inc->y][inc->x];
-    if (!check_incantate_players(inc, rule))
+    if (!check_incantate_players(inc, rule)) {
         return false;
-    if (!check_incantate_resources(tile, rule))
+    }
+    if (!check_incantate_resources(tile, rule)) {
         return false;
+    }
     return true;
 }

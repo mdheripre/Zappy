@@ -42,20 +42,45 @@ static void init_player_from_egg(server_t *server, client_t *client,
 }
 
 /**
+ * @brief Count the number of available (unassigned) eggs for a given team.
+ *
+ * @param game Pointer to the game instance.
+ * @param team_name Name of the team to check for available eggs.
+ * @return Number of unassigned eggs for the team.
+ */
+static int count_available_eggs(game_t *game, const char *team_name)
+{
+    int count = 0;
+    egg_t *egg = NULL;
+
+    for (list_node_t *n = game->eggs->head; n; n = n->next) {
+        egg = n->data;
+        if (egg && strcmp(egg->team_name, team_name) == 0 &&
+                egg->player_id == -1)
+            count++;
+    }
+    return count;
+}
+
+/**
  * @brief Log and notify the client of their initial game state.
  *
- * Sends map size and triggers Connect_nbr dispatch event.
+ * Sends map size and slot remainging for the team client
  *
  * @param server Pointer to the server.
  * @param client Pointer to the initialized client.
  */
 static void send_player_init(server_t *server, client_t *client)
 {
-    console_log(LOG_SUCCESS, "Client %d joined team \"%s\" as player #%d",
-        client->fd, client->player->team_name, client->player->id);
-    EMIT(server->command_manager->dispatcher, "command_ia_Connect_nbr",
-        client);
-    dprintf(client->fd, "%d %d\n", server->game->width, server->game->height);
+    const char *team_name = client->player->team_name;
+    int available = count_available_eggs(server->game, team_name);
+
+    console_log(LOG_SUCCESS,
+        "Client %d joined team \"%s\" as player #%d",
+        client->fd, team_name, client->player->id);
+    dprintf(client->fd, "%d\n", available);
+    dprintf(client->fd, "%d %d\n",
+        server->game->width, server->game->height);
 }
 
 /**
@@ -82,25 +107,30 @@ static bool match_egg(void *a, void *b)
 /****************************************************************************/
 
 /**
- * @brief Validate if a team exists and has available slots.
+ * @brief Checks if a client can join a team based on team existence and
+ *  available slots.
  *
- * Rejects the client if conditions are not met.
+ * If the team does not exist or is already full, the client is rejected with
+ * an appropriate message.
  *
- * @param server Pointer to the server.
- * @param team_name Name of the team.
- * @param client Pointer to the client.
- * @return true if the client must be rejected.
+ * @param server Pointer to the server structure.
+ * @param team_name Name of the team to check.
+ * @param client Pointer to the client attempting to join.
+ * @return true if the client should be rejected, false otherwise.
  */
 static bool check_condition(server_t *server, const char *team_name,
     client_t *client)
 {
-    if (!server->game->team_name->methods->contain(
-            server->game->team_name, (void *)team_name, str_are_equals)) {
+    team_info_t *team = find_team(server->game, team_name);
+    int current_count = 0;
+
+    if (!team) {
         server->vtable->reject_client(server, client, "Unknown team");
         return true;
     }
-    if (server->game->methods->count_team_members(server->game, team_name)
-        >= server->game->team_size) {
+    current_count = server->game->methods->count_team_members(
+        server->game, team->team_name);
+    if (current_count >= team->team_size) {
         server->vtable->reject_client(server, client, "No remaining slot");
         return true;
     }

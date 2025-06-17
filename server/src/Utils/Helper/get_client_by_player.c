@@ -2,12 +2,12 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** get_fd_by_player
+** get_client_by_player
 */
 
 #include "game.h"
-#include "player.h"
 #include "server.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -16,20 +16,20 @@
 /****************************************************************************/
 
 /**
- * @brief Get the client file descriptor for a given player.
+ * @brief Get the client associated with a given player.
  *
- * @param server Pointer to the server.
+ * @param server Pointer to the server instance.
  * @param player Pointer to the player.
  * @param index Optional pointer to store the client index.
- * @return File descriptor, or -1 if not found.
+ * @return Pointer to the client, or NULL if not found.
  */
-int get_client_fd_by_player(server_t *server, player_t *player, int *index)
+client_t *get_client_by_player(server_t *server, player_t *player, int *index)
 {
     int idx = get_client_index_by_player(server, player);
 
     if (idx == -1)
-        return -1;
+        return NULL;
     if (index)
         *index = idx;
-    return server->clients[idx].fd;
+    return &server->clients[idx];
 }

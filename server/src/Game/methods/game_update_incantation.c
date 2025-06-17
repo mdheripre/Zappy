@@ -22,41 +22,45 @@
  */
 static void send_end_incantation(game_t *self, incantation_t *inc)
 {
-    game_event_t event;
+    game_event_t *event = malloc(sizeof(game_event_t));
 
-    if (!self || !inc)
+    if (!self || !inc || !event)
         return;
-    event.type = GAME_EVENT_END_INCANTATION;
-    event.data.incantation.x = inc->x;
-    event.data.incantation.y = inc->y;
-    event.data.incantation.success = false;
-    event.data.incantation.participants = inc->participants;
-    self->event_queue->methods->push_back(self->event_queue, &event);
+    event->type = GAME_EVENT_END_INCANTATION;
+    event->data.incantation.x = inc->x;
+    event->data.incantation.y = inc->y;
+    event->data.incantation.success = false;
+    event->data.incantation.participants = inc->participants;
+    self->event_queue->methods->push_back(self->event_queue, event);
 }
 
 /**
- * @brief Update ongoing incantations and end those that are finished.
+ * @brief Update all active incantations by decrementing their timers.
+ *
+ * If an incantation has completed (tick_remaining ≤ 0), it is finalized
+ * and removed from the list.
  *
  * @param self Pointer to the game instance.
+ * @param ticks Number of ticks to subtract from each incantation.
  */
-void update_incantations(game_t *self)
+void update_incantations(game_t *self, int ticks)
 {
-    list_node_t *curr = NULL;
+    list_node_t *curr = self->incantations->head;
     list_node_t *next = NULL;
     incantation_t *inc = NULL;
 
-    if (!self || !self->incantations)
-        return;
-    curr = self->incantations->head;
-    for (; curr; curr = next) {
+    while (curr) {
         next = curr->next;
         inc = (incantation_t *)curr->data;
-        if (!inc)
+        if (!inc) {
+            curr = next;
             continue;
-        inc->tick_remaining--;
+        }
+        inc->tick_remaining -= ticks;
         if (inc->tick_remaining <= 0) {
             send_end_incantation(self, inc);
             self->incantations->methods->remove(self->incantations, inc);
         }
+        curr = next;
     }
 }
