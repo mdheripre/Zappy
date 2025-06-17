@@ -71,6 +71,11 @@ std::unique_ptr<render::IText> SFMLObjectFactory::createText(std::string fontPat
     );
 }
 
+std::unique_ptr<render::IObject> SFMLObjectFactory::createRectangle() const
+{
+    return std::make_unique<SFMLRectangle>(_rWindow);
+}
+
 std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite(const tools::AssetDefinition& definition)
 {
     const std::string& path = definition.getModelPath();

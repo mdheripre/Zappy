@@ -22,7 +22,11 @@ namespace sfml
             void setPosition(const tools::Vector2<float> &pos);
             void setText(std::string text);
             void setSize(const tools::Vector2<float> &size);
+            float getCharacterSize() const;
             void drawObject() const;
+            void setCharacterSize(float size);
+            int estimateMaxCharsPerLine(float width) const;
+            float getLineHeight() const;
         private:
             std::string _rawText;
             sf::Text _sfText;

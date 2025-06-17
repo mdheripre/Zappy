@@ -33,7 +33,6 @@ std::string  tools::TextTableBuilder::build() const
     };
 
     formatRow(_columns);
-    formatRow(std::vector<std::string>(_columns.size(), "—"));
     for (const auto& row : _rows)
         formatRow(row);
 

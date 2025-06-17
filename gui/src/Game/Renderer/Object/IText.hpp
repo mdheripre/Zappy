@@ -16,5 +16,9 @@ namespace render
     public:
         virtual ~IText() = default;
         virtual void setText(std::string text) = 0;
+        virtual float getCharacterSize() const = 0;
+        virtual void setCharacterSize(float size) = 0;
+        virtual int estimateMaxCharsPerLine(float width) const = 0;
+        virtual float getLineHeight() const = 0;
     };
 } // namespace render

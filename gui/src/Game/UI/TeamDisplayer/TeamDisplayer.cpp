@@ -10,7 +10,7 @@
 gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory)
 {
     _textDisplayer = factory.createText(fontPath);
-    _background = factory.createStaticSprite(backgroundPath);
+    _background = factory.createRectangle();
 
     tools::Vector2<float> absPos(
         WIDTH_WINDOW * left,
@@ -30,7 +30,26 @@ gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory)
 
 void gui::TeamDisplayer::updateInfo(const std::vector<TeamInfo> &teamList)
 {
-    _teamList = teamList;
+    if (!_textDisplayer || !_background)
+        return;
+
+    tools::TextTableBuilder builder;
+    builder.setColumns({"Name", "Players", "High", "Level 8", "Eggs"});
+    
+    for (const auto& team : teamList) {
+        builder.addRow({
+            team.teamName,
+            std::to_string(team.nbPlayers),
+            std::to_string(team.highLevel),
+            std::to_string(team.nbPlayersLvl8),
+            std::to_string(team.nbEggs)
+        });
+    }
+
+    std::string finalText = _title + "\n\n" + builder.build();
+    _textDisplayer->setText(finalText);
+    _background->setSize(_textDisplayer->getSize());
+    _background->setPosition(_textDisplayer->getPosition());
 }
 
 bool gui::TeamDisplayer::update(float)
@@ -42,21 +61,7 @@ void gui::TeamDisplayer::draw() const
 {
     if (!_textDisplayer || !_background)
         return;
-        
-    tools::TextTableBuilder builder;
-    builder.setColumns({"Name", "Players", "High", "Level 8", "Eggs"});
-    
-    for (const auto& team : _teamList) {
-        builder.addRow({
-            team.teamName,
-            std::to_string(team.nbPlayers),
-            std::to_string(team.highLevel),
-            std::to_string(team.nbPlayersLvl8),
-            std::to_string(team.nbEggs)
-        });
-    }
-    std::string finalText = _title + "\n\n" + builder.build();
-    _textDisplayer->setText(finalText);
+
     _background->drawObject();
     _textDisplayer->drawObject();
 }

@@ -48,6 +48,10 @@ void sfml::SFMLText::setSize(const tools::Vector2<float> &targetSize)
     }
 }
 
+float sfml::SFMLText::getCharacterSize() const
+{
+    return _sfText.getCharacterSize();
+}
 
 void sfml::SFMLText::setPosition(const tools::Vector2<float> &pos)
 {
@@ -62,4 +66,24 @@ void sfml::SFMLText::setText(std::string text)
 void sfml::SFMLText::drawObject() const
 {
     _rWindow->draw(_sfText);
+}
+
+void sfml::SFMLText::setCharacterSize(float size)
+{
+    _sfText.setCharacterSize(size);
+}
+int sfml::SFMLText::estimateMaxCharsPerLine(float width) const
+{
+    if (_sfText.getString().isEmpty())
+        return 80; // par défaut
+
+    sf::Text temp = _sfText;
+    temp.setString("W"); // caractère large
+    float charWidth = temp.getLocalBounds().width;
+    return static_cast<int>(width / charWidth);
+}
+
+float sfml::SFMLText::getLineHeight() const
+{
+    return static_cast<float>(_sfText.getCharacterSize()) * 1.2f;
 }

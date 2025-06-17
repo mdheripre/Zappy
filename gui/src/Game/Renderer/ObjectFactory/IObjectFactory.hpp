@@ -25,5 +25,6 @@ namespace render
         virtual std::unique_ptr<IStaticSprite> createStaticSprite(const std::string &texturePath) = 0;
         virtual std::unique_ptr<ICanva> createCanva() const = 0;
         virtual std::unique_ptr<IText> createText(std::string fontPath) = 0;
+        virtual std::unique_ptr<render::IObject> createRectangle() const = 0;
     };
 } // namespace render
