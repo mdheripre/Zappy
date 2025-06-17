@@ -22,6 +22,7 @@
     #include <sys/time.h>
     #include "client.h"
     #include "config.h"
+    #include "player.h"
     #include "shared.h"
     #include "dispatcher.h"
     #include "game.h"
@@ -50,6 +51,7 @@ typedef struct server_methods_s {
     int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
+    client_t *(*get_gui)(server_t *self);
     tick_info_t (*get_next_tick_info)(server_t *self);
 } server_methods_t;
 
@@ -83,9 +85,9 @@ void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 void reject_client(server_t *server, client_t *client, const char *reason);
+client_t *server_get_gui(server_t *server);
 int get_command_delay(server_t *self, const char *command);
 tick_info_t get_next_tick_info(server_t *self);
-
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);

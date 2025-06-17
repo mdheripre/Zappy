@@ -81,6 +81,7 @@ static void send_player_init(server_t *server, client_t *client)
     dprintf(client->fd, "%d\n", available);
     dprintf(client->fd, "%d %d\n",
         server->game->width, server->game->height);
+    EMIT(server->command_manager->dispatcher, "gui_pnw", client);
 }
 
 /**
