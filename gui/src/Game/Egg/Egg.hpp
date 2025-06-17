@@ -10,6 +10,7 @@
 #include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
 #include "Game/GameState/EntityState/EntityState.hpp"
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
+#include "Tools/Define.hpp"
 #include <string>
 #include <memory>
 #include <iostream>

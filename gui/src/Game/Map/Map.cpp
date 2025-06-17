@@ -6,7 +6,6 @@
 */
 
 #include "Map.hpp"
-#include "Tools/Error/Error.hpp"
 
 /**
  * @brief Constructs a Map object with rendering capabilities.
@@ -16,13 +15,23 @@
  * @param tileObject Renderable tile object (base ground).
  * @param propsObject Array of 7 animated objects representing resources.
  */
-gui::Map::Map(int width, int height, std::unique_ptr<render::IObject> tileObject, std::array<std::unique_ptr<render::IAnimatedSprite>, 7> propsObject)
+gui::Map::Map(int width,
+    int height,
+    std::unordered_map<Map::MapTileType,
+    std::unique_ptr<render::IStaticSprite>> tilesObject,
+    std::array<std::unique_ptr<render::IAnimatedSprite>, 7> propsObject)
     : MapState(width, height),
     _width(width),
     _height(height),
     _map(width, std::vector<Tile>(height)),
-    _tileObject(std::move(tileObject)),
-    _propsObject(std::move(propsObject)) {}
+    _tilesObject(std::move(tilesObject)),
+    _propsObject(std::move(propsObject))
+{
+    auto refTile = _tilesObject.find(MapTileType::MID_GROUND);
+
+    _tileSize = refTile->second->getSize();
+    generateTileTypes();
+}
 
 
 /**
@@ -66,9 +75,9 @@ void gui::Map::setTile(const Tile &tile, const tools::Vector2<int> &pos)
 void gui::Map::drawProps(const Tile &tile, const tools::Vector2<float> &tilePos) const
 {
     const std::array<int, 7> &ress = tile.getResources();
-    tools::Vector2<float> tileSize = _tileObject->getSize();
-    float cellSizeX = tileSize.x / 3.0f;
-    float cellSizeY = tileSize.y / 3.0f;
+
+    float cellSizeX = _tileSize.x / 3.0f;
+    float cellSizeY = _tileSize.y / 3.0f;
     int placed = 0;
 
     for (int i = 0; i < 7; ++i) {
@@ -98,18 +107,43 @@ void gui::Map::drawProps(const Tile &tile, const tools::Vector2<float> &tilePos)
  */
 void gui::Map::draw() const
 {
-    if (_tileObject != nullptr) {
-        tools::Vector2<float> tileSize = _tileObject->getSize();
-        for (int i = 0; i < _map.size(); ++i) {
-            for (int j = 0; j < _map[i].size(); ++j) {
-                tools::Vector2<float> tilePos(
-                    j * tileSize.x,
-                    i * tileSize.y
-                );
-                _tileObject->setPosition(tilePos);
-                _tileObject->drawObject();
-                drawProps(_map[i][j], tilePos);
-            }
+    if (_map.empty() || _tilesObject.empty())
+        return;
+
+    for (int i = 0; i < _map.size(); ++i) {
+        for (int j = 0; j < _map[i].size(); ++j) {
+            tools::Vector2<float> pos(j * _tileSize.x, i * _tileSize.y);
+            MapTileType type = _tileTypes[i][j];
+            
+            auto it = _tilesObject.find(type);
+            if (it == _tilesObject.end())
+                continue;
+            it->second->setPosition(pos);
+            it->second->drawObject();
+            drawProps(_map[i][j], pos);
+        }
+    }
+}
+
+void gui::Map::generateTileTypes()
+{
+    int height = _map.size();
+    int width = _map[0].size();
+    _tileTypes.resize(height, std::vector<MapTileType>(width));
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            bool top = (i == 0);
+            bool bottom = (i == height - 1);
+            bool left = (j == 0);
+            bool right = (j == width - 1);
+            BorderFlags key = {top, bottom, left, right};
+
+            auto it = _tileTypeMap.find(key);
+            if (it != _tileTypeMap.end())
+                _tileTypes[i][j] = it->second;
+            else
+                _tileTypes[i][j] = MapTileType::MID_GROUND;
         }
     }
 }

@@ -14,8 +14,8 @@ namespace render
     {
         public:
             virtual ~IObject() = default;
-            virtual const tools::Vector2<float> &getPosition() const = 0;
-            virtual const tools::Vector2<float> &getSize() const = 0;
+            virtual tools::Vector2<float> getPosition() const = 0;
+            virtual tools::Vector2<float> getSize() const = 0;
             virtual void setPosition(const tools::Vector2<float> &pos) = 0;
             virtual void drawObject() const = 0;
     };

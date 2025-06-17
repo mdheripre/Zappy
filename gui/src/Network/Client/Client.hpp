@@ -12,6 +12,7 @@
     #include <poll.h>
     #include <memory>
     #include "Network/Socket/Socket.hpp"
+    #include <queue>
 
 namespace net
 {
@@ -19,13 +20,14 @@ namespace net
         private:
         std::unique_ptr<Socket> _sock;
         std::string _commandBuffer;
-        std::string _command;
+        std::queue<std::string> _commands;
         public:
             Client(std::unique_ptr<Socket> sock) : _sock(std::move(sock)) {}
             ~Client() {_sock->closeSocket();}
             void sendMessage(const std::string &message) const;
-            std::string getCommand() const {return this->_command;}
+            std::string getCommand();
             bool readCommand();
+            void manageBuffer();
     }; 
 } // namespace net
 
