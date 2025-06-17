@@ -30,9 +30,9 @@ impl Direction {
     pub fn is_along(&self, pos: (i32, i32)) -> bool {
         match self {
             Direction::North => pos.1 < 0,
-            Direction::East => pos.0 < 0,
-            Direction::South => pos.1 < 0,
-            Direction::West => pos.0 > 0,
+            Direction::East => pos.0 > 0,
+            Direction::South => pos.1 > 0,
+            Direction::West => pos.0 < 0,
         }
     }
     

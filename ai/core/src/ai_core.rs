@@ -76,10 +76,10 @@ impl AiState {
     pub fn forward(&mut self) {
         match self.direction {
             Direction::North => {
-                self.position.1 += 1
+                self.position.1 -= 1
             }
             Direction::South => {
-                self.position.1 -= 1
+                self.position.1 += 1
             }
             Direction::East => {
                 self.position.0 += 1
@@ -133,6 +133,38 @@ impl AiState {
             }
         }
         false
+    }
+
+    pub fn remove_item_from_map(&mut self, item: &Item) {
+        for tile in &mut self.world_map {
+            if tile.position() == self.position {
+                tile.take(item.clone());
+                tile.nb_items -= 1;
+            }
+        }
+        if let Some(dest) = self.destination.clone() {
+            for tile in self.world_map.clone() {
+                if tile.position() == dest.position() {
+                    self.destination = Some(tile.clone());
+                }
+            }
+        }
+    }
+
+    pub fn add_item_to_map(&mut self, item: &Item) {
+        for tile in &mut self.world_map {
+            if tile.position() == self.position {
+                tile.set(item.clone());
+                tile.nb_items += 1;
+            }
+        }
+        if let Some(dest) = self.destination.clone() {
+            for tile in self.world_map.clone() {
+                if tile.position() == dest.position() {
+                    self.destination = Some(tile.clone());
+                }
+            }
+        }
     }
 }
 
@@ -400,18 +432,28 @@ impl AiCore {
                 match last_command {
                     Some(AiCommand::Take(item)) => {
                         state.inventory.add_item(&item);
+                        state.remove_item_from_map(&item);
                     }
                     Some(AiCommand::Set(item)) => {
                         state.inventory.remove_item(&item);
+                        state.add_item_to_map(&item);
                     }
                     Some(AiCommand::Forward) => {
                         state.forward();
                     }
                     Some(AiCommand::Left) => {
-                        state.direction.left();
+                        state.direction = state.direction.left();
                     }
                     Some(AiCommand::Right) => {
-                        state.direction.right();
+                        state.direction = state.direction.right();
+                    }
+                    _ => {}
+                }
+            }
+            ServerResponse::Ko => {
+                match last_command {
+                    Some(AiCommand::Take(item)) => {
+                        state.remove_item_from_map(&item);
                     }
                     _ => {}
                 }

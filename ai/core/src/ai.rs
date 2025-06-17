@@ -79,7 +79,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let mut state = state.lock().await;
 
     tokio::time::sleep(Duration::from_millis(500)).await;
-    
+
     if state.last_command.is_some() {
         return None;
     }
