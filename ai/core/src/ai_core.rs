@@ -49,6 +49,7 @@ pub struct AiState {
     pub direction: Direction,
     pub last_command: Option<AiCommand>,
     pub previous_command: Option<AiCommand>,
+    pub destination: Option<Tile>
 }
 
 impl AiState {
@@ -68,6 +69,7 @@ impl AiState {
             direction: Direction::North,
             last_command: None,
             previous_command: None,
+            destination: None,
         }
     }
     
@@ -86,6 +88,51 @@ impl AiState {
                 self.position.0 -= 1
             }
         }
+    }
+    
+    pub fn chose_destination_tile(&self) -> Option<Tile> {
+        let mut max_value: f64 = 0.0;
+        let mut selected_tile: Option<Tile> = None;
+        for tile in &self.world_map {
+            let mut value: f64 = 0.0;
+            let mut distance: f64 = tile.distance(self.position);
+            if distance == 0.0 {
+                distance = 0.5
+            }
+            for item in tile.get_items() {
+                value = value + (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) / (item.0.probability() * distance);
+            }
+            if value > max_value {
+                max_value = value;
+                selected_tile = Some(tile.clone());
+            }
+        }
+        selected_tile
+    }
+    
+    pub fn chose_best_item(&self, items: Vec<Item>) -> Option<AiCommand> {
+        let mut max_value: f64 = 0.0;
+        let mut selected_item: Option<Item> = None;
+        for item in items {
+            let value: f64 = (item.needed() as f64 - self.inventory.get_count(&item) as f64) / item.probability();
+            if value > max_value {
+                max_value = value;
+                selected_item = Some(item.clone());
+            }
+        }
+        if selected_item.is_none() {
+            return None
+        }
+        Some(AiCommand::Take(selected_item.unwrap()))
+    }
+    
+    pub fn is_there_things_in_map(&self) -> bool {
+        for tile in &self.world_map {
+            if !tile.get_items().is_empty() {
+                return true
+            }
+        }
+        false
     }
 }
 

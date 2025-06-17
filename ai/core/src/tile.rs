@@ -112,6 +112,10 @@ impl Tile {
     pub fn distance(&self, pos: (i32, i32)) -> f64 {
         let dx = (self.position.0 - pos.0).abs();
         let dy = (self.position.1 - pos.1).abs();
-        ((dx * dx + dy * dy) as f64).sqrt()
+        (dx + dy) as f64
+    }
+    
+    pub fn distance_as_pair(&self, pos: (i32, i32)) -> (i32, i32) {
+        (self.position.0 - pos.0, self.position.1 - pos.0)
     }
 }

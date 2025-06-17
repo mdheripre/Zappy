@@ -85,7 +85,7 @@ impl Item {
 
     pub fn needed(&self) -> i32 {
         match self {
-            Item::Food => 100,
+            Item::Food => 10,
             Item::Linemate => 9,
             Item::Deraumere => 8,
             Item::Sibur => 10,

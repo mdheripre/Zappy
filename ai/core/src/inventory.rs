@@ -69,4 +69,16 @@ impl Inventory {
             _ => Err(format!("Cannot remove item: {:?}", item)),
         }
     }
+    
+    pub fn get_count(&self, item: &Item) -> usize {
+        match item {
+            Item::Food => self.food,
+            Item::Linemate => self.linemate,
+            Item::Deraumere => self.deraumere,
+            Item::Sibur => self.sibur,
+            Item::Mendiane => self.mendiane,
+            Item::Phiras => self.phiras,
+            Item::Thystame => self.thystame,
+        }
+    }
 }
