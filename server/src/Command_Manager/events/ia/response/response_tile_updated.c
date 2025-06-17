@@ -55,7 +55,7 @@ void on_response_tile_updated(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *client = get_gui_client(server);
+    client_t *client = server->vtable->get_gui(server);
 
     if (!server || !event || !client)
         return;

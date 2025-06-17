@@ -37,4 +37,5 @@ void on_gui_init(void *ctx, void *data)
     EMIT(server->command_manager->dispatcher, "command_gui_msz", client);
     EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);
     EMIT(server->command_manager->dispatcher, "command_gui_mct", client);
+    EMIT(server->command_manager->dispatcher, "command_gui_tna", client);
 }
