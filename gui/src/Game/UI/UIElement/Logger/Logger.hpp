@@ -34,6 +34,12 @@ namespace gui
             bool update(float dt);
             void draw() const;
         protected:
-            std::deque<std::string> _events;    
+            std::deque<std::string> _events;
+        private:
+            void updateDisplayFromWrappedLines(const std::vector<std::string>& lines) const;
+            void limitLines(std::vector<std::string>& lines, int maxLines) const;
+            std::vector<std::string> wrapEventsToLines(int maxChars) const;
+
+
     };    
 } // namespace gui
