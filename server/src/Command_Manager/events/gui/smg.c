@@ -17,8 +17,8 @@
 /**
  * @brief Handles sending a message to the GUI client.
  *
- * This function formats a message and emits a response event to the GUI client,
- * if one is connected.
+ * This function formats a message and emits a response event to
+ * the GUI client, if one is connected.
  *
  * @param ctx Pointer to the server context (server_t).
  * @param data Pointer to the message string to be sent.
@@ -37,11 +37,11 @@ void handle_gui_smg(void *ctx, void *data)
     if (!payload)
         return;
     payload->client = client;
-    payload->response = malloc(strlen(message) + 6);
-    if (!payload->response) {
+    payload->message = malloc(strlen(message) + 6);
+    if (!payload->message) {
         free(payload);
         return;
     }
-    sprintf(payload->response, "smg %s\n", message);
+    sprintf(payload->message, "smg %s\n", message);
     EMIT(server->dispatcher, "send_response", payload);
 }

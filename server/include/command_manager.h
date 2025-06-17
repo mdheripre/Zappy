@@ -62,6 +62,7 @@ void handle_gui_suc(void *ctx, void *);
 void handle_gui_sbp(void *ctx, void *);
 void handle_gui_enw(void *ctx, void *data);
 void handle_gui_smg(void *ctx, void *data);
+void handle_gui_ebo(void *ctx, void *data);
 
 /* Responses */
 void on_response_player_moved(void *ctx, void *data);

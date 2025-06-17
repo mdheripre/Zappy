@@ -22,7 +22,7 @@
  * @param server Pointer to the server instance.
  * @param client Pointer to the GUI client.
  */
-static void emit_gui_egg_events(server_t *server, client_t *client)
+static void emit_gui_egg_events(server_t *server)
 {
     egg_t *egg = NULL;
     game_event_t *event = NULL;
@@ -71,5 +71,5 @@ void on_gui_init(void *ctx, void *data)
     EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);
     EMIT(server->command_manager->dispatcher, "command_gui_mct", client);
     EMIT(server->command_manager->dispatcher, "command_gui_tna", client);
-    emit_gui_egg_events(server, client);
+    emit_gui_egg_events(server);
 }
