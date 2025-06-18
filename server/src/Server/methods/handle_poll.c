@@ -119,12 +119,14 @@ static int handle_client_read_error(server_t *server, client_t *client,
             return 1;
         console_log(LOG_WARNING,
             "Client (fd=%d) read error: %s", client->fd, strerror(errno));
+        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
         server->vtable->remove_client(server, index);
         return 1;
     }
     if (bytes == 0) {
         console_log(LOG_INFO,
             "Client (fd=%d) disconnected", client->fd);
+        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
         server->vtable->remove_client(server, index);
         return 1;
     }
@@ -154,6 +156,7 @@ void read_from_client(server_t *server, int index)
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
         dprintf(client->fd, "ko\n");
+        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
         server->vtable->remove_client(server, index);
         return;
     }
