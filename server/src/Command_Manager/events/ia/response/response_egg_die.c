@@ -22,4 +22,5 @@ void on_response_egg_die(void *ctx, void *data)
 
     if (!server || !event)
         return;
+    EMIT(server->command_manager->dispatcher, "gui_edi", event);
 }

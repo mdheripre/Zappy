@@ -16,10 +16,10 @@
 void handle_gui_edi(void *ctx, void *data)
 {
     server_t *server = ctx;
-    egg_t *egg = data;
+    game_event_t *event = data;
     client_t *client = server->vtable->get_gui(server);
 
-    if (!server || !egg || !client)
+    if (!server || !event || !client)
         return;
-    dprintf(client->fd, "edi #%d\n", egg->id);
+    dprintf(client->fd, "edi #%d\n", event->data.egg.egg_id);
 }

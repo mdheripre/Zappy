@@ -27,5 +27,5 @@ void handle_gui_pbc(void *ctx, void *data)
     dprintf(gui->fd, "pbc #%d %s\n",
         event->data.generic_response.player_id,
         event->data.generic_response.response);
-    free(event->data.generic_response.response);
+    free((char *)event->data.generic_response.response);
 }
