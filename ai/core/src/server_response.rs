@@ -58,11 +58,13 @@ impl ServerResponse {
                 ServerResponse::Look(items)
             }
             s if s.starts_with("[") && s.ends_with("]") && s.chars().any(|c| c.is_numeric()) => {
-                let re = Regex::new(r"food (\d+)").unwrap();
-                if let Some(cap) = re.captures(s) {
-                    if let Some(mat) = cap.get(1) {
-                        let food_value: i32 = mat.as_str().parse().unwrap();
-                        return ServerResponse::Inventory(food_value)
+                if let Ok(re) = Regex::new(r"food (\d+)") {
+                    if let Some(cap) = re.captures(s) {
+                        if let Some(mat) = cap.get(1) {
+                            if let Ok(food_value) = mat.as_str().parse() {
+                                return ServerResponse::Inventory(food_value)
+                            }
+                        }
                     }
                 }
                 ServerResponse::Inventory(0)

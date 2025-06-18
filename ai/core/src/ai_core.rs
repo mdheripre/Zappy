@@ -144,7 +144,7 @@ impl AiState {
         if selected_item.is_none() {
             return None
         }
-        Some(AiCommand::Take(selected_item.unwrap()))
+        selected_item.map(AiCommand::Take)
     }
     
     /// Check if there are items in the map
@@ -170,7 +170,7 @@ impl AiState {
             }
         }
         if let Some(dest) = self.destination.clone() {
-            for tile in self.world_map.clone() {
+            for tile in &self.world_map {
                 if tile.position() == dest.position() {
                     self.destination = Some(tile.clone());
                 }
@@ -189,7 +189,7 @@ impl AiState {
             }
         }
         if let Some(dest) = self.destination.clone() {
-            for tile in self.world_map.clone() {
+            for tile in &self.world_map {
                 if tile.position() == dest.position() {
                     self.destination = Some(tile.clone());
                 }
