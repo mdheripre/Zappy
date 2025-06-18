@@ -46,6 +46,7 @@ void on_response_take(void *ctx, void *data)
     payload = create_response_payload(client, event->data.player_item.success);
     if (!payload)
         return;
-    EMIT(server->command_manager->dispatcher, "gui_pgt", event);
+    if (event->data.player_item.success)
+        EMIT(server->command_manager->dispatcher, "gui_pgt", event);
     EMIT(server->dispatcher, "send_response", payload);
 }

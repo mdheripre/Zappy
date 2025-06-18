@@ -46,6 +46,7 @@ void on_response_drop(void *ctx, void *data)
     payload = create_response_payload(client, event->data.player_item.success);
     if (!payload)
         return;
-    EMIT(server->command_manager->dispatcher, "gui_pdr", event);
+    if (event->data.player_item.success)
+        EMIT(server->command_manager->dispatcher, "gui_pdr", event);
     EMIT(server->dispatcher, "send_response", payload);
 }
