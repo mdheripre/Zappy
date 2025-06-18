@@ -99,6 +99,35 @@ static void append_to_read_buffer(client_t *client,
 }
 
 /**
+ * @brief Handles errors or disconnections when reading from a client.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client.
+ * @param index Index of the client in the server's client array.
+ * @param bytes Number of bytes read from the client.
+ * @return 1 if the client was removed, 0 otherwise.
+ */
+static int handle_client_read_error(server_t *server, client_t *client,
+    int index, ssize_t bytes)
+{
+    if (bytes < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return 1;
+        console_log(LOG_WARNING,
+            "Client (fd=%d) read error: %s", client->fd, strerror(errno));
+        server->vtable->remove_client(server, index);
+        return 1;
+    }
+    if (bytes == 0) {
+        console_log(LOG_INFO,
+            "Client (fd=%d) disconnected", client->fd);
+        server->vtable->remove_client(server, index);
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * @brief Reads data from a client socket and processes it.
  *
  * This function reads data from the specified client socket, appends it to
@@ -115,12 +144,8 @@ void read_from_client(server_t *server, int index)
     ssize_t bytes = 0;
 
     bytes = read(client->fd, buf, sizeof(buf));
-    if (bytes <= 0) {
-        console_log(LOG_INFO,
-            "Client (fd=%d) disconnected", client->fd);
-        server->vtable->remove_client(server, index);
+    if (handle_client_read_error(server, client, index, bytes))
         return;
-    }
     if (client->buffer_len + bytes >= CLIENT_BUFFER_SIZE) {
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);

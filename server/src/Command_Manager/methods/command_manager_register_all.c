@@ -20,6 +20,27 @@
  * @param self Pointer to the command manager.
  * @param server Pointer to the server instance.
  */
+static void register_gui_internal_command(command_manager_t *self,
+    server_t *server)
+{
+    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
+    REGISTER(self->dispatcher, "gui_suc", handle_gui_suc, server);
+    REGISTER(self->dispatcher, "gui_sbp", handle_gui_sbp, server);
+    REGISTER(self->dispatcher, "gui_enw", handle_gui_enw, server);
+    REGISTER(self->dispatcher, "gui_smg", handle_gui_smg, server);
+    REGISTER(self->dispatcher, "gui_ebo", handle_gui_ebo, server);
+    REGISTER(self->dispatcher, "gui_pex", handle_gui_pex, server);
+    REGISTER(self->dispatcher, "gui_pbc", handle_gui_pbc, server);
+    REGISTER(self->dispatcher, "gui_pdi", handle_gui_pdi, server);
+    REGISTER(self->dispatcher, "gui_edi", handle_gui_edi, server);
+}
+
+/**
+ * @brief Register GUI commands to the dispatcher.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ */
 static void register_gui_command(command_manager_t *self, server_t *server)
 {
     REGISTER(self->dispatcher, "command_gui_msz", handle_command_gui_msz,
@@ -32,12 +53,7 @@ static void register_gui_command(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_mct", handle_command_gui_mct,
         server);
-    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
-    REGISTER(self->dispatcher, "gui_suc", handle_gui_suc, server);
-    REGISTER(self->dispatcher, "gui_sbp", handle_gui_sbp, server);
-    REGISTER(self->dispatcher, "gui_enw", handle_gui_enw, server);
-    REGISTER(self->dispatcher, "gui_smg", handle_gui_smg, server);
-    REGISTER(self->dispatcher, "gui_ebo", handle_gui_ebo, server);
+    register_gui_internal_command(self, server);
 }
 
 /****************************************************************************/

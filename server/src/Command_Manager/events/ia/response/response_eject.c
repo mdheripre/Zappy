@@ -64,6 +64,8 @@ static response_payload_t *owner_eject(server_t *server, game_event_t *event)
         return NULL;
     payload->client = client;
     payload->message = (char *)event->data.generic_response.response;
+    if (strcmp("ok\n", event->data.generic_response.response) == 0)
+        EMIT(server->command_manager->dispatcher, "gui_pex", client);
     return payload;
 }
 

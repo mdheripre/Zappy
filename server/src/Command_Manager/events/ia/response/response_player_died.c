@@ -42,6 +42,8 @@ void on_response_player_died(void *ctx, void *data)
     client_fd = get_client_fd_by_player(server, player, &index);
     if (client_fd != -1)
         dprintf(client_fd, "dead\n");
+    EMIT(server->command_manager->dispatcher, "gui_pdi",
+        get_client_by_player(server, player, NULL));
     server->game->players->methods->remove(server->game->players, player);
     server->vtable->remove_client(server, index);
 }
