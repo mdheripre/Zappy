@@ -37,6 +37,8 @@ static void register_gui_internal_command(command_manager_t *self,
     REGISTER(self->dispatcher, "gui_pgt", handle_gui_pgt, server);
     REGISTER(self->dispatcher, "gui_seg", handle_gui_seg, server);
     REGISTER(self->dispatcher, "gui_pfk", handle_gui_pfk, server);
+    REGISTER(self->dispatcher, "gui_pic", handle_gui_pic, server);
+    REGISTER(self->dispatcher, "gui_pie", handle_gui_pie, server);
 }
 
 /**

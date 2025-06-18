@@ -86,4 +86,5 @@ void on_response_end_incantation(void *ctx, void *data)
         send_incantation_result(server, event, player);
         replan_next_command(server, player);
     }
+    EMIT(server->command_manager->dispatcher, "gui_pie", event);
 }
