@@ -69,6 +69,7 @@ void handle_gui_pdi(void *ctx, void *data);
 void handle_gui_edi(void *ctx, void *data);
 void handle_gui_pdr(void *ctx, void *data);
 void handle_gui_pgt(void *ctx, void *data);
+void handle_gui_seg(void *ctx, void *);
 
 
 /* Responses */

@@ -178,6 +178,7 @@ struct game_methods_s {
     bool (*check_incantate)(game_t *self, incantation_t *inc);
     list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
     bool (*has_finished)(game_t *self);
+    char *(*get_winner)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -248,6 +249,8 @@ list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 void emit_tile_update(game_t *game, int x, int y);
 int resource_from_string(const char *name);
 bool has_finished(game_t *self);
+char *get_winner(game_t *self);
+
 
 /* Event */
 void on_player_moved(void *ctx, void *data);

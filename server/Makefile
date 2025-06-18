@@ -107,6 +107,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pbc.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pdi.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/edi.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/seg.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pdr.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/enw.c \
@@ -169,6 +170,7 @@ SRCS = \
 	$(SRC_GAME_METHODS)/update_players.c \
 	$(SRC_GAME_METHODS)/has_finished.c \
 	$(SRC_GAME_METHODS)/spawn_ressources.c \
+	$(SRC_GAME_METHODS)/get_winner.c \
 	$(SRC_GAME_METHODS)/game_update.c \
 	$(SRC_GAME_METHODS)/get_player_on_tile.c \
 	$(SRC_GAME_METHODS)/game_update_incantation.c \
