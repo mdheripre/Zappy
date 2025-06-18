@@ -44,4 +44,9 @@ void SFMLRectangle::drawObject() const
         _rWindow->draw(_rect);
 }
 
+bool SFMLRectangle::contains(tools::Vector2<float> position)
+{
+    return _rect.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
 } // namespace sfml

@@ -76,6 +76,11 @@ std::unique_ptr<render::IObject> SFMLObjectFactory::createRectangle() const
     return std::make_unique<SFMLRectangle>(_rWindow);
 }
 
+std::unique_ptr<render::IProgressBar> SFMLObjectFactory::createProgressBar() const
+{
+    return std::make_unique<SFMLProgressBar>(_rWindow);
+}
+
 std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite(const tools::AssetDefinition& definition)
 {
     const std::string& path = definition.getModelPath();

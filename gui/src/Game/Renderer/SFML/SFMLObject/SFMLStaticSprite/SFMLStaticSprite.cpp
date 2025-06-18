@@ -70,4 +70,9 @@ void SFMLStaticSprite::drawObject() const
     }
 }
 
+bool SFMLStaticSprite::contains(tools::Vector2<float> position)
+{
+    return _sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
 } // namespace sfml

@@ -20,7 +20,8 @@ gui::Logger::Logger(
 
 void gui::Logger::pushEvent(const std::string &newEvent)
 {
-    constexpr std::size_t maxHistory = 100;
+    const std::size_t maxHistory = 20;
+
     _events.push_back(newEvent);
     if (_events.size() > maxHistory)
         _events.pop_front();
@@ -43,6 +44,7 @@ void gui::Logger::pushEvent(const std::string &newEvent)
 std::vector<std::string> gui::Logger::wrapEventsToLines(int maxChars) const
 {
     std::vector<std::string> wrapped;
+
     for (const auto& event : _events) {
         std::istringstream iss(event);
         std::string word, line;

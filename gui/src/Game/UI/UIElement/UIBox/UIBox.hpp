@@ -25,6 +25,8 @@ namespace gui
                 std::unique_ptr<render::IObject> background);
             virtual ~UIBox() = default;
             virtual void draw() const;
+            void setVisible(bool value) {_visible = value;};
+            bool isVisible() {return _visible;};
         protected:
             std::string _title;
             std::unique_ptr<render::IText> _textDisplayer;
@@ -33,5 +35,6 @@ namespace gui
             float _height;
             float _top;
             float _left;
+            bool _visible = true;
     };
 } // namespace gui

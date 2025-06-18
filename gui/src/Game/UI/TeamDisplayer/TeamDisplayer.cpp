@@ -10,7 +10,7 @@
 gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory) :
     TeamDisplayer::TableDisplayer<5>(
         "Top 3",
-        0.5f, 0.2f, 0.7f, 0.2f,
+        0.5f, 0.2f, 0.7f, 0.01f,
         factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
         factory.createRectangle(),
         std::array<std::string, 5> {"Name", "Players", "High", "Level 8", "Eggs"}

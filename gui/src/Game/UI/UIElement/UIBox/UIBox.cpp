@@ -42,7 +42,7 @@ gui::UIBox::UIBox(
 
 void gui::UIBox::draw() const
 {
-    if (!_textDisplayer || !_background)
+    if (!_textDisplayer || !_background || !_visible)
         return;
 
     _background->drawObject();

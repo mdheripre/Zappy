@@ -27,6 +27,8 @@ namespace sfml
             void setCharacterSize(float size);
             int estimateMaxCharsPerLine(float width) const;
             float getLineHeight() const;
+            bool contains(tools::Vector2<float> position);
+
         private:
             std::string _rawText;
             sf::Text _sfText;

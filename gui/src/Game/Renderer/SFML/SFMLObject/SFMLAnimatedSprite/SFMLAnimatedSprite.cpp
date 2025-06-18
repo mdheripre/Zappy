@@ -124,5 +124,29 @@ void SFMLAnimatedSprite::drawObject() const
         _ctx->draw(sprite);
 }
 
+std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const 
+{
+    auto copy = std::make_unique<SFMLAnimatedSprite>(
+        *sprite.getTexture(),
+        _ctx,
+        static_cast<int>(_frameWidth),
+        static_cast<int>(_frameHeight),
+        sprite.getScale().x,
+        _animationMap,
+        _fps,
+        _defaultAnimation
+    );
+
+    copy->playAnimation(_defaultAnimation, _loop);
+    copy->setPosition(getPosition());
+    copy->setSize(getSize());
+    return copy;
+}
+
+bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
+{
+    return sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
 } // namespace sfml
 

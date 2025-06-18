@@ -87,3 +87,9 @@ float sfml::SFMLText::getLineHeight() const
 {
     return static_cast<float>(_sfText.getCharacterSize()) * 1.2f;
 }
+
+bool sfml::SFMLText::contains(tools::Vector2<float> position)
+{
+    return _sfText.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+

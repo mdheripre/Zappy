@@ -106,6 +106,7 @@ void sfml::SFMLRenderer::poll()
             manageKeyCode(event);
         }
     }
+    handleMouseInteraction();
 }
 
 void sfml::SFMLRenderer::manageKeyCode(const sf::Event &event)
@@ -119,3 +120,27 @@ void sfml::SFMLRenderer::manageKeyCode(const sf::Event &event)
             bindIt->second();
     }
 }
+
+void sfml::SFMLRenderer::handleMouseInteraction()
+{
+    sf::Vector2i pixelPos = sf::Mouse::getPosition(*_rWindow);
+    sf::Vector2f worldPos = _rWindow->mapPixelToCoords(pixelPos);
+    tools::Vector2<float> mouse(worldPos.x, worldPos.y);
+
+    bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+    bool foundSelected = false;
+
+    for (auto it = _entities.rbegin(); it != _entities.rend(); ++it) {
+        auto* interactive = dynamic_cast<render::AInteractiveEntity*>(it->get());
+        if (!interactive)
+            continue;
+        interactive->computeHover(mouse);
+        bool shouldReceiveClick = false;
+        if (!foundSelected && interactive->isMouseOver(mouse)) {
+            shouldReceiveClick = true;
+            foundSelected = true;
+        }
+        interactive->processClick(mousePressed, shouldReceiveClick);
+    }
+}
+

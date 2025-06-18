@@ -19,5 +19,6 @@ namespace render
             virtual void setSize(const tools::Vector2<float> &size) = 0;
             virtual void setPosition(const tools::Vector2<float> &pos) = 0;
             virtual void drawObject() const = 0;
+            virtual bool contains(tools::Vector2<float> position) = 0;
     };
 } // namespace render

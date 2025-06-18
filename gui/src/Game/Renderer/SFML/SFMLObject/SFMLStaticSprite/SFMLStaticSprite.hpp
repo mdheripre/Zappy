@@ -25,6 +25,7 @@ namespace sfml
         void setPosition(const tools::Vector2<float>& pos) override;
         void setSize(const tools::Vector2<float> &size);
         void drawObject() const override;
+        bool contains(tools::Vector2<float> position);
 
     private:
         std::shared_ptr<sf::RenderWindow> _window;

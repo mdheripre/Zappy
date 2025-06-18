@@ -23,6 +23,7 @@ namespace sfml
             void setSize(const tools::Vector2<float> &size);
             void setPosition(const tools::Vector2<float> &pos);
             void drawObject() const;
+            bool contains(tools::Vector2<float> position);
         private:
             sf::RectangleShape _rect;
             std::shared_ptr<sf::RenderWindow> _rWindow;

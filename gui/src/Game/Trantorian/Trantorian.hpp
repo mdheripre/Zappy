@@ -11,6 +11,7 @@
 #include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Tools/TeamBranding/TeamBranding.hpp"
+#include "Game/Renderer/Entity/AInteractiveEntity.hpp"
 #include "Game/Map/Tile/Tile.hpp"
 #include "Game/Egg/Egg.hpp"
 #include <string>
@@ -36,7 +37,6 @@ namespace gui {
                 _inventory.fill(0);
             }
             virtual ~TrantorianState() = default;
-        
             Orientation getOrientation() const { return _orientation; }
             int getLevel() const { return _level; }
             const std::array<int, 7>& getInventory() const { return _inventory; }
@@ -59,7 +59,9 @@ namespace gui {
             std::array<int, 7> _inventory;
         };
         
-        class Trantorian : public TrantorianState, public render::IRenderEntity {
+        class Trantorian : public TrantorianState,
+            public render::IRenderEntity,
+            public render::AInteractiveEntity {
             public:
                 enum class TrantorianAnimation {
                     IDLE,
@@ -80,6 +82,7 @@ namespace gui {
                     setPosition(pos);
                 }
                 ~Trantorian() override = default;
+                std::unique_ptr<render::IAnimatedSprite> getVisual() const;
             private:
                 std::unique_ptr<render::IAnimatedSprite> _trantorianObject;
                 void setDead() override { _alive = false; }
@@ -98,5 +101,8 @@ namespace gui {
                 void broadcast(const std::string &msg) {std::cout << "Brodcast from player " << _id << ": "<< msg << std::endl;}
                 bool update(float dt);
                 void draw() const;
+                bool isMouseOver(const tools::Vector2<float>& mousePosition) const;
+                void onHoverEnter() override;
+                void onHoverExit() override;
             };         
 } // namespace game

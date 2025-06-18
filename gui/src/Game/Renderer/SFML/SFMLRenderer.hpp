@@ -9,6 +9,7 @@
 #include "Game/Renderer/IRenderer.hpp"
 #include "Game/Renderer/SFML/SFMLObjectFactory/SFMLObjectFactory.hpp"
 #include "Tools/Error/Error.hpp"
+#include "Game/Renderer/Entity/AInteractiveEntity.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <list>
@@ -38,9 +39,12 @@ namespace sfml
             { sf::Keyboard::Up,    tools::KeyCode::Up },
             { sf::Keyboard::Down,  tools::KeyCode::Down },
             { sf::Keyboard::W,     tools::KeyCode::W },
-            { sf::Keyboard::S,     tools::KeyCode::S }
+            { sf::Keyboard::S,     tools::KeyCode::S },
+            { sf::Keyboard::P,     tools::KeyCode::P },
+            { sf::Keyboard::M,     tools::KeyCode::M }
         };
     private:
+        void handleMouseInteraction();
         std::unordered_map<tools::KeyCode, std::function<void()>> _bindings;
         std::shared_ptr<sf::RenderWindow> _rWindow;
         std::unique_ptr<SFMLObjectFactory> _objFactory;

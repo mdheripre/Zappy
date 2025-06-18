@@ -107,6 +107,8 @@ namespace game
                 { tools::KeyCode::Down,  [this]() { _renderer->setPositionView(0, -20); }},
                 { tools::KeyCode::W,     [this]() { _renderer->setZoomView(1.1f);}},
                 { tools::KeyCode::S,     [this]() { _renderer->setZoomView(0.9f);}},
+                { tools::KeyCode::P,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit + 1) + "\n");}},
+                { tools::KeyCode::M,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit - 1) + "\n");}}
             };
     };
 } // namespace Game

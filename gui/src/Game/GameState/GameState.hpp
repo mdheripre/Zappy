@@ -30,7 +30,7 @@ namespace state
         GameState() = default;
         ~GameState() = default;
         State state;
-        float time_unit = 0;
+        int time_unit = 0;
         std::shared_ptr<gui::MapState> map;
         std::map<std::string, tools::TeamBranding> teams;
         std::unordered_map<int, std::shared_ptr<gui::TrantorianState>> trantorians;

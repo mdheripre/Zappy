@@ -65,11 +65,14 @@ void game::Game::gameLoop()
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
+    float acc = 0;
 
     while (!_renderer->isClose()) {
         auto currentTime = clock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
-        float dt = elapsed.count();
+        float dt = elapsed.count() * static_cast<float>(_gm.time_unit);
+        acc += dt;
+        _ui->updateTimeUnit(_gm.time_unit, acc);
         lastTime = currentTime;
         try {
             if (!errorCaught) {
