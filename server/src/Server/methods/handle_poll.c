@@ -29,6 +29,7 @@ void process_command_line(server_t *server, client_t *client,
     const char *line)
 {
     char clean[BUFFER_COMMAND_SIZE] = {0};
+    char cmd_name[BUFFER_COMMAND_SIZE] = {0};
     int ticks = 0;
 
     if (!server || !client || !line)
@@ -36,9 +37,12 @@ void process_command_line(server_t *server, client_t *client,
     strncpy(clean, line, BUFFER_COMMAND_SIZE - 1);
     clean[BUFFER_COMMAND_SIZE - 1] = '\0';
     strip_linefeed(clean);
+    extract_command_name(clean, cmd_name, sizeof(cmd_name));
     ticks = server->vtable->get_command_delay(server, clean);
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
+    if (strcmp(cmd_name, "Fork") == 0 && client->player)
+        EMIT(server->command_manager->dispatcher, "gui_pfk", client->player);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
