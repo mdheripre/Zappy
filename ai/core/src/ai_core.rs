@@ -4,15 +4,15 @@ use lib_tcp::tcp_client::AsyncTcpClient;
 use tokio::sync::{mpsc, Mutex};
 
 use crate::ai::{ai_decision, AiCommand};
+use crate::ai_direction::Direction;
+use crate::ai_role::Role;
 use crate::init::{init_client, ClientInfos};
+use crate::inventory::Inventory;
 use crate::item::Item;
 use crate::packet::{Packet, PacketSender};
 use crate::server_response::ServerResponse;
 use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
-use crate::ai_direction::Direction;
-use crate::ai_role::Role;
-use crate::inventory::Inventory;
 
 /// Zappy game state
 ///
@@ -61,7 +61,7 @@ pub struct AiState {
     pub direction: Direction,
     pub last_command: Option<AiCommand>,
     pub previous_command: Option<AiCommand>,
-    pub destination: Option<Tile>
+    pub destination: Option<Tile>,
 }
 
 impl AiState {
@@ -84,25 +84,17 @@ impl AiState {
             destination: None,
         }
     }
-    
+
     /// Make the AI move forward in the current direction
     pub fn forward(&mut self) {
         match self.direction {
-            Direction::North => {
-                self.position.1 -= 1
-            }
-            Direction::South => {
-                self.position.1 += 1
-            }
-            Direction::East => {
-                self.position.0 += 1
-            }
-            Direction::West => {
-                self.position.0 -= 1
-            }
+            Direction::North => self.position.1 -= 1,
+            Direction::South => self.position.1 += 1,
+            Direction::East => self.position.0 += 1,
+            Direction::West => self.position.0 -= 1,
         }
     }
-    
+
     /// Choose a destination tile based on the items needed in the inventory
     /// # Returns
     /// - `Option<Tile>` - The tile with the highest value based on the items needed and distance.
@@ -116,7 +108,9 @@ impl AiState {
                 distance = 0.5
             }
             for item in tile.get_items() {
-                value = value + (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) / (item.0.probability() * distance);
+                value = value
+                    + (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
+                        / (item.0.probability() * distance);
             }
             if value > max_value {
                 max_value = value;
@@ -125,7 +119,7 @@ impl AiState {
         }
         selected_tile
     }
-    
+
     /// Choose the best item to take based on the items needed in the inventory
     /// # Arguments
     /// - `items` (`Vec<Item>`) - List of items to choose from.
@@ -135,25 +129,26 @@ impl AiState {
         let mut max_value: f64 = 0.0;
         let mut selected_item: Option<Item> = None;
         for item in items {
-            let value: f64 = (item.needed() as f64 - self.inventory.get_count(&item) as f64) / item.probability();
+            let value: f64 = (item.needed() as f64 - self.inventory.get_count(&item) as f64)
+                / item.probability();
             if value > max_value {
                 max_value = value;
                 selected_item = Some(item.clone());
             }
         }
         if selected_item.is_none() {
-            return None
+            return None;
         }
         selected_item.map(AiCommand::Take)
     }
-    
+
     /// Check if there are items in the map
     /// # Returns
     /// - `bool` - True if there are items in the map, false otherwise.
     pub fn is_there_things_in_map(&self) -> bool {
         for tile in &self.world_map {
             if !tile.get_items().is_empty() {
-                return true
+                return true;
             }
         }
         false
@@ -277,7 +272,7 @@ impl AiCore {
             cmd_queue: cmd_tx_,
             err_queue: err_rx_,
             resp_queue: resp_tx_,
-            resp_rx : resp_rx_,
+            resp_rx: resp_rx_,
             send_rx: send_rx_,
             recv_tx: recv_tx_,
             cmd_rx: cmd_rx_,
@@ -450,7 +445,7 @@ impl AiCore {
     ///
     /// - `response` (`ServerResponse`) - ServerResponse to handle.
     ///
-    async fn handle_server_response(&self, response: ServerResponse) -> Result<()>{
+    async fn handle_server_response(&self, response: ServerResponse) -> Result<()> {
         println!("Received: {:?}", response);
 
         let mut state = self.state.lock().await;
@@ -458,36 +453,32 @@ impl AiCore {
         state.last_command = None;
         state.previous_command = last_command.clone();
         match &response {
-            ServerResponse::Ok => {
-                match last_command {
-                    Some(AiCommand::Take(item)) => {
-                        state.inventory.add_item(&item);
-                        state.remove_item_from_map(&item);
-                    }
-                    Some(AiCommand::Set(item)) => {
-                        state.inventory.remove_item(&item);
-                        state.add_item_to_map(&item);
-                    }
-                    Some(AiCommand::Forward) => {
-                        state.forward();
-                    }
-                    Some(AiCommand::Left) => {
-                        state.direction = state.direction.left();
-                    }
-                    Some(AiCommand::Right) => {
-                        state.direction = state.direction.right();
-                    }
-                    _ => {}
+            ServerResponse::Ok => match last_command {
+                Some(AiCommand::Take(item)) => {
+                    state.inventory.add_item(&item);
+                    state.remove_item_from_map(&item);
                 }
-            }
-            ServerResponse::Ko => {
-                match last_command {
-                    Some(AiCommand::Take(item)) => {
-                        state.remove_item_from_map(&item);
-                    }
-                    _ => {}
+                Some(AiCommand::Set(item)) => {
+                    state.inventory.remove_item(&item);
+                    state.add_item_to_map(&item);
                 }
-            }
+                Some(AiCommand::Forward) => {
+                    state.forward();
+                }
+                Some(AiCommand::Left) => {
+                    state.direction = state.direction.left();
+                }
+                Some(AiCommand::Right) => {
+                    state.direction = state.direction.right();
+                }
+                _ => {}
+            },
+            ServerResponse::Ko => match last_command {
+                Some(AiCommand::Take(item)) => {
+                    state.remove_item_from_map(&item);
+                }
+                _ => {}
+            },
             ServerResponse::Look(items) => {
                 let mut i = 0;
                 for item in items {
@@ -511,7 +502,9 @@ impl AiCore {
             }
             _ => {}
         }
-        self.resp_queue.send(response).map_err(CoreError::SendChannelErrorSR)
+        self.resp_queue
+            .send(response)
+            .map_err(CoreError::SendChannelErrorSR)
     }
 
     /// update the zappy game state

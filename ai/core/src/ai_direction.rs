@@ -6,7 +6,7 @@ use crate::ai::AiCommand;
 /// - `East` - Facing east.
 /// - `South` - Facing south.
 /// - `West` - Facing west.
-/// 
+///
 #[derive(Debug, Clone)]
 pub enum Direction {
     North,
@@ -27,7 +27,7 @@ impl Direction {
             Direction::West => Direction::North,
         }
     }
-    
+
     /// Turn the direction to the left
     /// # Returns
     /// - `Direction` - The new direction after turning left.
@@ -39,7 +39,7 @@ impl Direction {
             Direction::West => Direction::South,
         }
     }
-    
+
     /// Checks if the given position is along the direction
     /// # Arguments
     /// - `pos` - The position to check, represented as a tuple (x, y).
@@ -53,7 +53,7 @@ impl Direction {
             Direction::West => pos.0 < 0,
         }
     }
-    
+
     // Get the best turn to orient to the given position
     /// # Arguments
     /// - `pos` - The position to orient towards, represented as a tuple (x, y).
@@ -63,28 +63,28 @@ impl Direction {
         match self {
             Direction::North => {
                 if pos.0 < 0 {
-                    return AiCommand::Left
+                    return AiCommand::Left;
                 }
                 AiCommand::Right
-            },
+            }
             Direction::East => {
                 if pos.1 < 0 {
-                    return AiCommand::Left
+                    return AiCommand::Left;
                 }
                 AiCommand::Right
-            },
+            }
             Direction::South => {
                 if pos.0 < 0 {
-                    return AiCommand::Right
+                    return AiCommand::Right;
                 }
                 AiCommand::Left
-            },
+            }
             Direction::West => {
                 if pos.1 < 0 {
-                    return AiCommand::Right
+                    return AiCommand::Right;
                 }
                 AiCommand::Right
-            },
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
+use crate::ai_core::AiState;
 use crate::item::Item;
 use crate::{CoreError, Result};
 use std::collections::HashMap;
-use crate::ai_core::AiState;
 
 /// Content of a Tile
 ///
@@ -41,7 +41,7 @@ impl Tile {
             look_time: time,
         }
     }
-    
+
     /// Create a new Tile from a response
     /// # Arguments
     /// - `string` - The response string containing items and players.
@@ -59,13 +59,13 @@ impl Tile {
             }
             crate::ai_direction::Direction::East => {
                 tile.set_position((ai_state.position.0 + y, ai_state.position.1 + x));
-            },
+            }
             crate::ai_direction::Direction::South => {
                 tile.set_position((ai_state.position.1 - x, ai_state.position.1 + y));
-            },
+            }
             crate::ai_direction::Direction::West => {
                 tile.set_position((ai_state.position.1 - y, ai_state.position.1 - x));
-            },
+            }
         }
         for item in string.split(' ') {
             if item == "player" {
@@ -99,11 +99,11 @@ impl Tile {
     pub fn get_look_time(&self) -> i32 {
         self.look_time
     }
-    
+
     pub fn set_look_time(&mut self, time: i32) {
         self.look_time = time;
     }
-    
+
     pub fn set(&mut self, item: Item) {
         *self.items.entry(item).or_insert(0) += 1;
     }
@@ -117,13 +117,13 @@ impl Tile {
             }
         }
     }
-    
+
     pub fn distance(&self, pos: (i32, i32)) -> f64 {
         let dx = (self.position.0 - pos.0).abs();
         let dy = (self.position.1 - pos.1).abs();
         (dx + dy) as f64
     }
-    
+
     pub fn distance_as_pair(&self, pos: (i32, i32)) -> (i32, i32) {
         (self.position.0 - pos.0, self.position.1 - pos.1)
     }

@@ -1,5 +1,5 @@
-use crate::{CoreError, Result};
 use crate::inventory::Inventory;
+use crate::{CoreError, Result};
 use regex::Regex;
 
 /// Possible responses from the server.
@@ -62,7 +62,7 @@ impl ServerResponse {
                     if let Some(cap) = re.captures(s) {
                         if let Some(mat) = cap.get(1) {
                             if let Ok(food_value) = mat.as_str().parse() {
-                                return ServerResponse::Inventory(food_value)
+                                return ServerResponse::Inventory(food_value);
                             }
                         }
                     }

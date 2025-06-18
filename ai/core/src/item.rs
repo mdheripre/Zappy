@@ -48,7 +48,7 @@ impl fmt::Display for Item {
             Item::Sibur => "sibur",
             Item::Mendiane => "mendiane",
             Item::Phiras => "Phiras",
-            Item::Thystame => "thystame"
+            Item::Thystame => "thystame",
         };
         write!(f, "{}", s)
     }
@@ -68,7 +68,8 @@ impl FromStr for Item {
             "thystame" => Ok(Item::Thystame),
             _ => Err(CoreError::InvalidResponse(format!("Unknown item: {}", s))),
         }
-    }}
+    }
+}
 
 impl Item {
     /// Get the probability of finding the item on a tile.

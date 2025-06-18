@@ -1,9 +1,9 @@
 use crate::item::Item;
 
 /// Inventory struct to hold the resources collected by an AI player.
-/// 
+///
 /// # Fields
-/// 
+///
 /// - `food` - Amount of food collected.
 /// - `linemate` - Amount of linemate collected.
 /// - `deraumere` - Amount of deraumere collected.
@@ -35,7 +35,7 @@ impl Inventory {
             thystame: 0,
         }
     }
-    
+
     /// Add an item to the inventory.
     /// # Arguments
     /// - `item` - The item to add to the inventory.
@@ -89,7 +89,7 @@ impl Inventory {
             _ => Err(format!("Cannot remove item: {:?}", item)),
         }
     }
-    
+
     /// Get the count of a specific item in the inventory.
     /// # Arguments
     /// - `item` - The item to get the count for.
