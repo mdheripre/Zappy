@@ -215,12 +215,13 @@ server_t *server_create(config_t *config)
         .team_size = config->team_size, .team_name = config->team_name
     };
 
-    if (!server)
+    if (!server_init(server, config)) {
+        free(server);
         return NULL;
+    }
     server->game = NEW(game, &game_cfg);
     server->command_manager = NEW(command_manager);
-    if (!server->command_manager || !server->game ||
-            !server_init(server, config)) {
+    if (!server->command_manager || !server->game) {
         free(server);
         return NULL;
     }
