@@ -46,6 +46,8 @@ void strip_linefeed(char *line);
 long get_ms_time(void);
 bool client_enqueue_command(client_t *client,
     const char *cmd, float delay);
+bool client_enqueue_front_command(client_t *client,
+    const char *cmd, float delay);
 queued_command_t *client_peek_command(client_t *client);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
 const char *event_type_name(game_event_type_t type);
@@ -60,4 +62,5 @@ int get_client_index_by_player(server_t *server, player_t *player);
 client_t *get_client_by_player(server_t *server, player_t *player,
     int *index);
 client_t *get_gui_client(server_t *server);
+bool get_next_arg(char *line, char *arg, int arg_size);
 #endif /* !UTILS_H_ */
