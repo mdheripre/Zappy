@@ -1,7 +1,10 @@
 mod ai;
 mod ai_core;
+mod ai_direction;
+mod ai_role;
 mod error;
 mod init;
+mod inventory;
 mod item;
 mod packet;
 mod prelude;
