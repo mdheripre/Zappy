@@ -34,8 +34,10 @@ void on_response_player_moved(void *ctx, void *data)
     fd = event->data.player_moved.client_fd;
     if (fd < 0)
         return;
-    if (event->data.player_moved.ia_success)
+    if (event->data.player_moved.ia_success) {
         dprintf(fd, "ok\n");
-    else
+        EMIT(server->command_manager->dispatcher, "gui_ppo",
+            &event->data.player_moved.player_id);
+    } else
         dprintf(fd, "ko\n");
 }

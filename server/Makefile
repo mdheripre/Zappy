@@ -20,6 +20,8 @@ SRC_SERV_EVENT = $(SRC_SERVER)/events
 SRC_CMD_MANAGER = $(SRC_DIR)/Command_Manager
 SRC_CMD_MANAGER_CTOR = $(SRC_CMD_MANAGER)/constructor
 SRC_CMD_MANAGER_DTOR = $(SRC_CMD_MANAGER)/destructor
+SRC_CMD_MANAGER_PARSER = $(SRC_CMD_MANAGER)/Parser
+SRC_CMD_MANAGER_PARSER_HELPERS = $(SRC_CMD_MANAGER_PARSER)/Helper
 SRC_CMD_MANAGER_METHODS = $(SRC_CMD_MANAGER)/methods
 SRC_CMD_MANAGER_EVENTS = $(SRC_CMD_MANAGER)/events
 SRC_CMD_MANAGER_EVENTS_IA = $(SRC_CMD_MANAGER_EVENTS)/ia
@@ -106,6 +108,9 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pnw.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/ppo.c \
+	$(SRC_CMD_MANAGER_PARSER)/get_player_number.c \
+	$(SRC_CMD_MANAGER_PARSER_HELPERS)/is_num.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \
 	$(SRC_SHARED)/shared.c \
 	$(SRC_UTILS_LOG)/print_log.c \
@@ -128,6 +133,7 @@ SRCS = \
 	$(SRC_LIST_DTOR)/list_destroy.c \
 	$(SRC_LIST_METHODS)/list_clear.c \
 	$(SRC_LIST_METHODS)/list_pop_front.c \
+	$(SRC_LIST_METHODS)/list_push_front.c \
 	$(SRC_LIST_METHODS)/list_consume.c \
 	$(SRC_LIST_METHODS)/list_push_back.c \
 	$(SRC_LIST_METHODS)/list_size.c \

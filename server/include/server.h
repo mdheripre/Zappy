@@ -20,7 +20,7 @@
     #include <sys/time.h>
     #include "client.h"
     #include "config.h"
-#include "player.h"
+    #include "player.h"
     #include "shared.h"
     #include "dispatcher.h"
     #include "game.h"

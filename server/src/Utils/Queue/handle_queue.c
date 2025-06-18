@@ -42,6 +42,35 @@ bool client_enqueue_command(client_t *client, const char *cmd, float delay)
 }
 
 /**
+ * @brief Add a command to the front of the client's command queue.
+ *
+ * This function allows you to add a command that should be executed
+ * immediately or with a specified delay, placing it at the front of the queue.
+ *
+ * @param client Pointer to the client.
+ * @param cmd Command string to enqueue.
+ * @param delay Time before the command is executed.
+ * @return true on success, false on failure.
+ */
+bool client_enqueue_front_command(client_t *client, const char *cmd,
+    float delay)
+{
+    queued_command_t *entry = NULL;
+
+    if (!client || !cmd || !client->commands)
+        return false;
+    entry = malloc(sizeof(queued_command_t));
+    if (!entry)
+        return false;
+    memset(entry, 0, sizeof(queued_command_t));
+    strncpy(entry->content, cmd, BUFFER_COMMAND_SIZE - 1);
+    entry->content[BUFFER_COMMAND_SIZE - 1] = '\0';
+    entry->time_remaining = delay;
+    client->commands->methods->push_front(client->commands, entry);
+    return true;
+}
+
+/**
  * @brief Remove and return the next command from the queue.
  *
  * @param client Pointer to the client.

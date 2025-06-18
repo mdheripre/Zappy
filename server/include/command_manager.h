@@ -57,6 +57,8 @@ void handle_command_gui_sgt(void *ctx, void *data);
 void handle_command_gui_tna(void *ctx, void *data);
 void handle_command_gui_bct(void *ctx, void *data);
 void handle_command_gui_mct(void *ctx, void *data);
+void handle_command_gui_ppo(void *ctx, void *data);
+void handle_gui_ppo(void *ctx, void *data);
 void handle_gui_pnw(void *ctx, void *data);
 
 /* Responses */
@@ -74,5 +76,11 @@ void on_response_broadcast(void *ctx, void *data);
 void on_response_tile_updated(void *ctx, void *data);
 void on_response_drop(void *ctx, void *data);
 void on_response_take(void *ctx, void *data);
+
+/* Parser */
+int get_player_number(const char *str);
+
+/* Helper */
+bool is_num(const char *arg);
 
 #endif /* !COMMAND_MANAGER_H_ */
