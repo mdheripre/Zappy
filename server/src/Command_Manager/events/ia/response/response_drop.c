@@ -15,25 +15,37 @@
 /*                                                                          */
 /****************************************************************************/
 
+
+static response_payload_t *create_response_payload(client_t *client,
+    bool success)
+{
+    response_payload_t *payload = malloc(sizeof(response_payload_t));
+
+    if (!payload)
+        return NULL;
+    payload->client = client;
+    payload->message = strdup(success ? "ok\n" : "ko\n");
+    if (!payload->message) {
+        free(payload);
+        return NULL;
+    }
+    return payload;
+}
+
 void on_response_drop(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
     player_t *player = find_player_by_id(server->game,
-        event->data.generic_response.player_id);
+        event->data.player_item.player_id);
     client_t *client = get_client_by_player(server, player, NULL);
     response_payload_t *payload = NULL;
 
-    if (!server || !event || !client || !event->data.generic_response.response)
+    if (!server || !event || !client)
         return;
-    payload = malloc(sizeof(response_payload_t));
+    payload = create_response_payload(client, event->data.player_item.success);
     if (!payload)
         return;
-    payload->client = client;
-    payload->message = (char *)event->data.generic_response.response;
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
+    EMIT(server->command_manager->dispatcher, "gui_pdr", event);
     EMIT(server->dispatcher, "send_response", payload);
 }

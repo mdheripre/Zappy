@@ -160,7 +160,8 @@ typedef struct {
         struct {
             int player_id;
             int client_fd;
-            char *item_name;
+            int type_item;
+            bool success;
         } player_item;
     } data;
 } game_event_t;
