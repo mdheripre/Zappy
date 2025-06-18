@@ -14,19 +14,6 @@
 /*                        HANDLER COMMAND                                   */
 /*                                                                          */
 /****************************************************************************/
-#include "server.h"
-#include "utils.h"
-#include "player.h"
-
-static const char *RESOURCE_NAMES[] = {
-    "food",
-    "linemate",
-    "deraumere",
-    "sibur",
-    "mendiane",
-    "phiras",
-    "thystame"
-};
 
 static bool extract_take_item_name(client_t *client, char *item,
     size_t item_size)
