@@ -16,6 +16,30 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Create a broadcast message event for a client.
+ *
+ * Allocates and initializes a game_event_t with the message content
+ * and client metadata.
+ *
+ * @param client Pointer to the client sending the broadcast.
+ * @param message Broadcast message content.
+ * @return Pointer to the created event, or NULL on allocation failure.
+ */
+static game_event_t *create_broadcast_event(client_t *client,
+    const char *message)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return NULL;
+    memset(event, 0, sizeof(game_event_t));
+    event->type = GAME_EVENT_BROADCAST_MESSAGE;
+    event->data.generic_response.player_id = client->player->id;
+    event->data.generic_response.client_fd = client->fd;
+    event->data.generic_response.response = strdup(message);
+    return event;
+}
 
 /**
  * @brief Handle the 'Broadcast' command from a client.
@@ -34,16 +58,15 @@ void handle_command_broadcast(void *ctx, void *data)
     const char *message = extract_command_args(line);
     game_event_t *event = NULL;
 
-    if (!server || !client || !player || !message || strlen(message) == 0)
+    if (!server || !client || !player)
         return;
-    event = malloc(sizeof(game_event_t));
+    if (!message || strlen(message) == 0) {
+        dprintf(client->fd, "ko\n");
+        return;
+    }
+    event = create_broadcast_event(client, message);
     if (!event)
         return;
-    memset(event, 0, sizeof(game_event_t));
-    event->type = GAME_EVENT_BROADCAST_MESSAGE;
-    event->data.generic_response.player_id = client->player->id;
-    event->data.generic_response.client_fd = client->fd;
-    event->data.generic_response.response = strdup(message);
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);
 }

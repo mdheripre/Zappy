@@ -48,12 +48,12 @@ void handle_command_gui_tna(void *ctx, void *data)
     client_t *client = data;
     response_payload_t *payload;
 
-    for (int i = 0; i < server->game->team_name->size; i++) {
+    for (int i = 0; i < server->game->teams->size; i++) {
         payload = malloc(sizeof(response_payload_t));
         if (!payload)
             return;
         asprintf(&payload->message, "tna %s\n",
-            get_team_name(server->game->team_name, i));
+            get_team_name(server->game->teams, i));
         if (!payload->message) {
             free(payload);
             return;

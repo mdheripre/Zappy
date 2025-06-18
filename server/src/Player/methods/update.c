@@ -35,17 +35,20 @@ static void add_event_died(player_t *self, game_t *game)
 }
 
 /**
- * @brief Update the player's hunger and trigger death if starving.
+ * @brief Update a player's hunger and handle starvation logic.
+ *
+ * Increments tick counter and consumes food. If starving, triggers death.
  *
  * @param self Pointer to the player.
  * @param game Pointer to the game instance.
+ * @param ticks Number of ticks since the last update.
  */
-void player_update(player_t *self, game_t *game)
+void player_update(player_t *self, game_t *game, int ticks)
 {
     if (!self || !self->is_alive || !game)
         return;
-    self->nbr_tick++;
-    if (self->nbr_tick == 110 && self->inventory[RESOURCE_FOOD] <= 0)
+    self->nbr_tick += ticks;
+    if (self->nbr_tick >= 110 && self->inventory[RESOURCE_FOOD] <= 0)
         console_log(LOG_WARNING, "Player %d is getting hungry!", self->id);
     if (self->nbr_tick < 126)
         return;

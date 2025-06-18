@@ -12,6 +12,8 @@
 #include <array>
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Trantorian/Trantorian.hpp"
+#include "Game/Egg/Egg.hpp"
+#include "Tools/Define.hpp"
 
 namespace tools
 {
@@ -54,13 +56,13 @@ namespace tools
                     //Trantorian Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         // Animation Mapping
                         {
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
                         },
                         // Scaling to apply
-                        1.0f,
+                        TILE_SIZE * 2,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8
@@ -68,13 +70,13 @@ namespace tools
                     //Incantation Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Effects/Fire/Fire.png",
+                        "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
         
                         },
                         //Scaling to apply
-                        0.7f,
+                        TILE_SIZE,
                         //Rows en colonnes to cut texture for animation
                         7,
                         1
@@ -82,13 +84,13 @@ namespace tools
                     //Egg Asset
                     AssetDefinition(
                         //Model Path
-                        "gui/assets/Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         //Animation Mapping
                         {
-
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
                         },
                         //Scaling to Apply
-                        0.2f,
+                        TILE_SIZE * 1.2,
                         //Rows en colonnes to cut texture for animation
                         6,
                         8

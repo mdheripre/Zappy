@@ -24,6 +24,8 @@ namespace render
         virtual bool isClose() const = 0;
         virtual void pushEntity(std::shared_ptr<IRenderEntity> renderEntity) = 0;
         virtual void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>>) = 0;
+        virtual void setPositionView(int offsetX, int offsetY) = 0;
+        virtual void setZoomView(float factor) = 0;
         virtual IObjectFactory &getFactory() = 0;
         virtual void poll() = 0;
     };

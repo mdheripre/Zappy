@@ -1,4 +1,6 @@
+use crate::inventory::Inventory;
 use crate::{CoreError, Result};
+use regex::Regex;
 
 /// Possible responses from the server.
 ///
@@ -36,7 +38,7 @@ pub enum ServerResponse {
     Ko,
     Dead,
     Look(Vec<String>),
-    Inventory(Vec<String>),
+    Inventory(i32),
     Message(String),
     ClientNum(i32),
 }
@@ -48,12 +50,24 @@ impl ServerResponse {
             "ok" => ServerResponse::Ok,
             "ko" => ServerResponse::Ko,
             "dead" => ServerResponse::Dead,
-            s if s.starts_with("[") && s.ends_with("]") => {
+            s if s.starts_with("[") && s.ends_with("]") && !s.chars().any(|c| c.is_numeric()) => {
                 let items = s[1..s.len() - 1]
                     .split(',')
                     .map(|s| s.trim().to_string())
                     .collect();
                 ServerResponse::Look(items)
+            }
+            s if s.starts_with("[") && s.ends_with("]") && s.chars().any(|c| c.is_numeric()) => {
+                if let Ok(re) = Regex::new(r"food (\d+)") {
+                    if let Some(cap) = re.captures(s) {
+                        if let Some(mat) = cap.get(1) {
+                            if let Ok(food_value) = mat.as_str().parse() {
+                                return ServerResponse::Inventory(food_value);
+                            }
+                        }
+                    }
+                }
+                ServerResponse::Inventory(0)
             }
             s if s.starts_with("CLIENT-") => {
                 if let Ok(num) = s[7..].parse::<i32>() {

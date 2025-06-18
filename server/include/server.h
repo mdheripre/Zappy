@@ -13,6 +13,8 @@
     #include <stdlib.h>
     #include <errno.h>
     #include <string.h>
+    #include <limits.h>
+    #include <math.h>
     #include <unistd.h>
     #include <poll.h>
     #include <signal.h>
@@ -36,6 +38,7 @@ typedef struct server_s server_t;
 typedef struct response_payload_s response_payload_t;
 typedef struct command_manager_s command_manager_t;
 typedef struct client_s client_t;
+typedef struct tick_info_s tick_info_t;
 
 typedef struct server_methods_s {
     bool (*constructor)(server_t *self);
@@ -45,10 +48,11 @@ typedef struct server_methods_s {
     void (*handle_poll)(server_t *self, struct pollfd *fds);
     void (*accept_client)(server_t *self);
     void (*remove_client)(server_t *self, int index);
-    float (*get_command_delay)(server_t *self, const char *command);
+    int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
     client_t *(*get_gui)(server_t *self);
+    tick_info_t (*get_next_tick_info)(server_t *self);
 } server_methods_t;
 
 struct server_s {
@@ -60,6 +64,8 @@ struct server_s {
     game_t *game;
     dispatcher_t *dispatcher;
     command_manager_t *command_manager;
+    float accumulated_ms;
+    long last_tick_time;
     const server_methods_t *vtable;
 };
 
@@ -78,9 +84,10 @@ void accept_client(server_t *self);
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
-float get_command_delay(server_t *server, const char *command);
 void reject_client(server_t *server, client_t *client, const char *reason);
 client_t *server_get_gui(server_t *server);
+int get_command_delay(server_t *self, const char *command);
+tick_info_t get_next_tick_info(server_t *self);
 
 /* Event */
 void on_client_connected(void *ctx, void *event_data);

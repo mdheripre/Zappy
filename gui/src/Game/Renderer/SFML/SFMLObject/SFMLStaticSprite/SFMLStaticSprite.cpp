@@ -6,30 +6,34 @@
 */
 
 #include "SFMLStaticSprite.hpp"
+#include <iostream>
 
 namespace sfml
 {
 
-SFMLStaticSprite::SFMLStaticSprite(const sf::Texture& texture, float scale, std::shared_ptr<sf::RenderWindow> window)
+    SFMLStaticSprite::SFMLStaticSprite(const sf::Texture& texture, float pixelSize, std::shared_ptr<sf::RenderWindow> window)
     : _window(std::move(window))
 {
     _sprite.setTexture(texture);
     auto size = texture.getSize();
-    _sprite.setScale(sf::Vector2f(scale, scale));
+
+    float scaleFactor = pixelSize / static_cast<float>(std::max(size.x, size.y));
+    _sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
 }
 
-const tools::Vector2<float>& SFMLStaticSprite::getPosition() const
+tools::Vector2<float> SFMLStaticSprite::getPosition() const
 {
-    static tools::Vector2<float> pos;
+    tools::Vector2<float> pos;
     sf::Vector2f sfPos = _sprite.getPosition();
     pos.x = sfPos.x;
     pos.y = sfPos.y;
     return pos;
 }
 
-const tools::Vector2<float>& SFMLStaticSprite::getSize() const
+tools::Vector2<float> SFMLStaticSprite::getSize() const
 {
-    static tools::Vector2<float> size;
+    tools::Vector2<float> size;
+
     auto bounds = _sprite.getGlobalBounds();
     size.x = bounds.width;
     size.y = bounds.height;
@@ -44,8 +48,9 @@ void SFMLStaticSprite::setPosition(const tools::Vector2<float>& pos)
 
 void SFMLStaticSprite::drawObject() const
 {
-    if (_window && _window->isOpen())
+    if (_window && _window->isOpen()) {
         _window->draw(_sprite);
+    }
 }
 
 } // namespace sfml
