@@ -35,7 +35,7 @@ namespace gui {
         void pushRow(std::array<std::string, col> row);
         bool update(float dt);
         void draw() const;
-
+        void setCharaterSize(int size);
     private:
         tools::TextTableBuilder _builder;
         std::vector<std::array<std::string, col>> _rows;

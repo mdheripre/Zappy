@@ -157,7 +157,8 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
         tokens,
         static_cast<gui::Trantorian::Orientation>(orientation),
         lvl,
-        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset())
+        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset()),
+        _ui
     );
 
     std::shared_ptr<gui::TrantorianState> tranState = trantorian;

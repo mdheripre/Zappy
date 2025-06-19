@@ -31,6 +31,7 @@ namespace sfml
         render::IObjectFactory &getFactory();
         void setPositionView(int offsetX, int offsetY);
         void setZoomView(float factor);
+        void updateUI(float dt);
         void poll();
         void manageKeyCode(const sf::Event &event);
         const std::unordered_map<sf::Keyboard::Key, tools::KeyCode> _keyMap = {

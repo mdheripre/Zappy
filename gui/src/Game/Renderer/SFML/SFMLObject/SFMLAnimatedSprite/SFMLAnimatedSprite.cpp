@@ -129,8 +129,8 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
     auto copy = std::make_unique<SFMLAnimatedSprite>(
         *sprite.getTexture(),
         _ctx,
-        static_cast<int>(_frameWidth),
-        static_cast<int>(_frameHeight),
+        _columns,
+        _rows,
         sprite.getScale().x,
         _animationMap,
         _fps,
@@ -146,6 +146,12 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
 bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
 {
     return sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
+void SFMLAnimatedSprite::setColor(const tools::Color &color)
+{
+    sprite.setColor({color.r, color.g, color.b, color.a});
+
 }
 
 } // namespace sfml

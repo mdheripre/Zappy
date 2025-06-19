@@ -85,7 +85,7 @@ int sfml::SFMLText::estimateMaxCharsPerLine(float width) const
 
 float sfml::SFMLText::getLineHeight() const
 {
-    return static_cast<float>(_sfText.getCharacterSize()) * 1.2f;
+    return static_cast<float>(_sfText.getCharacterSize()) * 1.3f;
 }
 
 bool sfml::SFMLText::contains(tools::Vector2<float> position)
@@ -93,3 +93,7 @@ bool sfml::SFMLText::contains(tools::Vector2<float> position)
     return _sfText.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+void sfml::SFMLText::setColor(const tools::Color &color)
+{
+    _sfText.setFillColor({color.r, color.g, color.b, color.a});
+}

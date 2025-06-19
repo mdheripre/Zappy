@@ -14,7 +14,9 @@ gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory) :
         factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
         factory.createRectangle(),
         std::array<std::string, 5> {"Name", "Players", "High", "Level 8", "Eggs"}
-    ) {}
+    ) {
+        setCharaterSize(30);
+    }
 
 std::array<std::string, 5> gui::TeamDisplayer::buildTeamRow(const std::string &teamName, const state::GameState &gm)
 {

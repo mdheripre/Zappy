@@ -36,8 +36,6 @@ void sfml::SFMLRenderer::update(float dt)
         std::remove_if(_entities.begin(), _entities.end(), shouldRemove),
         _entities.end()
     );
-    if (_ui)
-        _ui->update(dt);
 }
 
 /**
@@ -96,6 +94,12 @@ void sfml::SFMLRenderer::setZoomView(float factor)
     _rWindow->setView(view);
 }
 
+void sfml::SFMLRenderer::updateUI(float dt)
+{
+    if (_ui)
+        _ui->update(dt);
+}
+
 void sfml::SFMLRenderer::poll()
 {
     sf::Event event;
@@ -128,19 +132,22 @@ void sfml::SFMLRenderer::handleMouseInteraction()
     tools::Vector2<float> mouse(worldPos.x, worldPos.y);
 
     bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-    bool foundSelected = false;
+    bool hoverHandled = false;
 
     for (auto it = _entities.rbegin(); it != _entities.rend(); ++it) {
         auto* interactive = dynamic_cast<render::AInteractiveEntity*>(it->get());
         if (!interactive)
             continue;
-        interactive->computeHover(mouse);
-        bool shouldReceiveClick = false;
-        if (!foundSelected && interactive->isMouseOver(mouse)) {
-            shouldReceiveClick = true;
-            foundSelected = true;
+
+        if (!hoverHandled && interactive->isMouseOver(mouse)) {
+            interactive->computeHover(mouse);
+            interactive->processClick(mousePressed, true);
+            hoverHandled = true;
+        } else {
+            interactive->computeHover({-9999.f, -9999.f});
+            interactive->processClick(mousePressed, false);
         }
-        interactive->processClick(mousePressed, shouldReceiveClick);
     }
 }
+
 

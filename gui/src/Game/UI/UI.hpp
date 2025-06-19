@@ -30,7 +30,7 @@ namespace gui
             void addNewEvent(const std::string &event);
             void addNewMessage(const std::string &message);
             void updateTimeUnit(const float timeUnit, const float elasped);
-            void setTrantInfo(const Trantorian & trant);
+            void setTrantInfo(const std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual);
             bool update(float dt);
             void draw() const;
         private:

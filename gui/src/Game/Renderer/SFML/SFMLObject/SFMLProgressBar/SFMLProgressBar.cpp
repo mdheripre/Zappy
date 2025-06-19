@@ -59,3 +59,32 @@ bool sfml::SFMLProgressBar::contains(tools::Vector2<float> position)
 {
     return _background.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
+
+void sfml::SFMLProgressBar::setColor(const tools::Color &color)
+{
+    auto luminance = [](const tools::Color& c) -> float {
+        return 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+    };
+    
+    sf::Color baseColor(color.r, color.g, color.b, color.a);
+    sf::Color contrastColor;
+    
+    if (luminance(color) > 200.f) {
+        contrastColor = sf::Color(
+            std::max(0, color.r - 60),
+            std::max(0, color.g - 60),
+            std::max(0, color.b - 60),
+            color.a
+        );
+    } else {
+        contrastColor = sf::Color(
+            std::min(255, color.r + 60),
+            std::min(255, color.g + 60),
+            std::min(255, color.b + 60),
+            color.a
+        );
+    }
+    
+    _background.setFillColor(contrastColor);
+    _bar.setFillColor(baseColor);
+}

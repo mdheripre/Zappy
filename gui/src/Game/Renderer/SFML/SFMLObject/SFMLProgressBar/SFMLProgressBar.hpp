@@ -24,6 +24,8 @@ namespace sfml {
         tools::Vector2<float> getPosition() const override;
         tools::Vector2<float> getSize() const override;
         void drawObject() const override;
+        void setColor(const tools::Color &color);
+        bool contains(tools::Vector2<float> position);
     private:
         float _min;
         float _max;
@@ -34,6 +36,5 @@ namespace sfml {
         sf::RectangleShape _bar;
         std::shared_ptr<sf::RenderWindow> _rWindow;
         void updateBar();
-        bool contains(tools::Vector2<float> position);
     };
 }

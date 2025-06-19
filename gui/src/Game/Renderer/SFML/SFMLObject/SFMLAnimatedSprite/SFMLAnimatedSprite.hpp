@@ -36,6 +36,7 @@ namespace sfml
             void drawObject() const;
             std::unique_ptr<IAnimatedSprite> clone() const;
             bool contains(tools::Vector2<float> position);
+            void setColor(const tools::Color &color);
         private:
             std::unordered_map<int, int> _animationMap;
             sf::Sprite sprite;

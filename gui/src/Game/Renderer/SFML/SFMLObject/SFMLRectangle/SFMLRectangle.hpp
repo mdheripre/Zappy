@@ -24,6 +24,7 @@ namespace sfml
             void setPosition(const tools::Vector2<float> &pos);
             void drawObject() const;
             bool contains(tools::Vector2<float> position);
+            void setColor(const tools::Color &color);
         private:
             sf::RectangleShape _rect;
             std::shared_ptr<sf::RenderWindow> _rWindow;

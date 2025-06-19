@@ -20,6 +20,7 @@ namespace render
         virtual ~IRenderer() = default;
         virtual void init(std::string title, int width, int height, int frameRate) = 0;
         virtual void update(float dt) = 0;
+        virtual void updateUI(float dt) = 0;
         virtual void render() = 0;
         virtual bool isClose() const = 0;
         virtual void pushEntity(std::shared_ptr<IRenderEntity> renderEntity) = 0;

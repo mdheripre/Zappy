@@ -117,10 +117,6 @@ bool gui::Trantorian::update(float dt)
  *
  * @param pos New map position (grid coordinates).
  */
-std::unique_ptr<render::IAnimatedSprite> gui::Trantorian::getVisual() const
-{
-    return _trantorianObject->clone();
-}
 
 void gui::Trantorian::setPosition(tools::Vector2<int> pos)
 {
@@ -135,11 +131,15 @@ void gui::Trantorian::setPosition(tools::Vector2<int> pos)
 
 void gui::Trantorian::onHoverEnter()
 {
-    _trantorianObject->setSize(tools::Vector2<float>(100, 100));
+    _trantorianObject->setColor(tools::Color(255, 255, 180, 255));
 }
 
 void gui::Trantorian::onHoverExit()
 {
-    _trantorianObject->setSize(tools::Vector2<float>(50, 50));
+    _trantorianObject->setColor(tools::Color(255, 255, 255, 255));
+}
 
+void gui::Trantorian::onClick()
+{
+    _uiController->setTrantInfo(shared_from_this(), _trantorianObject->clone());
 }

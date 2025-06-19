@@ -60,4 +60,10 @@ namespace gui {
         UIBox::draw();
     }
 
+    template <int col>
+    void TableDisplayer<col>::setCharaterSize(int size)
+    {
+        _textDisplayer->setCharacterSize(size);
+    }
+
 } // namespace gui

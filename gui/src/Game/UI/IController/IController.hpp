@@ -9,8 +9,8 @@
 #include <memory>
 
 namespace gui {
-    class Trantorian;
-    class Egg;
+    class TrantorianState;
+    class EggState;
     class Tile;
 }
 namespace gui
@@ -18,7 +18,7 @@ namespace gui
     class ITrantorianUI {
     public:
         virtual ~ITrantorianUI() = default;
-        virtual void setTrantInfo(const Trantorian & trant) = 0;
+        virtual void setTrantInfo(std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual) = 0;
     };
     
 /*     class IEggUI {

@@ -21,6 +21,8 @@ gui::UI::UI(render::IObjectFactory &factory)
 bool gui::UI::update(float dt)
 {
     _teamDisplayer->update(dt);
+    if (_trantInfo->isVisible())
+        _trantInfo->update(dt);
     return true;
 }
 
@@ -54,8 +56,8 @@ void gui::UI::updateTimeUnit(const float timeUnit, const float elasped)
     _TUDisplayer->setValues(timeUnit, elasped);
 }
 
-void gui::UI::setTrantInfo(const Trantorian &trant)
+void gui::UI::setTrantInfo(const std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual)
 {
     _trantInfo->setVisible(true);
-    _trantInfo->updateTrantorianInfo(trant);
+    _trantInfo->updateTrantorianInfo(trantState, std::move(visual));
 }

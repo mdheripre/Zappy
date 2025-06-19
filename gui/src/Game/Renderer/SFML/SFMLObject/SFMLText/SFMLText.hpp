@@ -28,7 +28,7 @@ namespace sfml
             int estimateMaxCharsPerLine(float width) const;
             float getLineHeight() const;
             bool contains(tools::Vector2<float> position);
-
+            void setColor(const tools::Color &color);
         private:
             std::string _rawText;
             sf::Text _sfText;

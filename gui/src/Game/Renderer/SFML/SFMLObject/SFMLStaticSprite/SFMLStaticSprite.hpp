@@ -26,7 +26,7 @@ namespace sfml
         void setSize(const tools::Vector2<float> &size);
         void drawObject() const override;
         bool contains(tools::Vector2<float> position);
-
+        void setColor(const tools::Color &color);
     private:
         std::shared_ptr<sf::RenderWindow> _window;
         sf::Sprite _sprite;

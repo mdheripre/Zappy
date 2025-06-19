@@ -75,4 +75,10 @@ bool SFMLStaticSprite::contains(tools::Vector2<float> position)
     return _sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+void SFMLStaticSprite::setColor(const tools::Color &color)
+{
+    _sprite.setColor({color.r, color.g, color.b, color.a});
+
+}
+
 } // namespace sfml

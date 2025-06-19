@@ -12,6 +12,7 @@
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Renderer/Entity/AInteractiveEntity.hpp"
+#include "Game/UI/IController/IController.hpp"
 #include "Game/Map/Tile/Tile.hpp"
 #include "Game/Egg/Egg.hpp"
 #include <string>
@@ -28,7 +29,7 @@ namespace gui {
                 SOUTH = 3,
                 WEST = 4
             };
-        
+        const std::array<std::string, 4> _orientationString = {"NORTH", "EAST", "SOUTH", "WEST"};
             TrantorianState(int id,
                 tools::Vector2<int>  pos,
                 const std::string& teamName,
@@ -40,6 +41,7 @@ namespace gui {
             Orientation getOrientation() const { return _orientation; }
             int getLevel() const { return _level; }
             const std::array<int, 7>& getInventory() const { return _inventory; }
+            std::string orientationToString(Orientation O) {return _orientationString[static_cast<int>(0)];};
             virtual void setOrientation(Orientation ori) = 0;
             virtual void addToInventory(gui::Tile::Resource res) = 0;
             virtual void setLevel(int lvl) = 0;
@@ -52,7 +54,6 @@ namespace gui {
             virtual void startIncantation() = 0;
             virtual void incantationFailed() = 0;
             virtual void incantationSucced() = 0;
-        
         protected:
             Orientation _orientation;
             int _level;
@@ -61,7 +62,8 @@ namespace gui {
         
         class Trantorian : public TrantorianState,
             public render::IRenderEntity,
-            public render::AInteractiveEntity {
+            public render::AInteractiveEntity,
+            public std::enable_shared_from_this<Trantorian> {
             public:
                 enum class TrantorianAnimation {
                     IDLE,
@@ -76,14 +78,18 @@ namespace gui {
                            const std::string& teamName,
                            Orientation orientation = Orientation::NORTH,
                            int level = 1,
-                           std::unique_ptr<render::IAnimatedSprite> trantorianObject = nullptr)
-                    : TrantorianState(id, pos, teamName, orientation), _trantorianObject(std::move(trantorianObject)) {
+                           std::unique_ptr<render::IAnimatedSprite> trantorianObject = nullptr,
+                           std::shared_ptr<ITrantorianUI> uiController = nullptr)
+                    : TrantorianState(id, pos, teamName, orientation),
+                    _trantorianObject(std::move(trantorianObject)),
+                    _uiController(uiController) {
                     _level = level;
                     setPosition(pos);
                 }
                 ~Trantorian() override = default;
-                std::unique_ptr<render::IAnimatedSprite> getVisual() const;
             private:
+                bool _isTagged = false;
+                std::shared_ptr<ITrantorianUI> _uiController;
                 std::unique_ptr<render::IAnimatedSprite> _trantorianObject;
                 void setDead() override { _alive = false; }
                 void setPosition(tools::Vector2<int>  pos) override;
@@ -104,5 +110,6 @@ namespace gui {
                 bool isMouseOver(const tools::Vector2<float>& mousePosition) const;
                 void onHoverEnter() override;
                 void onHoverExit() override;
+                void onClick();
             };         
 } // namespace game

@@ -70,8 +70,8 @@ void game::Game::gameLoop()
     while (!_renderer->isClose()) {
         auto currentTime = clock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
-        float dt = elapsed.count() * static_cast<float>(_gm.time_unit);
-        acc += dt;
+        float dt = elapsed.count();
+        acc += dt * static_cast<float>(_gm.time_unit);
         _ui->updateTimeUnit(_gm.time_unit, acc);
         lastTime = currentTime;
         try {
@@ -82,7 +82,8 @@ void game::Game::gameLoop()
                 }
             }
             _renderer->poll();
-            _renderer->update(dt);
+            _renderer->update(dt * static_cast<float>(_gm.time_unit));
+            _renderer->updateUI(dt);
             if (_gm.map)
                 _renderer->render();
         } catch (const Error& e) {

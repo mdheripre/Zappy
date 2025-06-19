@@ -49,4 +49,9 @@ bool SFMLRectangle::contains(tools::Vector2<float> position)
     return _rect.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+void SFMLRectangle::setColor(const tools::Color &color)
+{
+    _rect.setFillColor({color.r, color.g, color.b, color.a});
+
+}
 } // namespace sfml

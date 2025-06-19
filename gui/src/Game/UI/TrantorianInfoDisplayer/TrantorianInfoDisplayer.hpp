@@ -21,8 +21,9 @@ namespace gui
             ~TrantorianInfoDisplayer() = default;
             bool update(float dt);
             void draw() const;
-            void updateTrantorianInfo(const Trantorian &trant);
+            void updateTrantorianInfo(std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual);
         private:
+            std::shared_ptr<gui::TrantorianState> _trantState;
             std::unique_ptr<TableDisplayer<2>> _inventory;
             std::unique_ptr<TableDisplayer<2>> _info;
             std::unique_ptr<render::IText> _currentAction;
