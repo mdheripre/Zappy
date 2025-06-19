@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** plv.c
+** pin.c
 */
 
 /****************************************************************************/
@@ -12,13 +12,14 @@
 /****************************************************************************/
 
 #include "client.h"
-#include "command_manager.h"
+#include "game.h"
 #include "server.h"
 #include "utils.h"
+#include <stdbool.h>
 #include <stdio.h>
 
 /**
-* @brief Handles the error checking for the PLV command.
+* @brief Handles the error checking for the PIN command.
 * @param args_line The line containing the command arguments.
 * @param arg Buffer to store the extracted argument.
 * @param client_num Pointer to store the player number.
@@ -32,7 +33,7 @@ static bool error_handling(char *args_line, char *arg, int *client_num,
         args_line, BUFFER_COMMAND_SIZE))
         return false;
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
-        console_log(LOG_WARNING, "PLV: Missing parameter");
+        console_log(LOG_WARNING, "PIN: Missing parameter");
         // emit error arg
         return false;
     }
@@ -45,15 +46,39 @@ static bool error_handling(char *args_line, char *arg, int *client_num,
 }
 
 /**
- * @brief Handles the PLV command from a GUI client.
+ * @brief Sends the player's inventory to the GUI client.
  *
- * Retrieves the player's level and sends it to the GUI client
- * in the format: "plv #<player_id> <level>\n".
+ * Formats and sends the player's inventory in the format:
+ * "pin #<player_id> <x> <y> <food> <linemate> <deraumere> <sibur>
+ * <mendiane> <phiras> <thystame>\n".
+ *
+ * @param client Pointer to the GUI client.
+ * @param player Pointer to the player whose inventory is being sent.
+ */
+static void pin_send_inventory(client_t *client, player_t *player)
+{
+    dprintf(client->fd, "pin #%d %d %d %d %d %d %d %d %d %d\n",
+        player->id, player->x, player->y,
+        player->inventory[RESOURCE_FOOD],
+        player->inventory[RESOURCE_LINEMATE],
+        player->inventory[RESOURCE_DERAUMERE],
+        player->inventory[RESOURCE_SIBUR],
+        player->inventory[RESOURCE_MENDIANE],
+        player->inventory[RESOURCE_PHIRAS],
+        player->inventory[RESOURCE_THYSTAME]);
+}
+
+/**
+ * @brief Handles the PIN command from a GUI client.
+ *
+ * Retrieves the player's inventory and sends it to the GUI client
+ * in the format: "pin #<player_id> <x> <y> <food> <linemate> <deraumere>
+ * <sibur> <mendiane> <phiras> <thystame>\n".
  *
  * @param ctx Pointer to the server instance (cast from void).
  * @param data Pointer to the requesting GUI client (cast from void).
  */
-void handle_command_gui_plv(void *ctx, void *data)
+void handle_command_gui_pin(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
@@ -62,43 +87,36 @@ void handle_command_gui_plv(void *ctx, void *data)
     char arg[BUFFER_SIZE] = {0};
     int client_num = -1;
 
-    if (!server || !client)
+    if (!client || !client)
         return;
     if (!error_handling(args_line, arg, &client_num, client))
         return;
     player = find_player_by_id(server->game, client_num);
     if (!player) {
-        console_log(LOG_WARNING, "PLV: Player %d not found", client_num);
-        // emit error player not found
+        console_log(LOG_WARNING, "PIN: Player %d not found", client_num);
+        // emit error arg
         return;
     }
-    dprintf(client->fd, "plv #%d %d\n", player->id, player->level);
+    pin_send_inventory(client, player);
 }
 
 /**
- * @brief Handles the PLV command from a GUI client.
+ * @brief Handles the PIN command for a GUI client.
  *
- * Retrieves the player's level and sends it to the GUI client
- * in the format: "plv #<player_id> <level>\n".
+ * Retrieves the player's inventory and sends it to the GUI client
+ * in the format: "pin #<player_id> <x> <y> <food> <linemate> <deraumere>
+ * <sibur> <mendiane> <phiras> <thystame>\n".
  *
  * @param ctx Pointer to the server instance (cast from void).
- * @param data Pointer to the player ID (cast from void).
+ * @param data Pointer to the player whose inventory is being requested.
  */
-void handle_gui_plv(void *ctx, void *data)
+void handle_gui_pin(void *ctx, void *data)
 {
     server_t *server = ctx;
-    client_t *gui_client = NULL;
-    char command[BUFFER_COMMAND_SIZE] = {0};
+    player_t *player = data;
+    client_t *client = get_gui_client(server);
 
-    if (!server || !data)
+    if (!client || !player)
         return;
-    gui_client = server->vtable->get_gui(server);
-    if (!gui_client)
-        return;
-    snprintf(command, BUFFER_COMMAND_SIZE, "plv #%d", *(int *)data);
-    command[BUFFER_COMMAND_SIZE - 1] = '\0';
-    if (!client_enqueue_front_command(gui_client, command, 0.f))
-        return;
-    handle_command_gui_plv(server, gui_client);
-    client_dequeue_command(gui_client, NULL);
+    pin_send_inventory(client, player);
 }

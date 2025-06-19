@@ -15,6 +15,13 @@
 /*                                                                          */
 /****************************************************************************/
 
+static void emit_drop(response_payload_t *payload, server_t *server,
+    client_t *client)
+{
+    EMIT(server->dispatcher, "send_response", payload);
+    EMIT(server->command_manager->dispatcher, "gui_pin", client);
+}
+
 void on_response_drop(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -35,5 +42,5 @@ void on_response_drop(void *ctx, void *data)
         free(payload);
         return;
     }
-    EMIT(server->dispatcher, "send_response", payload);
+    emit_drop(payload, server, client);
 }

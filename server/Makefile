@@ -111,6 +111,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pnw.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/ppo.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/plv.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/pin.c \
 	$(SRC_CMD_MANAGER_PARSER)/get_player_number.c \
 	$(SRC_CMD_MANAGER_PARSER_HELPERS)/is_num.c \
 	$(SRC_CMD_MANAGER_EVENTS)/not_found.c \

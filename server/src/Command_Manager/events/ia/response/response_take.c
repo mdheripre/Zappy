@@ -5,6 +5,7 @@
 ** response_take
 */
 
+#include "client.h"
 #include "game.h"
 #include "server.h"
 #include "utils.h"
@@ -14,6 +15,21 @@
 /*                        RESPONSE COMMAND                                  */
 /*                                                                          */
 /****************************************************************************/
+
+/** * @brief Emit the take response to the client.
+ *
+ * Sends the response payload to the client and updates the GUI pin.
+ *
+ * @param payload Pointer to the response payload containing client and message.
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client receiving the response.
+ */
+static void emit_take(response_payload_t *payload, server_t *server,
+    client_t *client)
+{
+    EMIT(server->dispatcher, "send_response", payload);
+    EMIT(server->command_manager->dispatcher, "gui_pin", client);
+}
 
 /**
  * @brief Handle the response to a take command.
@@ -44,5 +60,5 @@ void on_response_take(void *ctx, void *data)
         free(payload);
         return;
     }
-    EMIT(server->dispatcher, "send_response", payload);
+    emit_take(payload, server, client);
 }
