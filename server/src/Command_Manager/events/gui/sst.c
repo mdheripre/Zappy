@@ -69,14 +69,14 @@ void handle_command_gui_sst(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
-    char args_line[BUFFER_COMMAND_SIZE] = {0};
+    char args_line[CLIENT_BUFFER_SIZE] = {0};
     char arg[BUFFER_SIZE] = {0};
     int num = 0;
 
     if (!server || !client)
         return;
     if (!extract_command_arguments(client_peek_command(client)->content,
-        args_line, BUFFER_COMMAND_SIZE)
+        args_line, CLIENT_BUFFER_SIZE)
         || error_handling(args_line, arg, server, &num))
         return;
     server->game->frequency = num;

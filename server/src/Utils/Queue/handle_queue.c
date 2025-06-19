@@ -38,8 +38,8 @@ bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     if (!entry)
         return false;
     memset(entry, 0, sizeof(queued_command_t));
-    strncpy(entry->content, cmd, BUFFER_COMMAND_SIZE - 1);
-    entry->content[BUFFER_COMMAND_SIZE - 1] = '\0';
+    strncpy(entry->content, cmd, CLIENT_BUFFER_SIZE - 1);
+    entry->content[CLIENT_BUFFER_SIZE - 1] = '\0';
     entry->ticks_remaining = ticks;
     entry->last_tick_checked = (ticks > 0) ? game->tick_counter + 1 :
         game->tick_counter;
@@ -73,8 +73,8 @@ bool client_enqueue_front_command(client_t *client, const char *cmd,
     if (!entry)
         return false;
     memset(entry, 0, sizeof(queued_command_t));
-    strncpy(entry->content, cmd, BUFFER_COMMAND_SIZE - 1);
-    entry->content[BUFFER_COMMAND_SIZE - 1] = '\0';
+    strncpy(entry->content, cmd, CLIENT_BUFFER_SIZE - 1);
+    entry->content[CLIENT_BUFFER_SIZE - 1] = '\0';
     entry->ticks_remaining = delay;
     client->commands->methods->push_front(client->commands, entry);
     return true;
