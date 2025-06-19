@@ -10,6 +10,7 @@
 #include "dispatcher.h"
 #include "shared.h"
 
+#include <fcntl.h>
 
 /****************************************************************************/
 /*                                                                          */
@@ -17,22 +18,40 @@
 /*                                                                          */
 /****************************************************************************/
 
+
 /**
- * @brief Accepts a new client connection.
+ * @brief Sets the given file descriptor to non-blocking mode.
  *
- * This function accepts a new client connection on the server's socket.
- * It retrieves the client's address and returns the file descriptor for
- * the accepted socket.
+ * @param fd The file descriptor to modify.
+ */
+static void set_nonblocking(int fd)
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+
+    if (flags == -1)
+        return;
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+
+/**
+ * @brief Accepts a new client connection on the server socket.
  *
- * @param self Pointer to the server instance.
- * @return The file descriptor for the accepted client socket, or -1 on error.
+ * This function accepts an incoming connection, sets the new socket
+ * to non-blocking mode, and returns its file descriptor.
+ *
+ * @param self Pointer to the server structure.
+ * @return File descriptor of the accepted client, or -1 on error.
  */
 static int accept_fd(server_t *self)
 {
     struct sockaddr_in client_addr;
     socklen_t addr_len = sizeof(client_addr);
+    int fd = accept(self->socket_fd, (struct sockaddr *)&client_addr,
+        &addr_len);
 
-    return accept(self->socket_fd, (struct sockaddr *)&client_addr, &addr_len);
+    if (fd >= 0)
+        set_nonblocking(fd);
+    return fd;
 }
 
 /**

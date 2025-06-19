@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
 ** File description:
-** response_egg_laid
+** seg
 */
 
 #include "game.h"
@@ -11,20 +11,21 @@
 
 /****************************************************************************/
 /*                                                                          */
-/*                        RESPONSE COMMAND                                  */
+/*                            GUI COMMANDS                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void on_response_egg_laid(void *ctx, void *data)
+void handle_gui_seg(void *ctx, void *)
 {
     server_t *server = ctx;
-    game_event_t *event = data;
-    player_t *player = find_player_by_id(server->game,
-        event->data.egg.player_id);
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *gui = server->vtable->get_gui(server);
+    char *winner = server->game->methods->get_winner(server->game);
 
-    if (!server || !event || !client)
+    if (!gui)
         return;
-    dprintf(client->fd, "ok\n");
-    EMIT(server->command_manager->dispatcher, "gui_enw", event);
+    if (winner)
+        dprintf(gui->fd, "seg %s\n", winner);
+    else
+        dprintf(gui->fd, "seg NULL\n");
+    free(winner);
 }

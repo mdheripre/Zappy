@@ -64,6 +64,22 @@ void handle_gui_pin(void *ctx, void *data);
 void handle_gui_plv(void *ctx, void *data);
 void handle_gui_ppo(void *ctx, void *data);
 void handle_gui_pnw(void *ctx, void *data);
+void handle_gui_suc(void *ctx, void *);
+void handle_gui_sbp(void *ctx, void *);
+void handle_gui_enw(void *ctx, void *data);
+void handle_gui_smg(void *ctx, void *data);
+void handle_gui_ebo(void *ctx, void *data);
+void handle_gui_pex(void *ctx, void *data);
+void handle_gui_pbc(void *ctx, void *data);
+void handle_gui_pdi(void *ctx, void *data);
+void handle_gui_edi(void *ctx, void *data);
+void handle_gui_pdr(void *ctx, void *data);
+void handle_gui_pgt(void *ctx, void *data);
+void handle_gui_seg(void *ctx, void *);
+void handle_gui_pfk(void *ctx, void *data);
+void handle_gui_pic(void *ctx, void *data);
+void handle_gui_pie(void *ctx, void *data);
+
 
 /* Responses */
 void on_response_player_moved(void *ctx, void *data);

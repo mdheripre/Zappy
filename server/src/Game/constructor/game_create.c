@@ -30,7 +30,8 @@ static const game_methods_t GAME_METHODS = {
     .update_incantations = update_incantations,
     .check_incantate = check_incantate,
     .get_players_on_tile = get_players_on_tile,
-    .has_finished = has_finished
+    .has_finished = has_finished,
+    .get_winner = get_winner
 };
 
 /**

@@ -23,23 +23,20 @@
 * @param args_line The line containing the command arguments.
 * @param arg Buffer to store the extracted argument.
 * @param client_num Pointer to store the player number.
-* @param client Pointer to the client issuing the command.
+* @param server Pointer to the server structure.
 * @return true if no errors, false if an error occurred.
 */
 static bool error_handling(char *args_line, char *arg, int *client_num,
-    client_t *client)
+    server_t *server)
 {
-    if (!extract_command_arguments(client_peek_command(client)->content,
-        args_line, BUFFER_COMMAND_SIZE))
-        return false;
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "PIN: Missing parameter");
-        // emit error arg
+        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
         return false;
     }
     *client_num = get_player_number(arg);
     if (*client_num < 0) {
-        // emit error arg
+        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
         return false;
     }
     return true;
@@ -89,12 +86,14 @@ void handle_command_gui_pin(void *ctx, void *data)
 
     if (!client || !client)
         return;
-    if (!error_handling(args_line, arg, &client_num, client))
+    if (!extract_command_arguments(client_peek_command(client)->content,
+        args_line, BUFFER_COMMAND_SIZE)
+        || !error_handling(args_line, arg, &client_num, server))
         return;
     player = find_player_by_id(server->game, client_num);
     if (!player) {
         console_log(LOG_WARNING, "PIN: Player %d not found", client_num);
-        // emit error arg
+        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
         return;
     }
     pin_send_inventory(client, player);
@@ -114,9 +113,12 @@ void handle_gui_pin(void *ctx, void *data)
 {
     server_t *server = ctx;
     player_t *player = data;
-    client_t *client = get_gui_client(server);
+    client_t *client = NULL;
 
-    if (!client || !player)
+    if (!server || !player)
+        return;
+    client = server->vtable->get_gui(server);
+    if (!client)
         return;
     pin_send_inventory(client, player);
 }

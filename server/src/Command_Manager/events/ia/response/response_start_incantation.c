@@ -86,4 +86,5 @@ void on_response_start_incantation(void *ctx, void *data)
         return;
     }
     notify_participants_elevation(server, participants);
+    EMIT(server->command_manager->dispatcher, "gui_pic", event);
 }

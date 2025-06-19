@@ -37,6 +37,7 @@ static void init_player_from_egg(server_t *server, client_t *client,
         return;
     server->game->players->methods->push_back(server->game->players,
         client->player);
+    EMIT(server->command_manager->dispatcher, "gui_ebo", egg);
     if (egg)
         free(egg);
 }

@@ -10,6 +10,12 @@
 #include "utils.h"
 #include "player.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                            METHODS GAME                                  */
+/*                                                                          */
+/****************************************************************************/
+
 list_t *get_players_on_tile(game_t *game, int x, int y, int level)
 {
     list_t *participants = NEW(list, NULL);

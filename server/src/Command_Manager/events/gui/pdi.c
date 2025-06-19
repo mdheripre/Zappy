@@ -1,26 +1,28 @@
 /*
 ** EPITECH PROJECT, 2025
-** server
+** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
 ** File description:
-** response_egg_die
+** pdi
 */
 
-#include "game.h"
+#include "command_manager.h"
+#include "shared.h"
 #include "server.h"
-#include "utils.h"
+#include "client.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                        RESPONSE COMMAND                                  */
+/*                            GUI COMMANDS                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void on_response_egg_die(void *ctx, void *data)
+void handle_gui_pdi(void *ctx, void *data)
 {
     server_t *server = ctx;
-    game_event_t *event = data;
+    player_t *player = data;
+    client_t *gui = server->vtable->get_gui(server);
 
-    if (!server || !event)
+    if (!server || !player || !gui)
         return;
-    EMIT(server->command_manager->dispatcher, "gui_edi", event);
+    dprintf(gui->fd, "pdi #%d\n", player->id);
 }

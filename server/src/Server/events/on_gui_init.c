@@ -14,6 +14,39 @@
 /****************************************************************************/
 
 /**
+ * @brief Emits GUI egg events for all eggs in the game.
+ *
+ * Iterates through the list of eggs and emits a GUI event for each,
+ * informing the GUI about existing eggs.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the GUI client.
+ */
+static void emit_gui_egg_events(server_t *server)
+{
+    egg_t *egg = NULL;
+    game_event_t *event = NULL;
+
+    for (list_node_t *node = server->game->eggs->head; node;
+        node = node->next) {
+        egg = node->data;
+        if (!egg)
+            continue;
+        event = malloc(sizeof(game_event_t));
+        if (!event)
+            continue;
+        event->type = GAME_EVENT_RESPONSE_EGG_LAID;
+        event->data.egg.egg_id = egg->id;
+        event->data.egg.player_id = egg->player_id;
+        event->data.egg.x = egg->x;
+        event->data.egg.y = egg->y;
+        event->data.egg.team_name = egg->team_name;
+        EMIT(server->command_manager->dispatcher, "gui_enw", event);
+        free(event);
+    }
+}
+
+/**
  * @brief Initializes a GUI client after connection.
  *
  * Sets the client type to GUI, clears its player pointer, and emits
@@ -37,4 +70,6 @@ void on_gui_init(void *ctx, void *data)
     EMIT(server->command_manager->dispatcher, "command_gui_msz", client);
     EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);
     EMIT(server->command_manager->dispatcher, "command_gui_mct", client);
+    EMIT(server->command_manager->dispatcher, "command_gui_tna", client);
+    emit_gui_egg_events(server);
 }

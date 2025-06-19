@@ -20,6 +20,37 @@
  * @param self Pointer to the command manager.
  * @param server Pointer to the server instance.
  */
+static void register_gui_internal_command(command_manager_t *self,
+    server_t *server)
+{
+    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
+    REGISTER(self->dispatcher, "gui_suc", handle_gui_suc, server);
+    REGISTER(self->dispatcher, "gui_sbp", handle_gui_sbp, server);
+    REGISTER(self->dispatcher, "gui_enw", handle_gui_enw, server);
+    REGISTER(self->dispatcher, "gui_smg", handle_gui_smg, server);
+    REGISTER(self->dispatcher, "gui_ebo", handle_gui_ebo, server);
+    REGISTER(self->dispatcher, "gui_pex", handle_gui_pex, server);
+    REGISTER(self->dispatcher, "gui_pbc", handle_gui_pbc, server);
+    REGISTER(self->dispatcher, "gui_pdi", handle_gui_pdi, server);
+    REGISTER(self->dispatcher, "gui_edi", handle_gui_edi, server);
+    REGISTER(self->dispatcher, "gui_pdr", handle_gui_pdr, server);
+    REGISTER(self->dispatcher, "gui_pgt", handle_gui_pgt, server);
+    REGISTER(self->dispatcher, "gui_seg", handle_gui_seg, server);
+    REGISTER(self->dispatcher, "gui_pfk", handle_gui_pfk, server);
+    REGISTER(self->dispatcher, "gui_pic", handle_gui_pic, server);
+    REGISTER(self->dispatcher, "gui_pie", handle_gui_pie, server);
+    REGISTER(self->dispatcher, "gui_pin", handle_gui_pin, server);
+    REGISTER(self->dispatcher, "gui_plv", handle_gui_plv, server);
+    REGISTER(self->dispatcher, "gui_ppo", handle_gui_ppo, server);
+    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
+}
+
+/**
+ * @brief Register GUI commands to the dispatcher.
+ *
+ * @param self Pointer to the command manager.
+ * @param server Pointer to the server instance.
+ */
 static void register_gui_command(command_manager_t *self, server_t *server)
 {
     REGISTER(self->dispatcher, "command_gui_msz", handle_command_gui_msz,
@@ -38,10 +69,7 @@ static void register_gui_command(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_pin", handle_command_gui_pin,
         server);
-    REGISTER(self->dispatcher, "gui_pin", handle_gui_pin, server);
-    REGISTER(self->dispatcher, "gui_plv", handle_gui_plv, server);
-    REGISTER(self->dispatcher, "gui_ppo", handle_gui_ppo, server);
-    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
+    register_gui_internal_command(self, server);
 }
 
 /****************************************************************************/
@@ -122,6 +150,8 @@ static void register_process_response_extend(command_manager_t *self,
         on_response_drop, server);
     REGISTER(self->dispatcher, "RESPONSE_TAKE",
         on_response_take, server);
+    REGISTER(self->dispatcher, "RESPONSE_BROADCAST_TO_GUI",
+        handle_gui_pbc, server);
 }
 
 /**

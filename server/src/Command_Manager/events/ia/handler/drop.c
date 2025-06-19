@@ -15,14 +15,28 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Extract the item name from the client's command.
- *
- * @param client Pointer to the client.
- * @param item Buffer to store the extracted item name.
- * @param item_size Size of the item buffer.
- * @return true if extraction succeeded, false otherwise.
- */
+
+static const char *RESOURCE_NAMES[] = {
+    "food",
+    "linemate",
+    "deraumere",
+    "sibur",
+    "mendiane",
+    "phiras",
+    "thystame"
+};
+
+int resource_from_string(const char *name)
+{
+    if (!name)
+        return -1;
+    for (int i = 0; i < RESOURCE_COUNT; i++) {
+        if (strcmp(name, RESOURCE_NAMES[i]) == 0)
+            return i;
+    }
+    return -1;
+}
+
 static bool extract_drop_item_name(client_t *client, char *item,
     size_t item_size)
 {
@@ -32,23 +46,12 @@ static bool extract_drop_item_name(client_t *client, char *item,
         client->commands->methods->front(client->commands), item, item_size);
 }
 
-/**
- * @brief Prepare a drop item event from a client's command.
- *
- * Extracts the item name and fills a game_event_t structure. If extraction
- * fails, sends "ko" to the client.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client issuing the drop.
- * @param event_out Output pointer to the created event.
- * @return true on success, false on failure.
- */
-static bool prepare_drop_event(server_t *server, client_t *client,
-    game_event_t **event_out)
+static bool validate_and_get_drop_type(server_t *server, client_t *client,
+    int *type_out)
 {
     player_t *player = client ? client->player : NULL;
     char item[BUFFER_SIZE] = {0};
-    game_event_t *event = NULL;
+    int type = -1;
 
     if (!server || !client || !player)
         return false;
@@ -56,25 +59,36 @@ static bool prepare_drop_event(server_t *server, client_t *client,
         dprintf(client->fd, "ko\n");
         return false;
     }
-    event = malloc(sizeof(game_event_t));
+    type = resource_from_string(item);
+    if (type < 0 || type >= RESOURCE_COUNT) {
+        dprintf(client->fd, "ko\n");
+        return false;
+    }
+    *type_out = type;
+    return true;
+}
+
+static bool prepare_drop_event(server_t *server, client_t *client,
+    game_event_t **event_out)
+{
+    int type = -1;
+    player_t *player = client ? client->player : NULL;
+    game_event_t *event;
+
+    if (!validate_and_get_drop_type(server, client, &type))
+        return false;
+    event = calloc(1, sizeof(game_event_t));
     if (!event)
         return false;
     event->type = GAME_EVENT_PLAYER_DROP_ITEM;
     event->data.player_item.client_fd = client->fd;
     event->data.player_item.player_id = player->id;
-    event->data.player_item.item_name = strdup(item);
+    event->data.player_item.type_item = type;
+    event->data.player_item.success = false;
     *event_out = event;
     return true;
 }
 
-/**
- * @brief Handle the 'Set' command from a client.
- *
- * Adds a GAME_EVENT_PLAYER_DROP_ITEM event to the queue.
- *
- * @param ctx Pointer to the server.
- * @param data Pointer to the client.
- */
 void handle_command_drop(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;
@@ -83,6 +97,6 @@ void handle_command_drop(void *ctx, void *data)
 
     if (!prepare_drop_event(server, client, &event))
         return;
-    server->game->event_queue->methods->push_back(server->game->event_queue,
-        event);
+    server->game->event_queue->methods->push_back(
+        server->game->event_queue, event);
 }

@@ -15,34 +15,49 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Prepare and emit a "bct" command for a specific tile.
- *
- * Temporarily overwrites the current command to trigger a tile update.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the GUI client.
- * @param event Pointer to the tile update event.
- */
-static void prepare_and_emit_bct(server_t *server, client_t *client,
-    game_event_t *event)
+static void backup_and_replace_command_content(queued_command_t *cmd,
+    const char *new_content, char *backup, size_t backup_size)
 {
-    queued_command_t *cmd = NULL;
-    char backup[BUFFER_COMMAND_SIZE] = {0};
-    char temp_cmd[BUFFER_COMMAND_SIZE] = {0};
-
-    cmd = client_peek_command(client);
-    if (!cmd)
+    if (!cmd || !new_content || !backup)
         return;
-    strncpy(backup, cmd->content, sizeof(backup) - 1);
-    backup[sizeof(backup) - 1] = '\0';
-    snprintf(temp_cmd, sizeof(temp_cmd), "bct %d %d",
-        event->data.tile.x, event->data.tile.y);
-    strncpy(cmd->content, temp_cmd, sizeof(cmd->content) - 1);
+    strncpy(backup, cmd->content, backup_size - 1);
+    backup[backup_size - 1] = '\0';
+    strncpy(cmd->content, new_content, sizeof(cmd->content) - 1);
     cmd->content[sizeof(cmd->content) - 1] = '\0';
+}
+
+static void build_bct_command(char *buffer, size_t buffer_size,
+    const game_event_t *event)
+{
+    if (!buffer || !event)
+        return;
+    snprintf(buffer, buffer_size, "bct %d %d", event->data.tile.x,
+        event->data.tile.y);
+}
+
+static void prepare_and_emit_bct(server_t *server,
+    client_t *client, game_event_t *event)
+{
+    queued_command_t *cmd = client_peek_command(client);
+    char backup[BUFFER_COMMAND_SIZE] = {0};
+    char tmp[BUFFER_COMMAND_SIZE] = {0};
+    bool created_temp = false;
+
+    if (!server || !client || !event)
+        return;
+    build_bct_command(tmp, sizeof(tmp), event);
+    if (!cmd) {
+        client_enqueue_command(client, tmp, 0, server->game);
+        created_temp = true;
+    } else
+        backup_and_replace_command_content(cmd, tmp, backup, sizeof(backup));
     EMIT(server->command_manager->dispatcher, "command_gui_bct", client);
-    strncpy(cmd->content, backup, sizeof(backup) - 1);
-    cmd->content[sizeof(backup) - 1] = '\0';
+    if (created_temp)
+        client_dequeue_command(client, NULL);
+    else if (cmd) {
+        strncpy(cmd->content, backup, sizeof(cmd->content) - 1);
+        cmd->content[sizeof(cmd->content) - 1] = '\0';
+    }
 }
 
 /**
@@ -55,7 +70,7 @@ void on_response_tile_updated(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *client = get_gui_client(server);
+    client_t *client = server->vtable->get_gui(server);
 
     if (!server || !event || !client)
         return;
