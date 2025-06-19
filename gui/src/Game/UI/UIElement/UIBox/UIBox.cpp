@@ -38,6 +38,7 @@ gui::UIBox::UIBox(
     _textDisplayer->setPosition(absPos);
     _textDisplayer->setSize(absSize);
     _textDisplayer->setText(_title);
+    _textDisplayer->setCharacterSize(20);
 }
 
 void gui::UIBox::draw() const
