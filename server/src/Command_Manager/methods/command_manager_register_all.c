@@ -69,6 +69,8 @@ static void register_gui_command(command_manager_t *self, server_t *server)
         server);
     REGISTER(self->dispatcher, "command_gui_pin", handle_command_gui_pin,
         server);
+    REGISTER(self->dispatcher, "command_gui_sst", handle_command_gui_sst,
+        server);
     register_gui_internal_command(self, server);
 }
 

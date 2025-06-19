@@ -60,6 +60,7 @@ void handle_command_gui_mct(void *ctx, void *data);
 void handle_command_gui_ppo(void *ctx, void *data);
 void handle_command_gui_plv(void *ctx, void *data);
 void handle_command_gui_pin(void *ctx, void *data);
+void handle_command_gui_sst(void *ctx, void *data);
 void handle_gui_pin(void *ctx, void *data);
 void handle_gui_plv(void *ctx, void *data);
 void handle_gui_ppo(void *ctx, void *data);
