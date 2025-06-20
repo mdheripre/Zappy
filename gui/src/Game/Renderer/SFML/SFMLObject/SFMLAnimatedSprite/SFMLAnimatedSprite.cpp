@@ -42,7 +42,6 @@ namespace sfml {
         if (animIt == _animationMap.end()) {
             throw RenderError("Error animation " + std::to_string(keyAnim) + " doesn't exist");
         }
-        
         _currentAnimRow = animIt->second;
         _currentFrame = 0;
         _loop = loop;

@@ -7,6 +7,8 @@
 
 #pragma once
 #include <array>
+#include <unordered_map>
+#include <string>
 
 namespace gui
 {
@@ -30,6 +32,7 @@ namespace gui
             bool popResource(Resource res);
             void pushResource(Resource res);
             void setResources(std::array<int, 7> resources);
+            static const std::unordered_map<Resource, std::string> resToString;
         private:
             std::array<int, 7> _resources;
             int _total = 0;

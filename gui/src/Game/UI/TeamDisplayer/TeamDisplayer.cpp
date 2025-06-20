@@ -72,7 +72,6 @@ void gui::TeamDisplayer::sortTeamRow(std::vector<std::array<std::string, 5>> &ro
 void gui::TeamDisplayer::updateInfo(const state::GameState &gm)
 {
     std::vector<std::array<std::string, 5>> rows;
-    std::cout << "dez" << std::endl;
 
 
     for (const auto &[teamName, _] : gm.teams)

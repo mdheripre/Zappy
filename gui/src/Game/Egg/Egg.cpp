@@ -8,6 +8,17 @@
 #include "Egg.hpp"
 #include <iostream>
 
+const tools::AssetDefinition gui::Egg::defaultAsset = tools::AssetDefinition(
+    "gui/assets/Tiny Swords/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.png",
+    {
+        {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+    },
+    TILE_SIZE,
+    6,
+    6
+);
+
+
 gui::Egg::Egg(int id, tools::Vector2<int> pos, const std::string &teamName, std::unique_ptr<render::IAnimatedSprite> eggObject)
     : EntityState(id, pos, teamName), _eggObject(std::move(eggObject)) {
     setPosition(pos);

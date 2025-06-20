@@ -24,6 +24,15 @@ bool gui::Trantorian::isMouseOver(const tools::Vector2<float> &mousePosition) co
     return _trantorianObject->contains(mousePosition);
 }
 
+void gui::Trantorian::laidAnEgg()
+{
+    _currentAction = "Laid an egg";
+}
+void gui::Trantorian::expulse()
+{
+    _currentAction = "Expulse";
+};
+
 /**
  * @brief Moves the Trantorian away from a given direction.
  *
@@ -48,7 +57,7 @@ void gui::Trantorian::expulseFrom(Orientation O, int maxWidth, int maxHeight)
     int newY = (_pos.y + offset.y + maxHeight) % maxHeight;
 
     tools::Vector2<int> newPos(newX, newY);
-    setPosition(newPos);
+    _currentAction = "Explused from " + orientationToString(O);
 }
 
 /**
@@ -66,9 +75,7 @@ void gui::Trantorian::removeFromInventory(Tile::Resource res)
 
     if (index > _inventory.size() || index < 0)
         throw EntityError("Invalid resource index " + std::to_string(index));
-    _inventory[index]--;
-    if (_inventory[index] < 0)
-        _inventory[index] = 0;
+    _currentAction = "Drop " + Tile::resToString.at(res);
 }
 
 /**
@@ -85,7 +92,12 @@ void gui::Trantorian::addToInventory(Tile::Resource res)
 
     if (index > _inventory.size() || index < 0)
         throw EntityError("Invalid resource index " + std::to_string(index));
-    _inventory[index]++;
+    _currentAction = "Take " + Tile::resToString.at(res);
+}
+
+void gui::Trantorian::startIncantation()
+{
+    _currentAction = "Do an incantation ";
 }
 
 /**
@@ -125,6 +137,7 @@ void gui::Trantorian::setPosition(tools::Vector2<int> pos)
         (static_cast<float>(pos.x) * TILE_SIZE) + (TILE_SIZE - tranSize.x) / 2.0f,
         (static_cast<float>(pos.y) * TILE_SIZE) + (TILE_SIZE - tranSize.y) / 2.0f
     );
+    _currentAction = "Move";
     _trantorianObject->setPosition(dPos);
     _pos = pos;
 }

@@ -150,7 +150,6 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
             tokens += " ";
     }
     tools::TeamBranding tb = _tbManager.getTeamBranding(tokens);
-
     auto trantorian = std::make_shared<gui::Trantorian>(
         id,
         pos,
@@ -368,9 +367,17 @@ void game::Game::pexCommand(const std::vector<std::string> &token)
  */
 void game::Game::pbcCommand(const std::vector<std::string> &token)
 {
-    if (token.size() != 2) {
+    if (token.size() < 1) {
         printErrorCommand("pbc", token);
         return;
+    }
+
+    std::string tokens;
+
+    for (int i = 1; i < token.size(); i++) {
+        tokens += token[i];
+        if (i + 1 != token.size())
+            tokens += " ";
     }
 
     int id = std::stoi(token[0].substr(1));
@@ -378,14 +385,14 @@ void game::Game::pbcCommand(const std::vector<std::string> &token)
     auto it = _gm.trantorians.find(id);
     if (it != _gm.trantorians.end()) {
         auto trantorian = it->second;
-        trantorian->broadcast(token[1]);
+        trantorian->broadcast(tokens);
 
         std::cout << "[PBC] --- Broadcast message ---" << std::endl;
         std::cout << "    ID      : " << id << std::endl;
-        std::cout << "    Message : \"" << token[1] << "\"" << std::endl;
+        std::cout << "    Message : \"" << tokens << "\"" << std::endl;
 
         std::stringstream ss;
-        ss << "Broadcast from #" << id << ": \"" << token[1] << "\"";
+        ss << "Broadcast from #" << id << ": \"" << tokens << "\"";
         _ui->addNewMessage(ss.str());
     } else {
         printErrorCommand("Unknown id in pbc for trantorian", token);
@@ -414,7 +421,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
 
     std::vector<int> playerIds;
 
-    int firstId = std::stoi(token[3]);
+    int firstId = std::stoi(token[3].substr(1));
     auto itInit = _gm.trantorians.find(firstId);
     if (itInit == _gm.trantorians.end()) {
         throw EntityError("Error: Unknown Trantorian ID " + std::to_string(firstId) + " in pic command.");
@@ -423,7 +430,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     tools::TeamBranding tb = _tbManager.getTeamBranding(itInit->second->getTeamName());
 
     for (size_t i = 3; i < token.size(); ++i) {
-        int pid = std::stoi(token[i]);
+        int pid = std::stoi(token[i].substr(1));
         playerIds.push_back(pid);
 
         auto it = _gm.trantorians.find(pid);
@@ -460,6 +467,7 @@ void game::Game::picCommand(const std::vector<std::string> &token)
         if (i + 1 < playerIds.size())
             oss << ", ";
     }
+    _ui->addNewEvent(oss.str());
     for (size_t i = 0; i < playerIds.size(); ++i)
         std::cout << playerIds[i] << (i < playerIds.size() - 1 ? ", " : "");
     std::cout << std::endl;
@@ -506,7 +514,6 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
             auto jt = _gm.trantorians.find(i);
             if (jt != _gm.trantorians.end()) {
                 jt->second->incantationSucced();
-                jt->second->setLevel(it->second->getTargetLevel());
             }
         }
         std::cout << "[PIE] --- Incantation result ---" << std::endl;
@@ -544,6 +551,10 @@ void game::Game::pfkCommand(const std::vector<std::string> &token)
 
         std::cout << "[PFK] --- Egg laying initiated ---" << std::endl;
         std::cout << "    ID : " << id << std::endl;
+
+        std::ostringstream oss;
+        oss << "Trantorian " << id << " laid an egg.";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in pfk for trantorian", token);
     }
@@ -577,11 +588,20 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
         std::cout << "[PDR] --- Resource dropped ---" << std::endl;
         std::cout << "    ID       : " << id << std::endl;
         std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
-        std::cout << "    Resource : " << std::stoi(token[1]) << std::endl;
+        std::cout << "    Resource : " << static_cast<int>(res) << std::endl;
+
+        std::ostringstream oss;
+        auto itStr = gui::Tile::resToString.find(res);
+        std::string resName = (itStr != gui::Tile::resToString.end()) ? itStr->second : "Unknown";
+
+        oss << "Trantorian " << id << " dropped " << resName
+            << " at (" << pos.x << ", " << pos.y << ")";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in pdr for trantorian", token);
     }
 }
+
 
 
 /**
@@ -612,10 +632,19 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
         std::cout << "    ID       : " << id << std::endl;
         std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
         std::cout << "    Resource : " << std::stoi(token[1]) << std::endl;
+
+        std::ostringstream oss;
+        auto itStr = gui::Tile::resToString.find(res);
+        std::string resName = (itStr != gui::Tile::resToString.end()) ? itStr->second : "Unknown";
+
+        oss << "Trantorian " << id << " picked up " << resName
+            << " at (" << pos.x << ", " << pos.y << ")";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in pgt for trantorian", token);
     }
 }
+
 
 
 /**
@@ -682,12 +711,12 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
     }
 
     if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
-        tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
+        tools::AssetDefinition asset = tranId >= 0 ? _tbManager.getTeamBranding(teamName).getEggAsset() : gui::Egg::defaultAsset;
         auto egg = std::make_shared<gui::Egg>(
             eggId,
             pos,
             teamName,
-            _renderer->getFactory().createAnimatedSprite(tb.getEggAsset())
+            _renderer->getFactory().createAnimatedSprite(asset)
         );
 
         std::shared_ptr<state::EntityState> eggState = egg;
@@ -697,17 +726,24 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         _gm.eggs[egg->getId()] = eggState;
         _ui->updateTeamInfo(_gm);
 
-
         std::cout << "[ENW] --- Egg laid ---" << std::endl;
         std::cout << "    Egg ID     : " << eggId << std::endl;
         std::cout << "    Trantorian : " << tranId << std::endl;
         std::cout << "    Team       : " << (teamName.empty() ? "(unknown)" : teamName) << std::endl;
         std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
-        
+
+        std::ostringstream oss;
+        oss << "Egg " << eggId << " laid by Trantorian " << tranId;
+        if (!teamName.empty())
+            oss << " (Team " << teamName << ")";
+        oss << " at position (" << pos.x << ", " << pos.y << ")";
+        _ui->addNewEvent(oss.str());
+
     } else {
         printErrorCommand("Egg ID already exists in enw", token);
     }
 }
+
 
 
 /**
@@ -736,10 +772,15 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
 
         std::cout << "[EBO] --- Egg hatched ---" << std::endl;
         std::cout << "    Egg ID : " << id << std::endl;
+
+        std::ostringstream oss;
+        oss << "Egg " << id << " has hatched.";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in ebo for egg", token);
     }
 }
+
 
 
 /**
@@ -766,10 +807,15 @@ void game::Game::ediCommand(const std::vector<std::string> &token)
 
         std::cout << "[EDI] --- Egg removed ---" << std::endl;
         std::cout << "    Egg ID : " << id << std::endl;
+
+        std::ostringstream oss;
+        oss << "Egg " << id << " has been removed from the game.";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in edi for egg", token);
     }
 }
+
 
 
 /**
@@ -790,7 +836,12 @@ void game::Game::sgtCommand(const std::vector<std::string> &token)
 
     std::cout << "[SGT] --- Time unit updated ---" << std::endl;
     std::cout << "    New time unit : " << _gm.time_unit << std::endl;
+
+    std::ostringstream oss;
+    oss << "Time unit updated to " << _gm.time_unit;
+    _ui->addNewEvent(oss.str());
 }
+
 
 
 /**

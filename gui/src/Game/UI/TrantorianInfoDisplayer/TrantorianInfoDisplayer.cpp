@@ -84,7 +84,7 @@ bool TrantorianInfoDisplayer::update(float dt)
         for (std::size_t i = 0; i < inv.size(); ++i)
             _inventory->pushRow({names[i], std::to_string(inv[i])});
 
-        _currentAction->setText("Current Action : Idle");
+        _currentAction->setText(_trantState->getCurrentAction());
         }
     return true;
 }
