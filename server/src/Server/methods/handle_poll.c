@@ -15,30 +15,23 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Process a raw command line from a client.
- *
- * Cleans the line, determines its delay, and enqueues it if possible.
- * Logs a warning if the client's command queue is full.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client sending the command.
- * @param line Raw command line string.
- */
-void process_command_line(server_t *server, client_t *client,
-    const char *line)
+static void handle_gui_command(server_t *server, client_t *client,
+    const char *cmd_name, const char *clean)
 {
-    char clean[BUFFER_COMMAND_SIZE] = {0};
-    char cmd_name[BUFFER_COMMAND_SIZE] = {0};
-    int ticks = 0;
+    char built[BUFFER_COMMAND_SIZE] = {0};
 
-    if (!server || !client || !line)
-        return;
-    strncpy(clean, line, BUFFER_COMMAND_SIZE - 1);
-    clean[BUFFER_COMMAND_SIZE - 1] = '\0';
-    strip_linefeed(clean);
-    extract_command_name(clean, cmd_name, sizeof(cmd_name));
-    ticks = server->vtable->get_command_delay(server, clean);
+    snprintf(built, sizeof(built), "command_gui_%s", cmd_name);
+    console_log(LOG_INFO, "Executing GUI command immediately: %s", built);
+    client_enqueue_command(client, clean, 0, server->game);
+    EMIT(server->command_manager->dispatcher, built, client);
+    client_dequeue_command(client, NULL);
+}
+
+static void handle_command_enqueue(server_t *server, client_t *client,
+    const char *clean, const char *cmd_name)
+{
+    int ticks = server->vtable->get_command_delay(server, clean);
+
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
     if (strcmp(cmd_name, "Fork") == 0 && client->player)
@@ -48,6 +41,24 @@ void process_command_line(server_t *server, client_t *client,
             "Client %d: command queue full, dropped \"%s\"",
             client->fd, clean);
     }
+}
+
+void process_command_line(server_t *server, client_t *client, const char *line)
+{
+    char clean[BUFFER_COMMAND_SIZE] = {0};
+    char cmd_name[BUFFER_CMD_NAME] = {0};
+
+    if (!server || !client || !line)
+        return;
+    strncpy(clean, line, BUFFER_COMMAND_SIZE - 1);
+    clean[BUFFER_COMMAND_SIZE - 1] = '\0';
+    strip_linefeed(clean);
+    extract_command_name(clean, cmd_name, sizeof(cmd_name));
+    if (client->type == CLIENT_GUI) {
+        handle_gui_command(server, client, cmd_name, clean);
+        return;
+    }
+    handle_command_enqueue(server, client, clean, cmd_name);
 }
 
 /**

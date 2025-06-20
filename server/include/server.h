@@ -31,6 +31,7 @@
     #define TIMEOUT_MS 100
     #define BUFFER_COMMAND_SIZE 128
     #define BUFFER_SIZE 64
+    #define BUFFER_CMD_NAME 100
     #define LONG_BUFFER 256
 
 
