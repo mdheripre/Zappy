@@ -70,7 +70,7 @@ impl From<AiCommand> for Packet {
 pub async fn spawn_child_process() -> Result<()> {
     let exe_path = env::current_exe()?;
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let mut child = Command::new(exe_path)
+    let child = Command::new(exe_path)
         .args(&args)
         .env("IS_CHILD", "1")
         .stdin(Stdio::null())
@@ -79,8 +79,6 @@ pub async fn spawn_child_process() -> Result<()> {
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
-    let status = child.wait().await?;
-    println!("Child exited with status: {:?}", status);
     Ok(())
 }
 

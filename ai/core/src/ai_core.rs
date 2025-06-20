@@ -230,7 +230,6 @@ impl AiState {
 pub struct AiCore {
     client: Arc<Mutex<AsyncTcpClient>>,
     state: Arc<Mutex<AiState>>,
-    child_tasks: Vec<JoinHandle<Result<()>>>,
     send_queue: mpsc::UnboundedSender<Packet>,
     recv_queue: mpsc::UnboundedReceiver<ServerResponse>,
     cmd_queue: mpsc::UnboundedSender<AiCommand>,
@@ -269,7 +268,6 @@ impl AiCore {
         Ok(AiCore {
             client: Arc::new(Mutex::new(client)),
             state,
-            child_tasks: vec![],
             send_queue: send_tx_,
             recv_queue: recv_rx_,
             cmd_queue: cmd_tx_,
@@ -402,32 +400,6 @@ impl AiCore {
         Ok(())
     }
 
-    /// check if child processes are terminated, if so remove them from the handle vector
-    ///
-    /// # Returns
-    /// - `Result<()>` - Describe the return value.
-    ///
-    /// # Errors
-    /// JoinError
-    async fn check_child_tasks(&mut self) -> Result<()> {
-        let mut finished = Vec::new();
-
-        for (i, handle) in self.child_tasks.iter_mut().enumerate() {
-            if handle.is_finished() {
-                let result = handle.await;
-                match result {
-                    Ok(Ok(())) => println!("Child process completed successfully."),
-                    Ok(Err(e)) => eprintln!("Child process failed {:?}", e),
-                    Err(join_err) => return Err(CoreError::Join(join_err)),
-                }
-                finished.push(i);
-            }
-        }
-        for i in finished.into_iter().rev() {
-            self.child_tasks.remove(i);
-        }
-        Ok(())
-    }
     /// main loop that allow communication between threads and update the zappy game state
     /// It alose reads the ServerResponse channel and handle it (self.handle_server_response)
     ///
@@ -438,7 +410,6 @@ impl AiCore {
         let mut cmd_rx = std::mem::replace(&mut self.cmd_rx, mpsc::unbounded_channel().1);
         println!("core loop starting..");
         loop {
-            self.check_child_tasks().await?;
             if let Ok(error) = self.err_queue.try_recv() {
                 return Err(CoreError::ConnectionClosed(error));
             }
@@ -505,8 +476,7 @@ impl AiCore {
                     state.direction = state.direction.right();
                 }
                 Some(AiCommand::Fork) => {
-                    let handle = tokio::spawn(spawn_child_process());
-                    self.child_tasks.push(handle);
+                    spawn_child_process().await?;
                 }
                 _ => {
                     println!("do nothing")
