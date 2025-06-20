@@ -7,6 +7,7 @@
 
 #include "game.h"
 #include "server.h"
+#include "player.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -18,8 +19,12 @@ void on_response_egg_laid(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
+    player_t *player = find_player_by_id(server->game,
+        event->data.egg.player_id);
+    client_t *client = get_client_by_player(server, player, NULL);
 
-    if (!server || !event)
+    if (!server || !event || !client)
         return;
-    printf("fin\n");
+    dprintf(client->fd, "ok\n");
+    EMIT(server->command_manager->dispatcher, "gui_enw", event);
 }

@@ -19,7 +19,7 @@ struct command_manager_methods_s {
     void (*register_all)(command_manager_t *self, server_t *server);
     void (*process_identify)(command_manager_t *self, server_t *server);
     void (*process_all)(command_manager_t *self, server_t *server,
-        float delta);
+        int ticks);
     void (*process_responses)(command_manager_t *self, game_t *game);
 };
 
@@ -33,7 +33,7 @@ command_manager_t *command_manager_create(void);
 void command_manager_destroy(command_manager_t *self);
 void register_all(command_manager_t *self, server_t *server);
 void process_identify(command_manager_t *self, server_t *server);
-void process_all(command_manager_t *self, server_t *server, float delta);
+void process_all(command_manager_t *self, server_t *server, int ticks);
 void on_command_not_found(dispatcher_t *self, const char *event, void *data);
 void process_responses(command_manager_t *self, game_t *game);
 
@@ -57,6 +57,30 @@ void handle_command_gui_sgt(void *ctx, void *data);
 void handle_command_gui_tna(void *ctx, void *data);
 void handle_command_gui_bct(void *ctx, void *data);
 void handle_command_gui_mct(void *ctx, void *data);
+void handle_command_gui_ppo(void *ctx, void *data);
+void handle_command_gui_plv(void *ctx, void *data);
+void handle_command_gui_pin(void *ctx, void *data);
+void handle_command_gui_sst(void *ctx, void *data);
+void handle_gui_pin(void *ctx, void *data);
+void handle_gui_plv(void *ctx, void *data);
+void handle_gui_ppo(void *ctx, void *data);
+void handle_gui_pnw(void *ctx, void *data);
+void handle_gui_suc(void *ctx, void *);
+void handle_gui_sbp(void *ctx, void *);
+void handle_gui_enw(void *ctx, void *data);
+void handle_gui_smg(void *ctx, void *data);
+void handle_gui_ebo(void *ctx, void *data);
+void handle_gui_pex(void *ctx, void *data);
+void handle_gui_pbc(void *ctx, void *data);
+void handle_gui_pdi(void *ctx, void *data);
+void handle_gui_edi(void *ctx, void *data);
+void handle_gui_pdr(void *ctx, void *data);
+void handle_gui_pgt(void *ctx, void *data);
+void handle_gui_seg(void *ctx, void *);
+void handle_gui_pfk(void *ctx, void *data);
+void handle_gui_pic(void *ctx, void *data);
+void handle_gui_pie(void *ctx, void *data);
+
 
 /* Responses */
 void on_response_player_moved(void *ctx, void *data);
@@ -68,5 +92,16 @@ void on_response_eject(void *ctx, void *data);
 void on_response_egg_laid(void *ctx, void *data);
 void on_response_end_incantation(void *ctx, void *data);
 void on_response_start_incantation(void *ctx, void *data);
+void on_response_egg_die(void *ctx, void *data);
+void on_response_broadcast(void *ctx, void *data);
+void on_response_tile_updated(void *ctx, void *data);
+void on_response_drop(void *ctx, void *data);
+void on_response_take(void *ctx, void *data);
+
+/* Parser */
+int get_player_number(const char *str);
+
+/* Helper */
+bool is_num(const char *arg);
 
 #endif /* !COMMAND_MANAGER_H_ */

@@ -17,22 +17,20 @@
 /**
  * @brief Update all players in the game.
  *
- * Calls each player's update method with the current game state.
+ * Calls each player's update method, passing the elapsed ticks.
  *
  * @param self Pointer to the game instance.
+ * @param ticks Number of ticks since the last update.
  */
-void update_players(game_t *self)
+void update_players(game_t *self, int ticks)
 {
-    list_node_t *node = NULL;
-    player_t *player;
+    player_t *player = NULL;
 
     if (!self || !self->players)
         return;
-    node = self->players->head;
-    while (node) {
-        player = node->data;
-        if (player && player->methods && player->methods->update)
-            player->methods->update(player, self);
-        node = node->next;
+    for (list_node_t *n = self->players->head; n; n = n->next) {
+        player = n->data;
+        if (player)
+            player->methods->update(player, self, ticks);
     }
 }

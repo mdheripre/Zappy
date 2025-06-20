@@ -1,0 +1,198 @@
+/*
+** EPITECH PROJECT, 2025
+** server
+** File description:
+** broadcast
+*/
+
+#include "game.h"
+#include "server.h"
+#include "utils.h"
+#include "player.h"
+#include <math.h>
+/****************************************************************************/
+/*                                                                          */
+/*                             EVENT INGAME                                 */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Compute toroidal vector from sender to receiver.
+ *
+ * Wraps the coordinates to respect map edges.
+ *
+ * @param game Pointer to the game instance.
+ * @param sender Pointer to the sending player.
+ * @param r Pointer to the receiving player.
+ * @return Vector from sender to receiver with torus logic.
+ */
+static vector2i_t compute_direction(game_t *game, player_t *sender,
+    player_t *r)
+{
+    vector2i_t v = { r->x - sender->x, r->y - sender->y };
+
+    if (v.x > game->width / 2)
+        v.x -= game->width;
+    else if (v.x < (game->width * -1) / 2)
+        v.x += game->width;
+    if (v.y > game->height / 2)
+        v.y -= game->height;
+    else if (v.y < (game->height * -1) / 2)
+        v.y += game->height;
+    return v;
+}
+
+/**
+ * @brief Get angle offset based on player's orientation.
+ *
+ * @param orientation Orientation enum value.
+ * @return Angle in degrees to adjust the direction.
+ */
+static float orientation_offset(player_orientation_t orientation)
+{
+    switch (orientation) {
+        case ORIENTATION_EAST:
+            return -90.0f;
+        case ORIENTATION_SOUTH:
+            return 180.0f;
+        case ORIENTATION_WEST:
+            return 90.0f;
+        default:
+            return 0.0f;
+    }
+}
+
+/**
+ * @brief Convert a 2D vector to an angle in degrees.
+ *
+ * @param vector The input vector.
+ * @return Angle in degrees between 0 and 360.
+ */
+static float vector_to_angle(vector2i_t vector)
+{
+    float angle = atan2f(-vector.y, vector.x) * 180.0f / (float)M_PI;
+
+    while (angle < 0.0f)
+        angle += 360.0f;
+    while (angle >= 360.0f)
+        angle -= 360.0f;
+    return angle;
+}
+
+/**
+ * @brief Convert angle to one of the 8 broadcast sectors.
+ *
+ * @param angle Angle in degrees.
+ * @return Sector number (1 to 8).
+ */
+static int angle_to_sector(float angle)
+{
+    int sector = (int)((angle + 22.5f) / 45.0f);
+
+    return (sector == 0) ? 8 : sector;
+}
+
+/**
+ * @brief Compute broadcast direction from sender to receiver.
+ *
+ * Takes into account map wrapping and receiver's orientation.
+ *
+ * @param game Pointer to the game instance.
+ * @param sender Pointer to the sending player.
+ * @param r Pointer to the receiving player.
+ * @return Direction sector (1 to 8).
+ */
+int compute_broadcast_direction(game_t *game, player_t *sender,
+    player_t *r)
+{
+    vector2i_t dir = compute_direction(game, sender, r);
+    float angle = vector_to_angle(dir);
+
+    angle += orientation_offset(r->orientation);
+    angle = fmodf(angle, 360.0f);
+    return angle_to_sector(angle);
+}
+
+/**
+ * @brief Create a broadcast game event with a message.
+ *
+ * @param player_id ID of the target player.
+ * @param msg Message to send.
+ * @return Pointer to the created event, or NULL on failure.
+ */
+static game_event_t *create_broadcast_event(int player_id,
+    const char *msg, bool to_gui)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return NULL;
+    memset(event, 0, sizeof(game_event_t));
+    event->type = to_gui ? GAME_EVENT_RESPONSE_BROADCAST_TO_GUI :
+        GAME_EVENT_RESPONSE_BROADCAST;
+    event->data.generic_response.player_id = player_id;
+    event->data.generic_response.client_fd = -1;
+    event->data.generic_response.response = strdup(msg);
+    return event;
+}
+
+/**
+ * @brief Send a broadcast message to all players except the sender.
+ *
+ * Computes the direction for each recipient and queues an event.
+ *
+ * @param game Pointer to the game instance.
+ * @param sender Pointer to the player sending the message.
+ * @param msg The message content.
+ */
+static void broadcast_to_players(game_t *game, player_t *sender,
+    const char *msg)
+{
+    player_t *target = NULL;
+    char buf[BUFFER_SIZE] = {0};
+    int dir = -1;
+    game_event_t *event = NULL;
+
+    for (list_node_t *n = game->players->head; n; n = n->next) {
+        target = n->data;
+        memset(buf, 0, sizeof(buf));
+        if (!target || target == sender)
+            continue;
+        dir = compute_broadcast_direction(game, sender, target);
+        snprintf(buf, sizeof(buf), "message %d, %s\n", dir, msg);
+        event = create_broadcast_event(target->id, buf, false);
+        if (event)
+            game->server_event_queue->methods->push_back(
+                game->server_event_queue, event);
+    }
+    event = create_broadcast_event(sender->id, msg, true);
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, event);
+}
+
+/**
+ * @brief Handle the broadcast command from a player.
+ *
+ * Dispatches messages to all other players and sends "ok" to sender.
+ *
+ * @param ctx Pointer to the game instance.
+ * @param data Pointer to the broadcast event.
+ */
+void on_broadcast(void *ctx, void *data)
+{
+    game_t *game = ctx;
+    game_event_t *event = data;
+    player_t *sender = find_player_by_id(game,
+        event->data.generic_response.player_id);
+    const char *msg = event->data.generic_response.response;
+    game_event_t *ok = NULL;
+
+    if (!game || !event || !sender || !msg)
+        return;
+    broadcast_to_players(game, sender, msg);
+    ok = create_broadcast_event(sender->id, "ok\n", false);
+    if (ok)
+        game->server_event_queue->methods->push_back(game->server_event_queue,
+            ok);
+    free((char *)msg);
+}

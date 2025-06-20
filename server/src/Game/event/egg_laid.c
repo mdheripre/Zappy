@@ -17,10 +17,12 @@
 /****************************************************************************/
 
 /**
- * @brief Create a new egg based on a player's position and team.
+ * @brief Create a new egg based on a player's current state.
  *
- * @param player Pointer to the player.
- * @return Pointer to the newly created egg, or NULL on failure.
+ * The egg inherits the player's position, team, and ID.
+ *
+ * @param player Pointer to the player laying the egg.
+ * @return Pointer to the created egg, or NULL on failure.
  */
 static egg_t *create_egg_from_player(player_t *player)
 {
@@ -41,18 +43,44 @@ static egg_t *create_egg_from_player(player_t *player)
 /**
  * @brief Create and add a new egg to the game.
  *
+ * Also increments the team's available slots if the team is found.
+ *
  * @param game Pointer to the game instance.
  * @param player Pointer to the player laying the egg.
- * @return Pointer to the egg, or NULL on failure.
+ * @return Pointer to the added egg, or NULL on failure.
  */
 static egg_t *add_egg_to_game(game_t *game, player_t *player)
 {
     egg_t *egg = create_egg_from_player(player);
+    team_info_t *team = find_team(game, player->team_name);
 
     if (!egg)
         return NULL;
+    if (team)
+        team->team_size++;
     game->eggs->methods->push_back(game->eggs, egg);
     return egg;
+}
+
+/**
+ * @brief Create a game event for an egg being laid.
+ *
+ * @param egg Pointer to the egg that was created.
+ * @return Pointer to the event, or NULL on allocation failure.
+ */
+static game_event_t *create_egg_event(const egg_t *egg)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return NULL;
+    event->type = GAME_EVENT_RESPONSE_EGG_LAID;
+    event->data.egg.player_id = egg->player_id;
+    event->data.egg.team_name = egg->team_name;
+    event->data.egg.x = egg->x;
+    event->data.egg.y = egg->y;
+    event->data.egg.egg_id = egg->id;
+    return event;
 }
 
 /**
@@ -61,19 +89,14 @@ static egg_t *add_egg_to_game(game_t *game, player_t *player)
  * @param game Pointer to the game instance.
  * @param egg Pointer to the egg that was laid.
  */
-static void send_egg_laid_event(game_t *game, egg_t *egg)
+static void send_egg_laid_event(game_t *game, const egg_t *egg)
 {
-    game_event_t *response = malloc(sizeof(game_event_t));
+    game_event_t *event = create_egg_event(egg);
 
-    if (!response)
+    if (!event)
         return;
-    response->type = GAME_EVENT_RESPONSE_EGG_LAID;
-    response->data.egg_laid.player_id = egg->player_id;
-    response->data.egg_laid.team_name = egg->team_name;
-    response->data.egg_laid.x = egg->x;
-    response->data.egg_laid.y = egg->y;
-    game->server_event_queue->methods->push_back(game->server_event_queue,
-        response);
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, event);
 }
 
 /**
@@ -88,15 +111,16 @@ void on_egg_laid(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    player_t *player = find_player_by_id(game,
-        event->data.generic_response.player_id);
+    player_t *player = NULL;
     egg_t *egg = NULL;
 
-    if (!game || !event || !player)
+    if (!game || !event)
+        return;
+    player = find_player_by_id(game, event->data.egg.player_id);
+    if (!player)
         return;
     egg = add_egg_to_game(game, player);
     if (!egg)
         return;
     send_egg_laid_event(game, egg);
-    printf("fin\n");
 }

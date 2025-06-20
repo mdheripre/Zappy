@@ -40,7 +40,7 @@ typedef struct player_methods_s {
     void (*die)(player_t *self);
     void (*add_resource)(player_t *self, int resource_type, int amount);
     void (*remove_resource)(player_t *self, int resource_type, int amount);
-    void (*update)(player_t *self, game_t *game);
+    void (*update)(player_t *self, game_t *game, int ticks);
 } player_methods_t;
 
 struct player_s {
@@ -59,7 +59,7 @@ struct player_s {
 
 player_t *player_create(player_config_t config);
 void player_destroy(player_t *self);
-void player_update(player_t *self, game_t *game);
+void player_update(player_t *self, game_t *game, int ticks);
 void player_die(player_t *self);
 void player_move(player_t *self, int map_width, int map_height,
     move_direction_t dir);

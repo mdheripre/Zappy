@@ -34,6 +34,8 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
     .reject_client = reject_client,
+    .get_gui = server_get_gui,
+    .get_next_tick_info = get_next_tick_info,
 };
 
 /****************************************************************************/
@@ -213,16 +215,16 @@ server_t *server_create(config_t *config)
         .team_size = config->team_size, .team_name = config->team_name
     };
 
-    if (!server)
+    if (!server_init(server, config)) {
+        free(server);
         return NULL;
-    if (!server_init(server, config))
-        return NULL;
+    }
     server->game = NEW(game, &game_cfg);
-    if (!server->game)
-        return NULL;
     server->command_manager = NEW(command_manager);
-    if (!server->command_manager)
+    if (!server->command_manager || !server->game) {
+        free(server);
         return NULL;
+    }
     server->command_manager->methods->register_all(server->command_manager,
         server);
     return server;

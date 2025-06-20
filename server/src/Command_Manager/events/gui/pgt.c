@@ -1,0 +1,33 @@
+/*
+** EPITECH PROJECT, 2025
+** server
+** File description:
+** pgt
+*/
+
+
+#include "command_manager.h"
+#include "shared.h"
+#include "server.h"
+#include "client.h"
+
+/****************************************************************************/
+/*                                                                          */
+/*                            GUI COMMANDS                                  */
+/*                                                                          */
+/****************************************************************************/
+
+
+void handle_gui_pgt(void *ctx, void *data)
+{
+    server_t *server = ctx;
+    game_event_t *event = data;
+    player_t *player = find_player_by_id(server->game,
+        event->data.player_item.player_id);
+    client_t *gui = server->vtable->get_gui(server);
+
+    if (!server || !event || !player || !gui)
+        return;
+    dprintf(gui->fd, "pgt #%d %d\n", player->id,
+        event->data.player_item.type_item);
+}

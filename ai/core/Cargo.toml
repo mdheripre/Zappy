@@ -9,5 +9,6 @@ tokio = { version = "1", features = ["full"] }
 async-trait = "0.1"
 anyhow = "1.0"
 thiserror = "1.0"
+regex = "1"
 
 lib-tcp = {path = "../lib-tcp"}

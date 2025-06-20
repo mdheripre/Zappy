@@ -5,6 +5,7 @@
 ** response_moved_player
 */
 
+#include "client.h"
 #include "server.h"
 #include "game.h"
 #include "player.h"
@@ -27,6 +28,7 @@ void on_response_player_moved(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
+    player_t *player = NULL;
     int fd = -1;
 
     if (!server || !event)
@@ -34,8 +36,14 @@ void on_response_player_moved(void *ctx, void *data)
     fd = event->data.player_moved.client_fd;
     if (fd < 0)
         return;
-    if (event->data.player_moved.ia_success)
+    player = find_player_by_id(server->game,
+        event->data.player_moved.player_id);
+    if (!player)
+        return;
+    if (event->data.player_moved.ia_success) {
         dprintf(fd, "ok\n");
-    else
+        EMIT(server->command_manager->dispatcher, "gui_ppo",
+            player);
+    } else
         dprintf(fd, "ko\n");
 }
