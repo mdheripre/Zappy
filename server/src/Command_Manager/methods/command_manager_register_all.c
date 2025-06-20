@@ -24,7 +24,6 @@ static void register_gui_internal_command(command_manager_t *self,
     server_t *server)
 {
     REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
-    REGISTER(self->dispatcher, "gui_suc", handle_gui_suc, server);
     REGISTER(self->dispatcher, "gui_sbp", handle_gui_sbp, server);
     REGISTER(self->dispatcher, "gui_enw", handle_gui_enw, server);
     REGISTER(self->dispatcher, "gui_smg", handle_gui_smg, server);
@@ -42,7 +41,6 @@ static void register_gui_internal_command(command_manager_t *self,
     REGISTER(self->dispatcher, "gui_pin", handle_gui_pin, server);
     REGISTER(self->dispatcher, "gui_plv", handle_gui_plv, server);
     REGISTER(self->dispatcher, "gui_ppo", handle_gui_ppo, server);
-    REGISTER(self->dispatcher, "gui_pnw", handle_gui_pnw, server);
 }
 
 /**

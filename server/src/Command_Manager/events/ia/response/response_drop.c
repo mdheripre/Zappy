@@ -20,7 +20,7 @@ static void emit_drop(response_payload_t *payload, server_t *server,
 {
     if (event->data.player_item.success) {
         EMIT(server->command_manager->dispatcher, "gui_pdr", event);
-        EMIT(server->command_manager->dispatcher, "gui_pin", client);
+        EMIT(server->command_manager->dispatcher, "gui_pin", client->player);
     }
     EMIT(server->dispatcher, "send_response", payload);
 }
