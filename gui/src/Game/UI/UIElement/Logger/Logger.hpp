@@ -38,6 +38,7 @@ namespace gui
         private:
             void updateDisplayFromWrappedLines(const std::vector<std::string>& lines) const;
             void limitLines(std::vector<std::string>& lines, int maxLines) const;
+            std::string computeLine(const std::string &event, int maxChars, std::vector<std::string> &wrapped) const;
             std::vector<std::string> wrapEventsToLines(int maxChars) const;
 
 

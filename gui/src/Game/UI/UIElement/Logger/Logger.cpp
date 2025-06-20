@@ -46,18 +46,8 @@ std::vector<std::string> gui::Logger::wrapEventsToLines(int maxChars) const
     std::vector<std::string> wrapped;
 
     for (const auto& event : _events) {
-        std::istringstream iss(event);
-        std::string word, line;
+        std::string line = computeLine(event, maxChars, wrapped);
 
-        while (iss >> word) {
-            if (line.length() + word.length() + 1 > static_cast<size_t>(maxChars)) {
-                wrapped.push_back(line);
-                line = word;
-            } else {
-                if (!line.empty()) line += " ";
-                line += word;
-            }
-        }
         if (!line.empty()) wrapped.push_back(line);
         wrapped.push_back("");
     }
@@ -68,6 +58,26 @@ void gui::Logger::limitLines(std::vector<std::string>& lines, int maxLines) cons
 {
     while (static_cast<int>(lines.size()) > maxLines)
         lines.erase(lines.begin());
+}
+
+std::string gui::Logger::computeLine(const std::string &event,
+    int maxChars,
+    std::vector<std::string> &wrapped) const
+{
+    std::istringstream iss(event);
+    std::string word;
+    std::string line;
+
+    while (iss >> word) {
+        if (line.length() + word.length() + 1 > static_cast<size_t>(maxChars)) {
+            wrapped.push_back(line);
+            line = word;
+        } else {
+            if (!line.empty()) line += " ";
+            line += word;
+        }
+    }
+    return line;
 }
 
 void gui::Logger::updateDisplayFromWrappedLines(const std::vector<std::string>& lines) const

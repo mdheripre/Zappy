@@ -36,5 +36,6 @@ namespace sfml {
         sf::RectangleShape _bar;
         std::shared_ptr<sf::RenderWindow> _rWindow;
         void updateBar();
+        float calculateLuminance(const tools::Color& c);
     };
 }

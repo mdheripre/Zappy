@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Projet
+** File description:
+** SFMLCanva.hpp
+*/
+
 #include "SFMLProgressBar.hpp"
 
 sfml::SFMLProgressBar::SFMLProgressBar(std::shared_ptr<sf::RenderWindow> rWindow)
@@ -55,21 +62,22 @@ void sfml::SFMLProgressBar::updateBar() {
     _bar.setSize(sf::Vector2f(_size.x * percent, _size.y));
 }
 
+float sfml::SFMLProgressBar::calculateLuminance(const tools::Color &c)
+{
+    return 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+}
+
 bool sfml::SFMLProgressBar::contains(tools::Vector2<float> position)
 {
     return _background.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
 void sfml::SFMLProgressBar::setColor(const tools::Color &color)
-{
-    auto luminance = [](const tools::Color& c) -> float {
-        return 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
-    };
-    
+{   
     sf::Color baseColor(color.r, color.g, color.b, color.a);
     sf::Color contrastColor;
     
-    if (luminance(color) > 200.f) {
+    if (calculateLuminance(color) > 200.f) {
         contrastColor = sf::Color(
             std::max(0, color.r - 60),
             std::max(0, color.g - 60),

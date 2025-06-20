@@ -21,9 +21,9 @@ namespace gui
         virtual void setTrantInfo(std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual) = 0;
     };
     
-/*     class IEggUI {
+    class IEggUI {
     public:
-        virtual void setEgg(std::shared_ptr<gui::Egg>) = 0;
+        virtual void setEgg(std::shared_ptr<gui::EggState>) = 0;
         virtual ~IEggUI() = default;
     };
     
@@ -32,5 +32,4 @@ namespace gui
         virtual void setTile(const gui::Tile&) = 0;
         virtual ~ITileUI() = default;
     };
-     */
 } // namespace gui
