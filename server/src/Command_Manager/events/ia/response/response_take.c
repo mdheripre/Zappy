@@ -5,6 +5,7 @@
 ** response_take
 */
 
+#include "client.h"
 #include "game.h"
 #include "server.h"
 #include "utils.h"
@@ -14,6 +15,50 @@
 /*                        RESPONSE COMMAND                                  */
 /*                                                                          */
 /****************************************************************************/
+
+/** * @brief Emit the take response to the client.
+ *
+ * Sends the response payload to the client and updates the GUI pin.
+ *
+ * @param payload Pointer to payload.
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client receiving the response.
+ */
+static void emit_take(response_payload_t *payload, server_t *server,
+    client_t *client, game_event_t *event)
+{
+    if (event->data.player_item.success) {
+        EMIT(server->command_manager->dispatcher, "gui_pgt", event);
+        EMIT(server->command_manager->dispatcher, "gui_pin", client);
+    }
+    EMIT(server->dispatcher, "send_response", payload);
+}
+
+/**
+ * @brief Create a response payload for the take command.
+ *
+ * Allocates memory for a response payload and initializes it with the client
+ * and success message.
+ *
+ * @param client Pointer to the client associated with the response.
+ * @param success Indicates if the take command was successful.
+ * @return Pointer to the created response payload, or NULL on failure.
+ */
+static response_payload_t *create_response_payload(client_t *client,
+    bool success)
+{
+    response_payload_t *payload = malloc(sizeof(response_payload_t));
+
+    if (!payload)
+        return NULL;
+    payload->client = client;
+    payload->message = strdup(success ? "ok\n" : "ko\n");
+    if (!payload->message) {
+        free(payload);
+        return NULL;
+    }
+    return payload;
+}
 
 /**
  * @brief Handle the response to a take command.
@@ -27,22 +72,15 @@ void on_response_take(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *client = NULL;
+    player_t *player = find_player_by_id(server->game,
+        event->data.player_item.player_id);
+    client_t *client = get_client_by_player(server, player, NULL);
     response_payload_t *payload = NULL;
 
-    if (!server || !event)
+    if (!server || !event || !client)
         return;
-    client = get_client_by_fd(server, event->data.generic_response.client_fd);
-    if (!client)
-        return;
-    payload = malloc(sizeof(response_payload_t));
+    payload = create_response_payload(client, event->data.player_item.success);
     if (!payload)
         return;
-    payload->client = client;
-    payload->message = strdup(event->data.generic_response.response);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
+    emit_take(payload, server, client, event);
 }

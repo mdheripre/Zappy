@@ -2,29 +2,24 @@
 ** EPITECH PROJECT, 2025
 ** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
 ** File description:
-** response_egg_laid
+** edi
 */
 
-#include "game.h"
 #include "server.h"
-#include "player.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                        RESPONSE COMMAND                                  */
+/*                            COMMAND GUI                                   */
 /*                                                                          */
 /****************************************************************************/
 
-void on_response_egg_laid(void *ctx, void *data)
+void handle_gui_edi(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    player_t *player = find_player_by_id(server->game,
-        event->data.egg.player_id);
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = server->vtable->get_gui(server);
 
     if (!server || !event || !client)
         return;
-    dprintf(client->fd, "ok\n");
-    EMIT(server->command_manager->dispatcher, "gui_enw", event);
+    dprintf(client->fd, "edi #%d\n", event->data.egg.egg_id);
 }

@@ -23,6 +23,7 @@ typedef struct list_methods_s {
     void (*destroy)(list_t *self);
     void (*clear)(list_t *self);
     void (*push_back)(list_t *self, void *data);
+    void (*push_front)(list_t *self, void *data);
     void *(*pop_front)(list_t *self);
     int (*size)(const list_t *self);
     bool (*contain)(list_t *self, void *data, bool (*compare)(void *, void *));
@@ -44,6 +45,7 @@ list_t *list_create(void (*free_fn)(void *));
 void list_destroy(list_t *self);
 void list_clear(list_t *self);
 void list_push_back(list_t *self, void *data);
+void list_push_front(list_t *self, void *data);
 void *list_pop_front(list_t *self);
 int list_size(const list_t *self);
 bool list_contain(list_t *self, void *data, bool (*compare)(void *, void *));

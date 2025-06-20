@@ -59,6 +59,8 @@ typedef struct {
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);
+bool client_enqueue_front_command(client_t *client,
+    const char *cmd, float delay);
 bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     game_t *game);
 queued_command_t *client_peek_command(client_t *client);
@@ -74,7 +76,7 @@ client_t *get_client_by_fd(server_t *server, int fd);
 int get_client_index_by_player(server_t *server, player_t *player);
 client_t *get_client_by_player(server_t *server, player_t *player,
     int *index);
-client_t *get_gui_client(server_t *server);
+bool get_next_arg(char *line, char *arg, int arg_size);
 team_info_t *find_team(game_t *game, const char *team_name);
 void add_tile_update_event(game_t *game, int x, int y);
 #endif /* !UTILS_H_ */

@@ -20,46 +20,51 @@
 
 
 /**
- * @brief Retrieve teams name index at passed index
+ * @brief Sends the team name to the GUI client.
  *
- * This function was usefull because the line were too long otherwise
- *
- * @param list Pointer to the list containing team names.
- * @param index Index of the team name to retrieve.
- * @return Pointer to the team name string at the specified index.
+ * @param server Pointer to the server structure.
+ * @param client Pointer to the GUI client.
+ * @param team Pointer to the team information.
  */
-
-static char *get_team_name(list_t *list, int index)
+static void send_team_name_to_gui(server_t *server, client_t *client,
+    team_info_t *team)
 {
-    return list->methods->index(list, index);
+    char buffer[BUFFER_COMMAND_SIZE];
+    response_payload_t *payload = NULL;
+
+    if (!team || !team->team_name)
+        return;
+    snprintf(buffer, sizeof(buffer), "tna %s\n", team->team_name);
+    payload = malloc(sizeof(response_payload_t));
+    if (!payload)
+        return;
+    payload->client = client;
+    payload->message = strdup(buffer);
+    if (!payload->message) {
+        free(payload);
+        return;
+    }
+    EMIT(server->dispatcher, "send_response", payload);
 }
 
 /**
- * @brief Sends tna response to the GUI client.
+ * @brief Handles the GUI command "tna" by sending all team
+ * names to the GUI client.
  *
- * Pass through all teams name and create a response payload for each
- *
- * @param ctx Pointer to the server instance.
- * @param data Pointer to the requesting GUI client.
+ * @param ctx Pointer to the server context.
+ * @param data Unused parameter.
  */
-void handle_command_gui_tna(void *ctx, void *data)
+void handle_command_gui_tna(void *ctx, void *)
 {
     server_t *server = ctx;
-    client_t *client = data;
-    response_payload_t *payload;
+    client_t *client = server->vtable->get_gui(server);
+    team_info_t *team = NULL;
 
-    for (int i = 0; i < server->game->teams->size; i++) {
-        payload = malloc(sizeof(response_payload_t));
-        if (!payload)
-            return;
-        asprintf(&payload->message, "tna %s\n",
-            get_team_name(server->game->teams, i));
-        if (!payload->message) {
-            free(payload);
-            return;
-        }
-        payload->client = client;
-        EMIT(server->dispatcher, "send_response", payload);
+    if (!server || !client || !server->game || !server->game->teams)
+        return;
+    for (list_node_t *node = server->game->teams->head; node;
+        node = node->next) {
+        team = node->data;
+        send_team_name_to_gui(server, client, team);
     }
-    return;
 }

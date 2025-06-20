@@ -65,6 +65,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_START_INCANTATION,  // pic + /ko
     GAME_EVENT_RESPONSE_END_INCANTATION,        // pie + "under eleway"/"ko"
     GAME_EVENT_RESPONSE_BROADCAST,          // réponse IA
+    GAME_EVENT_RESPONSE_BROADCAST_TO_GUI,
     GAME_EVENT_RESPONSE_CONNECT_NBR,        // Réponse connect_nbr
     GAME_EVENT_RESPONSE_LOOK,               // réponse IA
     GAME_EVENT_RESPONSE_INVENTORY,          // réponse IA
@@ -110,6 +111,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_DROP, "RESPONSE_DROP" },
     { GAME_EVENT_RESPONSE_TAKE, "RESPONSE_TAKE" },
     { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
+    { GAME_EVENT_RESPONSE_BROADCAST_TO_GUI, "RESPONSE_BROADCAST_TO_GUI" },
     { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
 };
 
@@ -140,6 +142,7 @@ typedef struct {
             int x;
             int y;
             const char *team_name;
+            int egg_id;
         } egg;
         struct {
             int x;
@@ -159,7 +162,8 @@ typedef struct {
         struct {
             int player_id;
             int client_fd;
-            char *item_name;
+            int type_item;
+            bool success;
         } player_item;
     } data;
 } game_event_t;
@@ -174,6 +178,7 @@ struct game_methods_s {
     bool (*check_incantate)(game_t *self, incantation_t *inc);
     list_t *(*get_players_on_tile)(game_t *self, int x, int y, int level);
     bool (*has_finished)(game_t *self);
+    char *(*get_winner)(game_t *self);
 };
 
 typedef struct egg_s {
@@ -244,6 +249,8 @@ list_t *get_players_on_tile(game_t *game, int x, int y, int level);
 void emit_tile_update(game_t *game, int x, int y);
 int resource_from_string(const char *name);
 bool has_finished(game_t *self);
+char *get_winner(game_t *self);
+
 
 /* Event */
 void on_player_moved(void *ctx, void *data);

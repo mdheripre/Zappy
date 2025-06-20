@@ -37,9 +37,11 @@ static void send_incantation_result(server_t *server,
     client->stuck = false;
     fd = get_client_fd_by_player(server, player, NULL);
     if (fd != -1) {
-        if (event->data.incantation.success)
+        if (event->data.incantation.success) {
             dprintf(fd, "current level: %d\n", player->level);
-        else
+            EMIT(server->command_manager->dispatcher, "gui_plv",
+                &player->id);
+        } else
             dprintf(fd, "ko\n");
     }
 }
@@ -86,4 +88,5 @@ void on_response_end_incantation(void *ctx, void *data)
         send_incantation_result(server, event, player);
         replan_next_command(server, player);
     }
+    EMIT(server->command_manager->dispatcher, "gui_pie", event);
 }

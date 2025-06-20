@@ -16,54 +16,35 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Send a response event to the client after a take command.
- *
- * @param game Pointer to the game instance.
- * @param player Pointer to the player who took the resource.
- * @param client_fd File descriptor of the client.
- * @param msg Response message ("ok\n" or "ko\n").
- */
-static void send_take_response(game_t *game, player_t *player,
-    int client_fd, const char *msg)
+void send_take_response(game_t *game, player_t *player,
+    game_event_t *event, bool success)
 {
     game_event_t *response = calloc(1, sizeof(game_event_t));
 
     if (!response)
         return;
     response->type = GAME_EVENT_RESPONSE_TAKE;
-    response->data.generic_response.player_id = player->id;
-    response->data.generic_response.client_fd = client_fd;
-    response->data.generic_response.response = msg;
+    response->data.player_item.player_id = player->id;
+    response->data.player_item.client_fd = event->data.player_item.client_fd;
+    response->data.player_item.type_item = event->data.player_item.type_item;
+    response->data.player_item.success = success;
     game->server_event_queue->methods->push_back(
         game->server_event_queue, response);
 }
 
-/**
- * @brief Handle a take command from a player.
- *
- * Transfers a resource from the map to the player's inventory
- * and sends a response.
- *
- * @param ctx Pointer to the game instance.
- * @param data Pointer to the take command event.
- */
 void on_take(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    int type = resource_from_string(event->data.player_item.item_name);
     player_t *p = find_player_by_id(game, event->data.player_item.player_id);
+    int type = event->data.player_item.type_item;
 
-    free(event->data.player_item.item_name);
     if (!game || !event || !p || type < 0 || type >= RESOURCE_COUNT)
-        return send_take_response(game, p, event->data.player_item.client_fd,
-            "ko\n");
+        return send_take_response(game, p, event, false);
     if (game->map[p->y][p->x].resources[type] <= 0)
-        return send_take_response(game, p, event->data.player_item.client_fd,
-            "ko\n");
+        return send_take_response(game, p, event, false);
     game->map[p->y][p->x].resources[type]--;
     player_add_resource(p, type, 1);
-    send_take_response(game, p, event->data.player_item.client_fd, "ok\n");
+    send_take_response(game, p, event, true);
     emit_tile_update(game, p->x, p->y);
 }

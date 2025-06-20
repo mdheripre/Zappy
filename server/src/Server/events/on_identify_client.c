@@ -85,15 +85,15 @@ void on_client_identify(void *ctx, void *data)
     server_t *server = ctx;
     client_t *client = data;
     queued_command_t *cmd = NULL;
-    char cleaned[BUFFER_COMMAND_SIZE] = {0};
+    char cleaned[CLIENT_BUFFER_SIZE] = {0};
 
     if (!server || !client || client->type != CLIENT_UNDEFINED)
         return;
     cmd = client_peek_command(client);
     if (!cmd)
         return;
-    strncpy(cleaned, cmd->content, BUFFER_COMMAND_SIZE - 1);
-    cleaned[BUFFER_COMMAND_SIZE - 1] = '\0';
+    strncpy(cleaned, cmd->content, CLIENT_BUFFER_SIZE - 1);
+    cleaned[CLIENT_BUFFER_SIZE - 1] = '\0';
     strip_linefeed(cleaned);
     if (strcmp(cleaned, "GRAPHIC") == 0 && check_second_gui(server, client)) {
         reject_client(server, client, "Rejected GUI: already connected");

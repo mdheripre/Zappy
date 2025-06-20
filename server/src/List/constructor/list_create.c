@@ -25,6 +25,7 @@ static const list_methods_t LIST_METHODS = {
     .destroy = list_destroy,
     .clear = list_clear,
     .push_back = list_push_back,
+    .push_front = list_push_front,
     .pop_front = list_pop_front,
     .size = list_size,
     .contain = list_contain,
