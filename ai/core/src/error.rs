@@ -39,6 +39,7 @@ pub enum CoreError {
     SendChannelErrorPacket(SendError<Packet>),
     SendChannelErrorSR(SendError<ServerResponse>),
     ConnectionClosed(String),
+    Process(String),
 }
 
 impl error::Error for CoreError {}
@@ -53,6 +54,7 @@ impl fmt::Display for CoreError {
             CoreError::ConnectionClosed(e) => write!(f, "ConnectionClosed: {}", e),
             CoreError::SendChannelErrorPacket(e) => write!(f, "Send channel Error: {}", e),
             CoreError::SendChannelErrorSR(e) => write!(f, "Send channel Error: {}", e),
+            CoreError::Process(e) => write!(f, "Process Error: {}", e),
         }
     }
 }

@@ -3,7 +3,7 @@ use std::sync::Arc;
 use lib_tcp::tcp_client::AsyncTcpClient;
 use tokio::sync::{mpsc, Mutex};
 
-use crate::ai::{ai_decision, AiCommand};
+use crate::ai::{ai_decision, new_ai_instance, AiCommand};
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
 use crate::init::{init_client, ClientInfos};
@@ -51,6 +51,7 @@ use crate::{CoreError, Result, ServerInfos};
 /// ```
 #[derive(Debug, Clone)]
 pub struct AiState {
+    pub is_child: bool,
     pub client_num: i32,
     pub position: (i32, i32),
     pub inventory: Inventory,
@@ -65,8 +66,9 @@ pub struct AiState {
 }
 
 impl AiState {
-    pub fn new(ci: ClientInfos) -> Self {
+    pub fn new(ci: ClientInfos, is_child: bool) -> Self {
         Self {
+            is_child,
             client_num: ci.client_num,
             position: (ci.x, ci.y),
             inventory: Inventory::new(),
@@ -259,7 +261,7 @@ impl AiCore {
         let (cmd_tx_, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
         let (err_tx_, err_rx_) = mpsc::unbounded_channel::<String>();
 
-        let state = Arc::new(Mutex::new(AiState::new(client_infos)));
+        let state = Arc::new(Mutex::new(AiState::new(client_infos, infos.is_child)));
 
         Ok(AiCore {
             client: Arc::new(Mutex::new(client)),
@@ -378,12 +380,15 @@ impl AiCore {
                 }
 
                 let command = ai_decision(&ai_state).await;
+                {
+                    let mut state = ai_state.lock().await;
+                    state.last_command = command.clone();
+                }
                 if let Some(cmd) = command {
                     if ai_cmd_queue.send(cmd).is_err() {
                         break;
                     }
                 }
-
                 // block until the server respond, the state has already been updated.
                 // You can use the response type for more decision control
                 resp_queue.recv().await;
@@ -468,7 +473,12 @@ impl AiCore {
                 Some(AiCommand::Right) => {
                     state.direction = state.direction.right();
                 }
-                _ => {}
+                Some(AiCommand::Fork) => {
+                    new_ai_instance().await?;
+                }
+                _ => {
+                    println!("do nothing")
+                }
             },
             ServerResponse::Ko => {
                 if let Some(AiCommand::Take(item)) = last_command {
