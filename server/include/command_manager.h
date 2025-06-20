@@ -82,6 +82,7 @@ void handle_gui_pie(void *ctx, void *data);
 
 
 /* Responses */
+void on_response_player_eat(void *ctx, void *data);
 void on_response_player_moved(void *ctx, void *data);
 void on_response_player_died(void *ctx, void *data);
 void on_response_connect_nbr(void *ctx, void *data);

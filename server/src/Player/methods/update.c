@@ -34,6 +34,19 @@ static void add_event_died(player_t *self, game_t *game)
     game->event_queue->methods->push_back(game->event_queue, event);
 }
 
+static void add_event_player_eat(player_t *self, game_t *game)
+{
+    game_event_t *event = malloc(sizeof(game_event_t));
+
+    if (!event)
+        return;
+    memset(event, 0, sizeof(game_event_t));
+    event->type = GAME_EVENT_RESPONSE_PLAYER_EAT;
+    event->data.generic_response.player_id = self->id;
+    game->server_event_queue->methods->push_back(game->server_event_queue,
+        event);
+}
+
 /**
  * @brief Update a player's hunger and handle starvation logic.
  *
@@ -55,6 +68,7 @@ void player_update(player_t *self, game_t *game, int ticks)
     self->nbr_tick = 0;
     if (self->inventory[RESOURCE_FOOD] > 0) {
         self->inventory[RESOURCE_FOOD]--;
+        add_event_player_eat(self, game);
         return;
     }
     self->methods->die(self);

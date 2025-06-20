@@ -102,6 +102,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_tile_updated.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_take.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_eat.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_die.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
