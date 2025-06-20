@@ -3,6 +3,7 @@ mod ai_core;
 mod ai_state;
 mod ai_direction;
 mod ai_role;
+mod broadcast;
 mod error;
 mod init;
 mod inventory;
