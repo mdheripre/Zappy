@@ -10,7 +10,7 @@
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include <vector>
 #include <memory>
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include <iostream>
 
 namespace gui {

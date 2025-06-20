@@ -9,6 +9,9 @@
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Game/Renderer/Object/IStaticSprite.hpp"
 #include "Tools/AssetDefinition/AssetDefinition.hpp"
+#include "Game/Renderer/Object/ICanva.hpp"
+#include "Game/Renderer/Object/IText.hpp"
+#include "Game/Renderer/Object/IProgressBar.hpp"
 #include "Tools/Color/Color.hpp"
 #include <memory>
 
@@ -20,5 +23,10 @@ namespace render
         virtual ~IObjectFactory() = default;
         virtual std::unique_ptr<IAnimatedSprite> createAnimatedSprite(const tools::AssetDefinition &definition) = 0;
         virtual std::unique_ptr<IStaticSprite> createStaticSprite(const tools::AssetDefinition &definition) = 0;
+        virtual std::unique_ptr<IStaticSprite> createStaticSprite(const std::string &texturePath) = 0;
+        virtual std::unique_ptr<ICanva> createCanva() const = 0;
+        virtual std::unique_ptr<IText> createText(std::string fontPath) = 0;
+        virtual std::unique_ptr<IObject> createRectangle() const = 0;
+        virtual std::unique_ptr<IProgressBar> createProgressBar() const = 0;
     };
 } // namespace render

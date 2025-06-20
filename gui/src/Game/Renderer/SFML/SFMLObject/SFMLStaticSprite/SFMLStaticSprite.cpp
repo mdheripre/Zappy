@@ -21,6 +21,12 @@ namespace sfml
     _sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
 }
 
+SFMLStaticSprite::SFMLStaticSprite(const sf::Texture &texture, std::shared_ptr<sf::RenderWindow> window)
+    : _window(std::move(window))
+{
+    _sprite.setTexture(texture);
+}
+
 tools::Vector2<float> SFMLStaticSprite::getPosition() const
 {
     tools::Vector2<float> pos;
@@ -46,11 +52,33 @@ void SFMLStaticSprite::setPosition(const tools::Vector2<float>& pos)
     _sprite.setPosition(pos.x, pos.y);
 }
 
+void SFMLStaticSprite::setSize(const tools::Vector2<float>& size)
+{
+    sf::FloatRect bounds = _sprite.getLocalBounds();
+    if (bounds.width == 0 || bounds.height == 0)
+        return;
+
+    float scaleX = size.x / bounds.width;
+    float scaleY = size.y / bounds.height;
+    _sprite.setScale(scaleX, scaleY);
+}
+
 void SFMLStaticSprite::drawObject() const
 {
     if (_window && _window->isOpen()) {
         _window->draw(_sprite);
     }
+}
+
+bool SFMLStaticSprite::contains(tools::Vector2<float> position)
+{
+    return _sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
+void SFMLStaticSprite::setColor(const tools::Color &color)
+{
+    _sprite.setColor({color.r, color.g, color.b, color.a});
+
 }
 
 } // namespace sfml

@@ -19,6 +19,11 @@ void gui::Trantorian::draw() const
         _trantorianObject->drawObject();
 }
 
+bool gui::Trantorian::isMouseOver(const tools::Vector2<float> &mousePosition) const
+{
+    return _trantorianObject->contains(mousePosition);
+}
+
 /**
  * @brief Moves the Trantorian away from a given direction.
  *
@@ -112,7 +117,8 @@ bool gui::Trantorian::update(float dt)
  *
  * @param pos New map position (grid coordinates).
  */
-void gui::Trantorian::setPosition(tools::Vector2<int>  pos)
+
+void gui::Trantorian::setPosition(tools::Vector2<int> pos)
 {
     tools::Vector2<float> tranSize = _trantorianObject->getSize();
     tools::Vector2<float> dPos(
@@ -121,4 +127,19 @@ void gui::Trantorian::setPosition(tools::Vector2<int>  pos)
     );
     _trantorianObject->setPosition(dPos);
     _pos = pos;
+}
+
+void gui::Trantorian::onHoverEnter()
+{
+    _trantorianObject->setColor(tools::Color(255, 255, 180, 255));
+}
+
+void gui::Trantorian::onHoverExit()
+{
+    _trantorianObject->setColor(tools::Color(255, 255, 255, 255));
+}
+
+void gui::Trantorian::onClick()
+{
+    _uiController->setTrantInfo(shared_from_this(), _trantorianObject->clone());
 }
