@@ -53,6 +53,6 @@ player_t *player_create(player_config_t config)
     }
     player->methods = &PLAYER_METHODS;
     memset(player->inventory, 0, sizeof(player->inventory));
-    player->inventory[RESOURCE_FOOD] = 10;
+    player->inventory[RESOURCE_FOOD] = 9;
     return player;
 }
