@@ -1,6 +1,6 @@
-use crate::{ai_core::AiState, item::Item, packet::Packet, CoreError, Result};
+use crate::{ai_state::AiState, item::Item, packet::Packet, Result};
 use std::{env, process::Stdio, sync::Arc, time::Duration};
-use tokio::{process::Command, sync::Mutex, task::JoinHandle};
+use tokio::{process::Command, sync::Mutex};
 
 /// Possible AI command to the server
 ///
@@ -67,6 +67,20 @@ impl From<AiCommand> for Packet {
     }
 }
 
+/// create a child process with a new env variable so the program can recognize his condition
+///
+/// # Errors
+/// child process creation might fail and return a CoreError::
+///
+/// # Examples
+///
+/// ```no_run
+/// use crate::...;
+///
+/// async {
+///   let result = spawn_child_process().await;
+/// };
+/// ```
 pub async fn spawn_child_process() -> Result<()> {
     let exe_path = env::current_exe()?;
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -95,7 +109,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
 
     tokio::time::sleep(Duration::from_millis(500)).await;
 
-    if !state.is_child {
+    if !state.is_child() {
         return Some(AiCommand::Fork);
     }
     if state.last_command.is_some() {
