@@ -108,9 +108,8 @@ impl AiState {
                 distance = 0.5
             }
             for item in tile.get_items() {
-                value = value
-                    + (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
-                        / (item.0.probability() * distance);
+                value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
+                    / (item.0.probability() * distance)
             }
             if value > max_value {
                 max_value = value;
@@ -136,9 +135,7 @@ impl AiState {
                 selected_item = Some(item.clone());
             }
         }
-        if selected_item.is_none() {
-            return None;
-        }
+        selected_item.as_ref()?;
         selected_item.map(AiCommand::Take)
     }
 
@@ -459,7 +456,7 @@ impl AiCore {
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {
-                    state.inventory.remove_item(&item);
+                    let _ = state.inventory.remove_item(&item);
                     state.add_item_to_map(&item);
                 }
                 Some(AiCommand::Forward) => {
@@ -473,12 +470,11 @@ impl AiCore {
                 }
                 _ => {}
             },
-            ServerResponse::Ko => match last_command {
-                Some(AiCommand::Take(item)) => {
+            ServerResponse::Ko => {
+                if let Some(AiCommand::Take(item)) = last_command {
                     state.remove_item_from_map(&item);
                 }
-                _ => {}
-            },
+            }
             ServerResponse::Look(items) => {
                 let mut i = 0;
                 for item in items {
@@ -500,7 +496,6 @@ impl AiCore {
             ServerResponse::Message(msg) => {
                 // send message to AI
             }
-            _ => {}
         }
         self.resp_queue
             .send(response)

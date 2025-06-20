@@ -58,16 +58,15 @@ impl ServerResponse {
                 ServerResponse::Look(items)
             }
             s if s.starts_with("[") && s.ends_with("]") && s.chars().any(|c| c.is_numeric()) => {
-                if let Ok(re) = Regex::new(r"food (\d+)") {
-                    if let Some(cap) = re.captures(s) {
-                        if let Some(mat) = cap.get(1) {
-                            if let Ok(food_value) = mat.as_str().parse() {
-                                return ServerResponse::Inventory(food_value);
-                            }
-                        }
-                    }
+                match Regex::new(r"food (\d+)")
+                    .ok()
+                    .and_then(|re| re.captures(s))
+                    .and_then(|cap| cap.get(1))
+                    .and_then(|mat| mat.as_str().parse().ok())
+                {
+                    Some(food_value) => ServerResponse::Inventory(food_value),
+                    None => ServerResponse::Inventory(0),
                 }
-                ServerResponse::Inventory(0)
             }
             s if s.starts_with("CLIENT-") => {
                 if let Ok(num) = s[7..].parse::<i32>() {
