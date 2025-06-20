@@ -76,8 +76,8 @@ void handle_command_gui_sst(void *ctx, void *data)
     if (!server || !client)
         return;
     if (!extract_command_arguments(client_peek_command(client)->content,
-        args_line, CLIENT_BUFFER_SIZE)
-        || error_handling(args_line, arg, server, &num))
+            args_line, CLIENT_BUFFER_SIZE)
+        || !error_handling(args_line, arg, server, &num))
         return;
     server->game->frequency = num;
     dprintf(client->fd, "sst %d\n", num);

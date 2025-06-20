@@ -27,5 +27,5 @@ void handle_gui_pfk(void *ctx, void *data)
     gui = server->vtable->get_gui(server);
     if (!gui)
         return;
-    dprintf(gui->fd, "pfk %d\n", player->id);
+    dprintf(gui->fd, "pfk #%d\n", player->id);
 }
