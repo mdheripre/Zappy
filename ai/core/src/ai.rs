@@ -1,6 +1,6 @@
 use crate::{ai_core::AiState, item::Item, packet::Packet, CoreError, Result};
-use std::{sync::Arc, time::Duration};
-use tokio::{sync::Mutex, time::sleep};
+use std::{env, process::Stdio, sync::Arc, time::Duration};
+use tokio::{process::Command, sync::Mutex, task::JoinHandle};
 
 /// Possible AI command to the server
 ///
@@ -67,6 +67,21 @@ impl From<AiCommand> for Packet {
     }
 }
 
+pub async fn spawn_child_process() -> Result<()> {
+    let exe_path = env::current_exe()?;
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let child = Command::new(exe_path)
+        .args(&args)
+        .env("IS_CHILD", "1")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()?;
+
+    println!("Spawned child with PID: {:?}", child.id());
+    Ok(())
+}
+
 /// Ai algorithm enty point
 ///
 /// # Arguments
@@ -80,6 +95,9 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
 
     tokio::time::sleep(Duration::from_millis(500)).await;
 
+    if !state.is_child {
+        return Some(AiCommand::Fork);
+    }
     if state.last_command.is_some() {
         return None;
     }
