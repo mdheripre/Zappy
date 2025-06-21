@@ -23,16 +23,16 @@
  */
 void process_identify(command_manager_t *, server_t *server)
 {
+    list_node_t *node = NULL;
     client_t *client = NULL;
-    queued_command_t *cmd = NULL;
-    int i = 0;
 
-    for (i = 0; i < server->client_count; i++) {
-        client = &server->clients[i];
-        if (!client->connected || client->type != CLIENT_UNDEFINED)
+    if (!server || !server->clients)
+        return;
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
+        if (!client || !client->connected || client->type != CLIENT_UNDEFINED)
             continue;
-        cmd = client_peek_command(client);
-        if (!cmd)
+        if (!client_peek_command(client))
             continue;
         EMIT(server->dispatcher, "client_identify", client);
     }

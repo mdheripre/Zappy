@@ -18,9 +18,24 @@
 /****************************************************************************/
 
 /**
- * @brief Handle a player's death and notify the client.
+ * @brief Notify the player and GUI about the player's death.
  *
- * Sends "dead" to the player and removes them from the server.
+ * Sends "dead" to the player and emits the "gui_pdi" event.
+ *
+ * @param server Pointer to the server.
+ * @param player Pointer to the player who died.
+ */
+static void notify_player_death(server_t *server, player_t *player)
+{
+    client_t *client = get_client_by_player(server, player);
+
+    if (client)
+        dprintf(client->fd, "dead\n");
+    EMIT(server->command_manager->dispatcher, "gui_pdi", player);
+}
+
+/**
+ * @brief Handle a player's death and remove them from the server.
  *
  * @param ctx Pointer to the server.
  * @param data Pointer to the death event (game_event_t *).
@@ -30,8 +45,7 @@ void on_response_player_died(void *ctx, void *data)
     server_t *server = ctx;
     game_event_t *event = data;
     player_t *player = NULL;
-    int client_fd = -1;
-    int index = -1;
+    client_t *client = NULL;
 
     if (!server || !event)
         return;
@@ -39,10 +53,9 @@ void on_response_player_died(void *ctx, void *data)
         event->data.player_died.player_id);
     if (!player)
         return;
-    client_fd = get_client_fd_by_player(server, player, &index);
-    if (client_fd != -1)
-        dprintf(client_fd, "dead\n");
-    EMIT(server->command_manager->dispatcher, "gui_pdi", player);
+    notify_player_death(server, player);
+    client = get_client_by_player(server, player);
     server->game->players->methods->remove(server->game->players, player);
-    server->vtable->remove_client(server, index);
+    if (client)
+        server->vtable->remove_client(server, client);
 }

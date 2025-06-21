@@ -15,21 +15,17 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Get the client file descriptor for a given player.
- *
- * @param server Pointer to the server.
- * @param player Pointer to the player.
- * @param index Optional pointer to store the client index.
- * @return File descriptor, or -1 if not found.
- */
-int get_client_fd_by_player(server_t *server, player_t *player, int *index)
+int get_client_fd_by_player(server_t *server, player_t *player)
 {
-    int idx = get_client_index_by_player(server, player);
+    list_node_t *node = NULL;
+    client_t *client = NULL;
 
-    if (idx == -1)
+    if (!server || !player || !server->clients)
         return -1;
-    if (index)
-        *index = idx;
-    return server->clients[idx].fd;
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
+        if (client && client->player == player)
+            return client->fd;
+    }
+    return -1;
 }

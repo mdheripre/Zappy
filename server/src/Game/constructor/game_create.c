@@ -203,17 +203,11 @@ static bool game_init_map(game_t *game)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Initializes the internal lists used in the game.
- *
- * Creates and assigns the player list, egg list, incantation list,
- * and event queue. Each list uses a dedicated free function if needed.
- *
- * @param game Pointer to the game instance.
- * @return true if all lists were successfully created, false otherwise.
- */
-static bool game_init_lists(game_t *game)
+static bool game_init_lists(game_t *game, config_game_t *config)
 {
+    int team_count = config->team_name ? config->team_name->size : 0;
+
+    game->max_players = (config->team_size + 5) * team_count;
     game->players = NEW(list, NULL);
     game->eggs = NEW(list, free);
     game->incantations = NEW(list, free);
@@ -257,7 +251,7 @@ game_t *game_create(config_game_t *config)
     register_event_game(game->dispatcher, game);
     if (!game->dispatcher)
         return NULL;
-    if (!game_init_lists(game) || !game_init_map(game))
+    if (!game_init_lists(game, config) || !game_init_map(game))
         return NULL;
     return game;
 }

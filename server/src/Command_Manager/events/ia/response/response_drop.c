@@ -47,7 +47,7 @@ void on_response_drop(void *ctx, void *data)
     game_event_t *event = data;
     player_t *player = find_player_by_id(server->game,
         event->data.player_item.player_id);
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = get_client_by_player(server, player);
     response_payload_t *payload = NULL;
 
     if (!server || !event || !client)

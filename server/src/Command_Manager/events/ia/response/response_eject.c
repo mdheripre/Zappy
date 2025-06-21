@@ -29,7 +29,7 @@ static response_payload_t *client_ejected(server_t *server,
 {
     player_t *player = find_player_by_id(server->game,
         event->data.generic_response.player_id);
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = get_client_by_player(server, player);
     response_payload_t *payload = NULL;
 
     if (!client || !event->data.generic_response.response)

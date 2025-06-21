@@ -220,6 +220,7 @@ server_t *server_create(config_t *config)
         return NULL;
     }
     server->game = NEW(game, &game_cfg);
+    server->clients = NEW(list, free);
     server->command_manager = NEW(command_manager);
     if (!server->command_manager || !server->game) {
         free(server);

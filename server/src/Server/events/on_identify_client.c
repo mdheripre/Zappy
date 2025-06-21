@@ -29,10 +29,13 @@ static bool check_second_gui(server_t *server, client_t *client)
 {
     client_t *other = NULL;
 
-    for (int i = 0; i < server->client_count; i++) {
-        other = &server->clients[i];
-        if (other->connected && other != client &&
-            other->type == CLIENT_GUI)
+    if (!server || !server->clients)
+        return false;
+    for (list_node_t *n = server->clients->head; n; n = n->next) {
+        other = n->data;
+        if (!other || other == client)
+            continue;
+        if (other->connected && other->type == CLIENT_GUI)
             return true;
     }
     return false;

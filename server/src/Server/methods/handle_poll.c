@@ -113,17 +113,8 @@ static void append_to_read_buffer(client_t *client,
     client->read_buffer[client->buffer_len] = '\0';
 }
 
-/**
- * @brief Handles errors or disconnections when reading from a client.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client.
- * @param index Index of the client in the server's client array.
- * @param bytes Number of bytes read from the client.
- * @return 1 if the client was removed, 0 otherwise.
- */
 static int handle_client_read_error(server_t *server, client_t *client,
-    int index, ssize_t bytes)
+    ssize_t bytes)
 {
     if (bytes < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -131,72 +122,55 @@ static int handle_client_read_error(server_t *server, client_t *client,
         console_log(LOG_WARNING,
             "Client (fd=%d) read error: %s", client->fd, strerror(errno));
         EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        server->vtable->remove_client(server, client);
         return 1;
     }
     if (bytes == 0) {
-        console_log(LOG_INFO,
-            "Client (fd=%d) disconnected", client->fd);
         EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        server->vtable->remove_client(server, client);
         return 1;
     }
     return 0;
 }
 
-/**
- * @brief Reads data from a client socket and processes it.
- *
- * This function reads data from the specified client socket, appends it to
- * the client's read buffer, and extracts commands from the buffer.
- * If the read operation fails or the buffer overflows, it removes the client.
- *
- * @param server Pointer to the server instance.
- * @param index Index of the client in the server's client array.
- */
-void read_from_client(server_t *server, int index)
+void read_from_client(server_t *server, client_t *client)
 {
-    client_t *client = &server->clients[index];
     char buf[BUFFER_COMMAND_SIZE] = {0};
     ssize_t bytes = 0;
 
+    if (!server || !client)
+        return;
     bytes = read(client->fd, buf, sizeof(buf));
-    if (handle_client_read_error(server, client, index, bytes))
+    if (handle_client_read_error(server, client, bytes))
         return;
     if (client->buffer_len + bytes >= CLIENT_BUFFER_SIZE) {
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
         dprintf(client->fd, "ko\n");
         EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        server->vtable->remove_client(server, client);
         return;
     }
     append_to_read_buffer(client, buf, bytes);
     extract_commands_from_buffer(server, client);
 }
 
-/**
- * @brief Sets up the poll file descriptors for the server and its clients.
- *
- * This function initializes the poll file descriptors for the server socket
- * and all connected clients, preparing them for polling events.
- *
- * @param self Pointer to the server instance.
- * @param fds Array of poll file descriptors to populate.
- * @param nfds Pointer to the number of file descriptors in the array.
- */
 void handle_server_poll(server_t *self, struct pollfd *fds)
 {
-    int client_index = 0;
-    int i = 0;
+    list_node_t *node = NULL;
+    list_node_t *next = NULL;
+    client_t *client = NULL;
+    int poll_index = 1;
 
     if (fds[0].revents & POLLIN)
         self->vtable->accept_client(self);
-    for (i = 1; i <= self->client_count; i++) {
-        if (fds[i].revents & (POLLIN | POLLHUP)) {
-            read_from_client(self, client_index);
+    for (node = self->clients->head; node; poll_index++) {
+        next = node->next;
+        client = node->data;
+        if (!client)
             continue;
-        }
-        client_index++;
+        if (fds[poll_index].revents & (POLLIN | POLLHUP))
+            read_from_client(self, client);
+        node = next;
     }
 }

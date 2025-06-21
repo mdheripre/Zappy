@@ -25,12 +25,14 @@
  */
 client_t *server_get_gui(server_t *server)
 {
-    if (!server)
+    client_t *client = NULL;
+
+    if (!server || !server->clients)
         return NULL;
-    for (int i = 0; i < server->client_count; i++) {
-        if (server->clients[i].connected &&
-            server->clients[i].type == CLIENT_GUI)
-            return &server->clients[i];
+    for (list_node_t *n = server->clients->head; n; n = n->next) {
+        client = n->data;
+        if (client && client->connected && client->type == CLIENT_GUI)
+            return client;
     }
     return NULL;
 }

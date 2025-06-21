@@ -48,7 +48,7 @@ typedef struct server_methods_s {
     void (*setup_poll)(server_t *self, struct pollfd *fds, nfds_t *nfds);
     void (*handle_poll)(server_t *self, struct pollfd *fds);
     void (*accept_client)(server_t *self);
-    void (*remove_client)(server_t *self, int index);
+    void (*remove_client)(server_t *self, client_t *client);
     int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
@@ -60,7 +60,7 @@ struct server_s {
     int port;
     int socket_fd;
     struct sockaddr_in address;
-    client_t clients[MAX_CLIENTS];
+    list_t *clients;
     int client_count;
     game_t *game;
     dispatcher_t *dispatcher;
@@ -80,7 +80,7 @@ server_t *server_create(config_t *config);
 void server_destroy(server_t *self);
 bool init_socket(server_t *self);
 bool server_init(server_t *server, config_t *config);
-void remove_client(server_t *self, int index);
+void remove_client(server_t *self, client_t *client);
 void accept_client(server_t *self);
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
