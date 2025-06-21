@@ -27,8 +27,6 @@
     #include "dispatcher.h"
     #include "game.h"
     #include "command_manager.h"
-    // #define MAX_CLIENTS 100
-    #define TIMEOUT_MS 100
     #define BUFFER_COMMAND_SIZE 128
     #define BUFFER_SIZE 64
     #define BUFFER_CMD_NAME 100
@@ -52,7 +50,6 @@ typedef struct server_methods_s {
     int (*get_command_delay)(server_t *self, const char *command);
     void (*reject_client)(server_t *self, client_t *client,
         const char *reason);
-    client_t *(*get_gui)(server_t *self);
     tick_info_t (*get_next_tick_info)(server_t *self);
 } server_methods_t;
 
@@ -64,6 +61,7 @@ struct server_s {
     int client_count;
     game_t *game;
     dispatcher_t *dispatcher;
+    client_t *gui;
     command_manager_t *command_manager;
     float accumulated_ms;
     long last_tick_time;
@@ -86,7 +84,6 @@ void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds);
 void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 void reject_client(server_t *server, client_t *client, const char *reason);
-client_t *server_get_gui(server_t *server);
 int get_command_delay(server_t *self, const char *command);
 tick_info_t get_next_tick_info(server_t *self);
 

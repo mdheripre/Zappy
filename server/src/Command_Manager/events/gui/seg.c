@@ -18,7 +18,7 @@
 void handle_gui_seg(void *ctx, void *)
 {
     server_t *server = ctx;
-    client_t *gui = server->vtable->get_gui(server);
+    client_t *gui = server->gui;
     char *winner = server->game->methods->get_winner(server->game);
 
     if (!gui)

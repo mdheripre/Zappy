@@ -27,5 +27,7 @@ void remove_client(server_t *self, client_t *client)
     }
     console_log(LOG_INFO, "Client (fd=%d) disconnected", client->fd);
     close(client->fd);
+    if (self->gui == client)
+        self->gui = NULL;
     self->clients->methods->remove(self->clients, client);
 }

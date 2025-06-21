@@ -15,30 +15,9 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Checks if another GUI client is already connected.
- *
- * Iterates through the list of connected clients to determine whether
- * a GUI client other than the given one is already present.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the current client being verified.
- * @return true if another GUI is already connected, false otherwise.
- */
 static bool check_second_gui(server_t *server, client_t *client)
 {
-    client_t *other = NULL;
-
-    if (!server || !server->clients)
-        return false;
-    for (list_node_t *n = server->clients->head; n; n = n->next) {
-        other = n->data;
-        if (!other || other == client)
-            continue;
-        if (other->connected && other->type == CLIENT_GUI)
-            return true;
-    }
-    return false;
+    return server->gui && server->gui != client;
 }
 
 /**

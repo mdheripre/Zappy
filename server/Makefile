@@ -65,7 +65,6 @@ SRCS = \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_next_tick.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
-	$(SRC_SERV_METHODS)/get_gui.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \

@@ -29,5 +29,7 @@ void reject_client(server_t *server, client_t *client, const char *reason)
         return;
     write(client->fd, "ko\n", 3);
     console_log(LOG_WARNING, "%s (fd=%d)", reason, client->fd);
+    if (server->gui == client)
+        server->gui = NULL;
     server->vtable->remove_client(server, client);
 }

@@ -34,7 +34,6 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
     .reject_client = reject_client,
-    .get_gui = server_get_gui,
     .get_next_tick_info = get_next_tick_info,
 };
 
@@ -195,6 +194,7 @@ static bool server_create_init(server_t *server, config_t *config)
 
     if (!server_init(server, config))
         return false;
+    server->gui = NULL;
     server->game = NEW(game, &game_cfg);
     if (!server->game || !listen_socket(server))
         return false;
