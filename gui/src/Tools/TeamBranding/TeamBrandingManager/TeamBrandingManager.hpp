@@ -12,6 +12,7 @@
 #include <array>
 #include "Tools/TeamBranding/TeamBranding.hpp"
 #include "Game/Trantorian/Trantorian.hpp"
+#include "Game/Incantation/Incantation.hpp"
 #include "Game/Egg/Egg.hpp"
 #include "Tools/Define.hpp"
 
@@ -48,11 +49,11 @@ namespace tools
             std::unordered_map<std::string, TeamBranding> _brandMap;
             int _nextIndex = 0;
     
-            const std::array<TeamBranding, 1> _presetBrandings = {
+            const std::array<TeamBranding, 4> _presetBrandings = {
                 //Team Starmie
                 TeamBranding(
                     "Yellow Knight", 
-                    Color(255, 255, 0, 0),
+                    Color(255, 255, 0, 255),
                     //Trantorian Asset
                     AssetDefinition(
                         //Model Path
@@ -73,7 +74,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
-        
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
                         },
                         //Scaling to apply
                         TILE_SIZE,
@@ -85,6 +86,144 @@ namespace tools
                     AssetDefinition(
                         //Model Path
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                        },
+                        //Scaling to Apply
+                        TILE_SIZE * 1.2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    )
+                ),
+                TeamBranding(
+                    "Blue Knight", 
+                    Color(0, 0, 255, 255),
+                    //Trantorian Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png",
+                        // Animation Mapping
+                        {
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                        },
+                        // Scaling to apply
+                        TILE_SIZE * 2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    ),
+                    //Incantation Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                        },
+                        //Scaling to apply
+                        TILE_SIZE,
+                        //Rows en colonnes to cut texture for animation
+                        7,
+                        1
+                    ),
+                    //Egg Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                        },
+                        //Scaling to Apply
+                        TILE_SIZE * 1.2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    )
+                ),
+                TeamBranding(
+                    "Red Knight", 
+                    Color(0, 0, 255, 255),
+                    //Trantorian Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.png",
+                        // Animation Mapping
+                        {
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                        },
+                        // Scaling to apply
+                        TILE_SIZE * 2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    ),
+                    //Incantation Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                        },
+                        //Scaling to apply
+                        TILE_SIZE,
+                        //Rows en colonnes to cut texture for animation
+                        7,
+                        1
+                    ),
+                    //Egg Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                        },
+                        //Scaling to Apply
+                        TILE_SIZE * 1.2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    )
+                ),
+                TeamBranding(
+                    "Purple Knight", 
+                    Color(0, 0, 255, 255),
+                    //Trantorian Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.png",
+                        // Animation Mapping
+                        {
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                        },
+                        // Scaling to apply
+                        TILE_SIZE * 2,
+                        //Rows en colonnes to cut texture for animation
+                        6,
+                        8
+                    ),
+                    //Incantation Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
+                        //Animation Mapping
+                        {
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                        },
+                        //Scaling to apply
+                        TILE_SIZE,
+                        //Rows en colonnes to cut texture for animation
+                        7,
+                        1
+                    ),
+                    //Egg Asset
+                    AssetDefinition(
+                        //Model Path
+                        "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.png",
                         //Animation Mapping
                         {
                             {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
