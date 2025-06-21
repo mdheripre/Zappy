@@ -73,16 +73,6 @@ static void emit_identify_event(server_t *server,
     free(payload);
 }
 
-/**
- * @brief Handles the first command sent by a client to identify itself.
- *
- * Parses the first message sent by the client. If it's "GRAPHIC", ensures
- * no other GUI is already connected. Then emits the corresponding init
- * event ("gui_init" or "ia_init") and dequeues the command.
- *
- * @param ctx Pointer to the server instance (cast from void).
- * @param data Pointer to the client (cast from void).
- */
 void on_client_identify(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -98,10 +88,10 @@ void on_client_identify(void *ctx, void *data)
     strncpy(cleaned, cmd->content, CLIENT_BUFFER_SIZE - 1);
     cleaned[CLIENT_BUFFER_SIZE - 1] = '\0';
     strip_linefeed(cleaned);
+    client_dequeue_command(client, NULL);
     if (strcmp(cleaned, "GRAPHIC") == 0 && check_second_gui(server, client)) {
         reject_client(server, client, "Rejected GUI: already connected");
         return;
     }
     emit_identify_event(server, client, cleaned);
-    client_dequeue_command(client, NULL);
 }

@@ -66,7 +66,7 @@ static int accept_fd(server_t *self)
  */
 static bool is_server_full(server_t *self)
 {
-    if (self->client_count >= MAX_CLIENTS) {
+    if (self->client_count >= self->game->max_players) {
         console_log(LOG_WARNING, "Too many clients. Connection refused.");
         return true;
     }

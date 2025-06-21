@@ -136,7 +136,8 @@ static bool poll_clients(server_t *self,
 {
     int ret = 0;
 
-    memset(fds, 0, sizeof(struct pollfd) * (MAX_CLIENTS + 1));
+    if (!self || !fds || !nfds)
+        return false;
     self->vtable->setup_poll(self, fds, nfds);
     ret = poll(fds, *nfds, timeout);
     if (ret < 0) {
@@ -167,23 +168,41 @@ static void handle_after_poll(server_t *self, struct pollfd *fds)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Main loop of the server, handling timing, polling, and game updates.
- *
- * Continuously applies time, handles client input, and updates the game.
- *
- * @param self Pointer to the server instance.
- */
-void run_server(server_t *self)
+static struct pollfd *get_dynamic_pollfds(server_t *server, nfds_t *nfds)
 {
-    struct pollfd fds[MAX_CLIENTS + 1];
-    nfds_t nfds = 0;
-    int timeout = 0;
-    int ticks_applied = 0;
+    static struct pollfd *fds = NULL;
+    struct pollfd *new_fds = NULL;
+    static size_t capacity = 0;
+    size_t required = 0;
 
-    self->last_tick_time = get_ms_time();
-    self->accumulated_ms = 0.0f;
+    required = server->game->max_players + 1;
+    if (capacity >= required) {
+        *nfds = required;
+        return fds;
+    }
+    new_fds = calloc(required, sizeof(struct pollfd));
+    if (!new_fds)
+        return NULL;
+    gc_unregister(fds);
+    free(fds);
+    gc_register(new_fds, NULL);
+    fds = new_fds;
+    capacity = required;
+    *nfds = required;
+    return fds;
+}
+
+static void server_main_loop(server_t *self)
+{
+    nfds_t nfds = 0;
+    struct pollfd *fds = NULL;
+    int ticks_applied = 0;
+    int timeout = 0;
+
     while (true) {
+        fds = get_dynamic_pollfds(self, &nfds);
+        if (!fds)
+            break;
         update_time(self);
         ticks_applied = apply_ticks(self);
         timeout = compute_timeout(self);
@@ -195,4 +214,11 @@ void run_server(server_t *self)
         if (update_game_if_needed(self, ticks_applied))
             break;
     }
+}
+
+void run_server(server_t *self)
+{
+    self->last_tick_time = get_ms_time();
+    self->accumulated_ms = 0.0f;
+    server_main_loop(self);
 }

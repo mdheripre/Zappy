@@ -24,11 +24,13 @@
 void process_identify(command_manager_t *, server_t *server)
 {
     list_node_t *node = NULL;
+    list_node_t *next = NULL;
     client_t *client = NULL;
 
     if (!server || !server->clients)
         return;
-    for (node = server->clients->head; node; node = node->next) {
+    for (node = server->clients->head; node; node = next) {
+        next = node->next;
         client = node->data;
         if (!client || !client->connected || client->type != CLIENT_UNDEFINED)
             continue;

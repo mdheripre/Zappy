@@ -27,7 +27,7 @@
     #include "dispatcher.h"
     #include "game.h"
     #include "command_manager.h"
-    #define MAX_CLIENTS 100
+    // #define MAX_CLIENTS 100
     #define TIMEOUT_MS 100
     #define BUFFER_COMMAND_SIZE 128
     #define BUFFER_SIZE 64
