@@ -25,7 +25,8 @@ static void format_enw_message(char *buffer, size_t size,
     const game_event_t *event)
 {
     snprintf(buffer, size, "enw #%d #%d %d %d\n",
-        event->data.egg.egg_id, event->data.egg.player_id,
+        event->data.egg.egg_id,
+        event->data.egg.player ? event->data.egg.player->id : -1,
         event->data.egg.x, event->data.egg.y);
 }
 

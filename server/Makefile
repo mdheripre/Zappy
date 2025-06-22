@@ -137,10 +137,7 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/find_player_by_id.c \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
 	$(SRC_UTILS_HELPERS)/event_type_name.c \
-	$(SRC_UTILS_HELPERS)/get_fd_by_player.c \
 	$(SRC_UTILS_HELPERS)/find_team.c \
-	$(SRC_UTILS_HELPERS)/get_client_by_player.c \
-	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \

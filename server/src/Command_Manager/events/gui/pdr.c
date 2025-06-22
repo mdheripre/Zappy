@@ -20,8 +20,7 @@ void handle_gui_pdr(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    player_t *player = find_player_by_id(server->game,
-        event->data.player_item.player_id);
+    player_t *player = event->data.player_item.player;
     client_t *gui = server->gui;
 
     if (!server || !event || !player || !gui)
