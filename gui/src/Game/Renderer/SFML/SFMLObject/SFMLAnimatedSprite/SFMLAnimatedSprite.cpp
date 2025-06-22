@@ -15,14 +15,12 @@ namespace sfml {
         int columns,
         int rows,
         float pixelSize,
-        std::unordered_map<int, int> animationMap,
-        float fps,
-        int defaultAnimation)
-        : _animationMap(std::move(animationMap)), _rows(rows), _columns(columns), _ctx(std::move(ctx)), _fps(fps)
+        std::unordered_map<int, tools::AssetDefinition::AnimationInfo> animationMap,
+        float fps)
+        : _animationMap(animationMap), _rows(rows), _columns(columns), _ctx(std::move(ctx)), _fps(fps)
     {
         sprite.setTexture(texture);
         auto texSize = texture.getSize();
-        
         _frameWidth = texSize.x / _columns;
         _frameHeight = texSize.y / _rows;
     
@@ -30,8 +28,8 @@ namespace sfml {
         float scaleFactor = pixelSize / frameMax;
         sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
         
-        _currentAnimation = defaultAnimation;
-        _defaultAnimation = defaultAnimation;
+        _currentAnimation = animationMap.at(0);
+        _defaultAnimation = animationMap.at(0);
         playAnimation(_currentAnimation, true);
     }
     
@@ -42,11 +40,30 @@ namespace sfml {
         if (animIt == _animationMap.end()) {
             throw RenderError("Error animation " + std::to_string(keyAnim) + " doesn't exist");
         }
-        _currentAnimRow = animIt->second;
+        _currentAnimRow = animIt->second.line;
         _currentFrame = 0;
         _loop = loop;
-        _currentAnimation = keyAnim;
-    
+        _currentAnimation = animIt->second;
+        _reversed = animIt->second.reverse;
+
+        updateSpriteDirection(); 
+        sprite.setTextureRect(sf::IntRect(
+            _currentFrame * _frameWidth,
+            _currentAnimRow * _frameHeight,
+            _frameWidth,
+            _frameHeight
+        ));
+    }
+
+    void SFMLAnimatedSprite::playAnimation(tools::AssetDefinition::AnimationInfo animInfo, bool loop)
+    {
+        _currentAnimRow = animInfo.line;
+        _currentFrame = 0;
+        _loop = loop;
+        _currentAnimation = animInfo;
+        _reversed = animInfo.reverse;
+
+        updateSpriteDirection();    
         sprite.setTextureRect(sf::IntRect(
             _currentFrame * _frameWidth,
             _currentAnimRow * _frameHeight,
@@ -64,7 +81,7 @@ namespace sfml {
         }
         acc = 0.0f;
         _currentFrame++;
-        if (_currentFrame >= _columns) {
+        if (_currentFrame >= _currentAnimation.frames) {
             if (_loop) {
                 _currentFrame = 0;
             } else {
@@ -132,8 +149,7 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
         _rows,
         sprite.getScale().x,
         _animationMap,
-        _fps,
-        _defaultAnimation
+        _fps
     );
 
     copy->playAnimation(_defaultAnimation, _loop);
@@ -150,7 +166,14 @@ bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
 void SFMLAnimatedSprite::setColor(const tools::Color &color)
 {
     sprite.setColor({color.r, color.g, color.b, color.a});
+}
 
+void SFMLAnimatedSprite::updateSpriteDirection()
+{
+    float scaleX = _reversed ? -std::abs(sprite.getScale().x) : std::abs(sprite.getScale().x);
+
+    sprite.setScale(scaleX, sprite.getScale().y);
+    sprite.setOrigin(_reversed ? static_cast<float>(_frameWidth) : 0.f, 0.f);
 }
 
 } // namespace sfml

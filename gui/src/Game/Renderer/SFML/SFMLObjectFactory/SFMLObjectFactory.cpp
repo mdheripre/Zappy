@@ -92,7 +92,6 @@ std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite
         texture.setSmooth(true);
         _textureMap[path] = std::move(texture);
     }
-
     return std::make_unique<SFMLAnimatedSprite>(
         _textureMap.at(path),
         _rWindow,

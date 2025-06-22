@@ -712,6 +712,7 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
 
     if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
         tools::AssetDefinition asset = tranId >= 0 ? _tbManager.getTeamBranding(teamName).getEggAsset() : gui::Egg::defaultAsset;
+        std::cout << asset.getAnimation().size() << "frrrrrrrrrrrr" << std::endl;
         auto egg = std::make_shared<gui::Egg>(
             eggId,
             pos,
