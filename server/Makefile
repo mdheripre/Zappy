@@ -51,6 +51,10 @@ SRC_GAME_CTOR = $(SRC_GAME)/constructor
 SRC_GAME_DTOR = $(SRC_GAME)/destructor
 SRC_GAME_METHODS = $(SRC_GAME)/methods
 SRC_GAME_EVENT = $(SRC_GAME)/event
+SRC_POLL_MANAGER = $(SRC_DIR)/Poll_manager
+SRC_POLL_MANAGER_CTOR = $(SRC_POLL_MANAGER)/constructor
+SRC_POLL_MANAGER_DTOR = $(SRC_POLL_MANAGER)/destructor
+SRC_POLL_MANAGER_METHODS = $(SRC_POLL_MANAGER)/methods
 
 SRCS = \
 	$(SRC_DIR)/main.c \
@@ -201,7 +205,10 @@ SRCS = \
 	$(SRC_PLAYER_METHODS)/move.c \
 	$(SRC_PLAYER_METHODS)/die.c \
 	$(SRC_PLAYER_METHODS)/update.c \
-
+	$(SRC_POLL_MANAGER_CTOR)/poll_manager_create.c \
+	$(SRC_POLL_MANAGER_DTOR)/poll_manager_destroy.c \
+	$(SRC_POLL_MANAGER_METHODS)/resize.c \
+	$(SRC_POLL_MANAGER_METHODS)/get_fds.c \
 
 OBJS = $(SRCS:.c=.o)
 
