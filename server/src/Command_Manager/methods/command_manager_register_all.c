@@ -152,6 +152,8 @@ static void register_process_response_extend(command_manager_t *self,
         on_response_take, server);
     REGISTER(self->dispatcher, "RESPONSE_BROADCAST_TO_GUI",
         handle_gui_pbc, server);
+    REGISTER(self->dispatcher, "RESPONSE_PLAYER_EAT",
+        on_response_player_eat, server);
 }
 
 /**

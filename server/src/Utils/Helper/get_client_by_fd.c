@@ -23,11 +23,15 @@
  */
 client_t *get_client_by_fd(server_t *server, int fd)
 {
-    if (!server)
+    list_node_t *node = NULL;
+    client_t *client = NULL;
+
+    if (!server || !server->clients)
         return NULL;
-    for (int i = 0; i < server->client_count; i++) {
-        if (server->clients[i].fd == fd)
-            return &server->clients[i];
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
+        if (client && client->fd == fd)
+            return client;
     }
     return NULL;
 }

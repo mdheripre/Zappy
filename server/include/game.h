@@ -72,6 +72,7 @@ typedef enum game_event_type_e {
     GAME_EVENT_RESPONSE_TILE_UPDATED,       // bct
     GAME_EVENT_RESPONSE_TAKE,               // réponse IA
     GAME_EVENT_RESPONSE_DROP,               // réponse IA
+    GAME_EVENT_RESPONSE_PLAYER_EAT,         // réponse IA
 } game_event_type_t;
 
 
@@ -113,6 +114,7 @@ static const event_type_entry_t EVENT_TYPE_MAP[] = {
     { GAME_EVENT_RESPONSE_BROADCAST, "RESPONSE_BROADCAST" },
     { GAME_EVENT_RESPONSE_BROADCAST_TO_GUI, "RESPONSE_BROADCAST_TO_GUI" },
     { GAME_EVENT_RESPONSE_TILE_UPDATED, "RESPONSE_TILE_UPDATED" },
+    { GAME_EVENT_RESPONSE_PLAYER_EAT, "RESPONSE_PLAYER_EAT"}
 };
 
 typedef enum move_direction_e {
@@ -216,6 +218,7 @@ struct game_s {
     int tick_counter_tiled;
     unsigned long tick_counter;
     bool has_finished;
+    int max_players;
 
     tile_t **map;
     list_t *teams;

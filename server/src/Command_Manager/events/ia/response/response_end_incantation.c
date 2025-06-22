@@ -29,13 +29,13 @@
 static void send_incantation_result(server_t *server,
     game_event_t *event, player_t *player)
 {
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = get_client_by_player(server, player);
     int fd = -1;
 
     if (!client)
         return;
     client->stuck = false;
-    fd = get_client_fd_by_player(server, player, NULL);
+    fd = get_client_fd_by_player(server, player);
     if (fd != -1) {
         if (event->data.incantation.success) {
             dprintf(fd, "current level: %d\n", player->level);
@@ -56,7 +56,7 @@ static void send_incantation_result(server_t *server,
  */
 static void replan_next_command(server_t *server, player_t *player)
 {
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = get_client_by_player(server, player);
     queued_command_t *next = NULL;
 
     if (!client)

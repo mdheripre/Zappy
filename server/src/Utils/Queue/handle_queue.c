@@ -32,7 +32,7 @@ bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     queued_command_t *entry = NULL;
 
     if (!client || !cmd || !client->commands ||
-        (client->commands->size >= MAX_COMMANDS && client->type != CLIENT_GUI))
+        client->commands->size >= MAX_COMMANDS)
         return false;
     entry = malloc(sizeof(queued_command_t));
     if (!entry)

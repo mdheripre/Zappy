@@ -2,30 +2,29 @@
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
-** pdr
+** response_player_eat
 */
 
-#include "command_manager.h"
-#include "shared.h"
-#include "server.h"
 #include "client.h"
+#include "server.h"
+#include "game.h"
+#include "player.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                            GUI COMMANDS                                  */
+/*                        RESPONSE COMMAND                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void handle_gui_pdr(void *ctx, void *data)
+void on_response_player_eat(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
     player_t *player = find_player_by_id(server->game,
-        event->data.player_item.player_id);
-    client_t *gui = server->gui;
+        event->data.generic_response.player_id);
 
-    if (!server || !event || !player || !gui)
+    if (!server || !player)
         return;
-    dprintf(gui->fd, "pdr #%d %d\n", player->id,
-        event->data.player_item.type_item);
+    EMIT(server->command_manager->dispatcher, "gui_pin",
+        player);
 }

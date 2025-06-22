@@ -40,7 +40,7 @@ void handle_gui_pic(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *gui = server->vtable->get_gui(server);
+    client_t *gui = server->gui;
     char buffer[BUFFER_SIZE] = {0};
 
     if (!server || !event || !gui)

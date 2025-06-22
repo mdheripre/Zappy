@@ -21,10 +21,11 @@ void on_response_egg_laid(void *ctx, void *data)
     game_event_t *event = data;
     player_t *player = find_player_by_id(server->game,
         event->data.egg.player_id);
-    client_t *client = get_client_by_player(server, player, NULL);
+    client_t *client = get_client_by_player(server, player);
 
     if (!server || !event || !client)
         return;
     dprintf(client->fd, "ok\n");
+    server->game->max_players++;
     EMIT(server->command_manager->dispatcher, "gui_enw", event);
 }

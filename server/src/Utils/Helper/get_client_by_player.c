@@ -15,21 +15,17 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Get the client associated with a given player.
- *
- * @param server Pointer to the server instance.
- * @param player Pointer to the player.
- * @param index Optional pointer to store the client index.
- * @return Pointer to the client, or NULL if not found.
- */
-client_t *get_client_by_player(server_t *server, player_t *player, int *index)
+client_t *get_client_by_player(server_t *server, player_t *player)
 {
-    int idx = get_client_index_by_player(server, player);
+    list_node_t *node = NULL;
+    client_t *client = NULL;
 
-    if (idx == -1)
+    if (!server || !player || !server->clients)
         return NULL;
-    if (index)
-        *index = idx;
-    return &server->clients[idx];
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
+        if (client && client->player == player)
+            return client;
+    }
+    return NULL;
 }

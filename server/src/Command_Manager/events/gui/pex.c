@@ -21,7 +21,7 @@ void handle_gui_pex(void *ctx, void *data)
     server_t *server = ctx;
     client_t *client = data;
     player_t *player = client->player;
-    client_t *gui = server_get_gui(server);
+    client_t *gui = server->gui;
 
     if (!server || !client || !player || !gui)
         return;

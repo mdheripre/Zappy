@@ -136,14 +136,14 @@ static void handle_client_command(command_manager_t *mgr,
  */
 void process_all(command_manager_t *mgr, server_t *server, int current_tick)
 {
+    list_node_t *node = NULL;
     client_t *client = NULL;
     queued_command_t *cmd = NULL;
 
-    if (!mgr || !server)
+    if (!mgr || !server || !server->clients)
         return;
-    for (int i = 0; i < server->client_count; i++) {
-        client = &server->clients[i];
-        cmd = NULL;
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
         if (!client || !client->connected || client->stuck)
             continue;
         cmd = client_peek_command(client);

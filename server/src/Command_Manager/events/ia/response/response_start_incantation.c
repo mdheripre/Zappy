@@ -32,7 +32,7 @@ static void send_ko_to_first_participant(server_t *server,
 
     if (participants && participants->head) {
         player = participants->head->data;
-        fd = get_client_fd_by_player(server, player, NULL);
+        fd = get_client_fd_by_player(server, player);
         if (fd != -1)
             dprintf(fd, "ko\n");
     }
@@ -55,11 +55,11 @@ static void notify_participants_elevation(server_t *server,
 
     for (list_node_t *n = participants->head; n; n = n->next) {
         player = n->data;
-        client = get_client_by_player(server, player, NULL);
+        client = get_client_by_player(server, player);
         if (!client)
             continue;
         client->stuck = true;
-        fd = get_client_fd_by_player(server, player, NULL);
+        fd = get_client_fd_by_player(server, player);
         if (fd != -1)
             dprintf(fd, "elevation underway\n");
     }

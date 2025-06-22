@@ -65,7 +65,6 @@ SRCS = \
 	$(SRC_SERV_METHODS)/accept_client.c \
 	$(SRC_SERV_METHODS)/get_next_tick.c \
 	$(SRC_SERV_METHODS)/get_delay.c \
-	$(SRC_SERV_METHODS)/get_gui.c \
 	$(SRC_SERV_METHODS)/handle_poll.c \
 	$(SRC_SERV_METHODS)/remove_client.c \
 	$(SRC_SERV_METHODS)/server_run.c \
@@ -102,6 +101,7 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_tile_updated.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_end_incantation.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_take.c \
+	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_player_eat.c \
 	$(SRC_CMD_MANAGER_EVENTS_RESPONSE)/response_egg_die.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/bct.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/msz.c \
@@ -141,7 +141,6 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/find_team.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_player.c \
 	$(SRC_UTILS_HELPERS)/get_client_by_fd.c \
-	$(SRC_UTILS_HELPERS)/get_client_index_by_player.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
 	$(SRC_DISP_DTOR)/dispatcher_destroy.c \

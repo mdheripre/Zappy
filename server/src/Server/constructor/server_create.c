@@ -34,7 +34,6 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
     .remove_client = remove_client,
     .get_command_delay = get_command_delay,
     .reject_client = reject_client,
-    .get_gui = server_get_gui,
     .get_next_tick_info = get_next_tick_info,
 };
 
@@ -140,7 +139,7 @@ static bool bind_socket(server_t *self)
  */
 static bool listen_socket(server_t *self)
 {
-    if (listen(self->socket_fd, MAX_CLIENTS) == -1) {
+    if (listen(self->socket_fd, 100) == -1) {
         console_log(LOG_ERROR, "Listen failed");
         return false;
     }
@@ -148,20 +147,10 @@ static bool listen_socket(server_t *self)
     return true;
 }
 
-/**
- * @brief Initializes the server socket and prepares it for accepting
- * connections.
- *
- * This function creates a socket, sets options, binds it to an address,
- * and starts listening for incoming connections.
- *
- * @param self Pointer to the server structure.
- * @return true if all operations were successful, false otherwise.
- */
 bool init_socket(server_t *self)
 {
     return create_socket(self) && set_socket_options(self) &&
-    (setup_address(self), true) && bind_socket(self) && listen_socket(self);
+        (setup_address(self), true) && bind_socket(self);
 }
 
 /**
@@ -197,35 +186,36 @@ bool server_init(server_t *server, config_t *config)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Creates and initializes a new server instance.
- *
- * Allocates the server structure and initializes its core components,
- * including the game instance and command manager. Fails gracefully on
- * any allocation or initialization error.
- *
- * @param config Pointer to the server configuration structure.
- * @return Pointer to the newly created server, or NULL on failure.
- */
+static bool server_create_init(server_t *server, config_t *config)
+{
+    config_game_t game_cfg = { .width = config->width,
+        .height = config->height, .frequency = config->frequency,
+        .team_size = config->team_size, .team_name = config->team_name };
+
+    if (!server_init(server, config))
+        return false;
+    server->gui = NULL;
+    server->game = NEW(game, &game_cfg);
+    if (!server->game || !listen_socket(server))
+        return false;
+    server->clients = NEW(list, free);
+    server->command_manager = NEW(command_manager);
+    if (!server->command_manager)
+        return false;
+    server->command_manager->methods->register_all(server->command_manager,
+        server);
+    return true;
+}
+
 server_t *server_create(config_t *config)
 {
     server_t *server = malloc(sizeof(server_t));
-    config_game_t game_cfg = { .width = config->width,
-        .height = config->height, .frequency = config->frequency,
-        .team_size = config->team_size, .team_name = config->team_name
-    };
 
-    if (!server_init(server, config)) {
+    if (!server)
+        return NULL;
+    if (!server_create_init(server, config)) {
         free(server);
         return NULL;
     }
-    server->game = NEW(game, &game_cfg);
-    server->command_manager = NEW(command_manager);
-    if (!server->command_manager || !server->game) {
-        free(server);
-        return NULL;
-    }
-    server->command_manager->methods->register_all(server->command_manager,
-        server);
     return server;
 }

@@ -33,7 +33,7 @@ static response_payload_t *create_response_payload(server_t *server,
         return NULL;
     player = find_player_by_id(server->game,
         event->data.generic_response.player_id);
-    target = get_client_by_player(server, player, NULL);
+    target = get_client_by_player(server, player);
     payload = malloc(sizeof(response_payload_t));
     if (!payload || !target)
         return NULL;

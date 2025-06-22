@@ -26,22 +26,10 @@
 void handle_gui_smg(void *ctx, void *data)
 {
     server_t *server = ctx;
-    char *message = data;
-    client_t *client = NULL;
-    response_payload_t *payload = NULL;
+    const char *message = data;
+    client_t *client = server ? server->gui : NULL;
 
-    client = server->vtable->get_gui(server);
-    if (!client)
+    if (!client || !message)
         return;
-    payload = malloc(sizeof(response_payload_t));
-    if (!payload)
-        return;
-    payload->client = client;
-    payload->message = malloc(strlen(message) + 6);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    sprintf(payload->message, "smg %s\n", message);
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(client->fd, "smg %s\n", message);
 }

@@ -27,14 +27,20 @@
  */
 void setup_server_poll(server_t *self, struct pollfd *fds, nfds_t *nfds)
 {
+    list_node_t *node = NULL;
+    client_t *client = NULL;
+
     *nfds = 1;
     fds[0].fd = self->socket_fd;
     fds[0].events = POLLIN;
     fds[0].revents = 0;
-    for (int i = 0; i < self->client_count; i++) {
-        fds[*nfds].fd = self->clients[i].fd;
+    for (node = self->clients->head; node; (*nfds)++) {
+        client = node->data;
+        if (!client)
+            continue;
+        fds[*nfds].fd = client->fd;
         fds[*nfds].events = POLLIN;
         fds[*nfds].revents = 0;
-        (*nfds)++;
+        node = node->next;
     }
 }
