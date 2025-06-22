@@ -31,11 +31,11 @@ static void player_init(player_t *player, player_config_t config)
     player->level = 1;
     player->client = config.client;
     player->is_alive = true;
-    player->nbr_tick = 0;
+    player->nbr_tick = 126;
     player->team_name = strdup(config.team_name);
     player->methods = &PLAYER_METHODS;
     memset(player->inventory, 0, sizeof(player->inventory));
-    player->inventory[RESOURCE_FOOD] = 9;
+    player->inventory[RESOURCE_FOOD] = 10;
 }
 
 player_t *player_create(player_config_t config)
