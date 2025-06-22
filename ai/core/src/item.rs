@@ -47,7 +47,7 @@ impl fmt::Display for Item {
             Item::Deraumere => "deraumere",
             Item::Sibur => "sibur",
             Item::Mendiane => "mendiane",
-            Item::Phiras => "Phiras",
+            Item::Phiras => "phiras",
             Item::Thystame => "thystame",
         };
         write!(f, "{}", s)
