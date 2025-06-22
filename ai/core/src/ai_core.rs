@@ -68,6 +68,9 @@ pub struct AiState {
 }
 
 impl AiState {
+    const MISSING_ITEM_WEIGHT: f64 = 1.0;
+    const DISTANCE_WEIGHT: f64 = 1.0;
+    const PROBABILITY_WEIGHT: f64 = 1.0;
     pub fn new(ci: ClientInfos, is_child: bool) -> Self {
         Self {
             is_child,
@@ -112,8 +115,8 @@ impl AiState {
                 distance = 0.5
             }
             for item in tile.get_items() {
-                value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
-                    / (item.0.probability() * distance)
+                value += ((item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) * Self::MISSING_ITEM_WEIGHT)
+                    / (item.0.probability() * Self::PROBABILITY_WEIGHT * distance * Self::DISTANCE_WEIGHT)
             }
             if value > max_value {
                 max_value = value;
@@ -132,8 +135,8 @@ impl AiState {
         let mut max_value: f64 = 0.0;
         let mut selected_item: Option<Item> = None;
         for item in items {
-            let value: f64 = (item.needed() as f64 - self.inventory.get_count(&item) as f64)
-                / item.probability();
+            let value: f64 = ((item.needed() as f64 - self.inventory.get_count(&item) as f64) * Self::MISSING_ITEM_WEIGHT)
+                / (item.probability() * Self::PROBABILITY_WEIGHT);
             if value > max_value {
                 max_value = value;
                 selected_item = Some(item.clone());
