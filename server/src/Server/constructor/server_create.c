@@ -50,13 +50,14 @@ static const server_methods_t DEFAULT_SERVER_METHODS = {
  */
 static void register_core_events(server_t *server)
 {
-    REGISTER(server->dispatcher, "client_connected",
-        on_client_connected, server);
-    REGISTER(server->dispatcher, "client_identify",
-        on_client_identify, server);
-    REGISTER(server->dispatcher, "send_response", on_send_response, server);
-    REGISTER(server->dispatcher, "gui_init", on_gui_init, server);
-    REGISTER(server->dispatcher, "ia_init", on_ia_init, server);
+    REGISTER(server->dispatcher, EVENT_CLIENT_CONNECTED, on_client_connected,
+        server);
+    REGISTER(server->dispatcher, EVENT_CLIENT_IDENTIFY, on_client_identify,
+        server);
+    REGISTER(server->dispatcher, EVENT_SEND_RESPONSE, on_send_response,
+        server);
+    REGISTER(server->dispatcher, EVENT_GUI_INIT, on_gui_init, server);
+    REGISTER(server->dispatcher, EVENT_IA_INIT, on_ia_init, server);
 }
 
 /****************************************************************************/
@@ -173,7 +174,7 @@ bool server_init(server_t *server, config_t *config)
     server->vtable = &DEFAULT_SERVER_METHODS;
     if (!server->vtable->constructor(server))
         return false;
-    server->dispatcher = NEW(dispatcher, on_event_not_found);
+    server->dispatcher = NEW(dispatcher, on_event_not_found, NULL, 0);
     if (!server->dispatcher)
         return false;
     register_core_events(server);

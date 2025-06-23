@@ -61,7 +61,7 @@ static void send_inventory_response(game_t *game, player_t *player)
         free(inventory_str);
         return;
     }
-    response->type = GAME_EVENT_RESPONSE_INVENTORY;
+    response->type = EVENT_RESP_INVENTORY;
     response->data.generic_response.client = player->client;
     response->data.generic_response.response = inventory_str;
     game->server_event_queue->methods->push_back(game->server_event_queue,

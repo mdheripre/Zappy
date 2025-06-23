@@ -76,11 +76,11 @@ void handle_command_gui_ppo(void *ctx, void *data)
     if (!extract_command_arguments(client_peek_command(client)->content,
         args_line, BUFFER_COMMAND_SIZE)
         || !error_handling(args_line, arg, &client_num))
-        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        return EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
     player = find_player_by_id(server->game, client_num);
     if (!player) {
         console_log(LOG_WARNING, "PPO: Player %d not found", client_num);
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return;
     }
     ppo_send_position(client, player);

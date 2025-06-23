@@ -35,7 +35,7 @@ void handle_command_forward(void *ctx, void *data)
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_PLAYER_MOVED;
+    event->type = EVENT_PLAYER_MOVED;
     event->data.player_moved.player = player;
     event->data.player_moved.ia_success = true;
     event->data.player_moved.direction = MOVE_FORWARD;

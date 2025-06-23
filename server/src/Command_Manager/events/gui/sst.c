@@ -42,7 +42,7 @@ static int get_frequency_from_str(char *arg)
 static bool error_handling(char *args_line, char *arg, int *num)
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
-        console_log(LOG_WARNING, "PPO: Missing parameter");
+        console_log(LOG_WARNING, "SST: Missing parameter");
         return false;
     }
     *num = get_frequency_from_str(arg);
@@ -74,7 +74,7 @@ void handle_command_gui_sst(void *ctx, void *data)
     if (!extract_command_arguments(client_peek_command(client)->content,
         args_line, CLIENT_BUFFER_SIZE)
         || error_handling(args_line, arg, &num)) {
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return;
     }
     server->game->frequency = num;

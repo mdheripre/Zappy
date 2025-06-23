@@ -34,7 +34,7 @@ static game_event_t *create_broadcast_event(client_t *client,
     if (!event)
         return NULL;
     memset(event, 0, sizeof(game_event_t));
-    event->type = GAME_EVENT_BROADCAST_MESSAGE;
+    event->type = EVENT_BROADCAST_MESSAGE;
     event->data.generic_response.client = client;
     event->data.generic_response.response = strdup(message);
     return event;

@@ -29,14 +29,12 @@
 void game_dispatch_events(game_t *self)
 {
     game_event_t *event = NULL;
-    const char *event_name = NULL;
 
     if (!self || !self->dispatcher)
         return;
     event = self->event_queue->methods->pop_front(self->event_queue);
     while (event) {
-        event_name = event_type_name(event->type);
-        EMIT(self->dispatcher, event_name, event);
+        EMIT(self->dispatcher, event->type, event);
         free(event);
         event = self->event_queue->methods->pop_front(self->event_queue);
     }

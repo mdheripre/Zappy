@@ -23,10 +23,10 @@ void on_response_drop(void *ctx, void *data)
 
     if (!server || !event || !player || !player->client)
         return;
-    dprintf(player->client->fd, event->data.player_item.success ? "ok\n" :
-        "ko\n");
+    dprintf(player->client->fd, event->data.player_item.success ?
+        "ok\n" : "ko\n");
     if (event->data.player_item.success) {
-        EMIT(server->command_manager->dispatcher, "gui_pdr", event);
-        EMIT(server->command_manager->dispatcher, "gui_pin", player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDR, event);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
     }
 }

@@ -32,7 +32,7 @@ static game_event_t *prepare_connect_nbr_response(player_t *player,
     if (!response)
         return NULL;
     snprintf(buffer, sizeof(buffer), "%d\n", available);
-    response->type = GAME_EVENT_RESPONSE_CONNECT_NBR;
+    response->type = EVENT_RESP_CONNECT_NBR;
     response->data.generic_response.client = player->client;
     response->data.generic_response.response = strdup(buffer);
     if (!response->data.generic_response.response) {

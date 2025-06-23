@@ -37,7 +37,7 @@ void on_player_died(void *ctx, void *data)
     response = malloc(sizeof(game_event_t));
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_PLAYER_DIED;
+    response->type = EVENT_RESP_PLAYER_DIED;
     response->data.player_died.player = player;
     game->server_event_queue->methods->push_back(game->server_event_queue,
         response);

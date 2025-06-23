@@ -209,7 +209,7 @@ static game_event_t *create_look_response(game_t *game, player_t *p)
     if (!resp || !buffer)
         return NULL;
     build_look_response(game, p, buffer);
-    resp->type = GAME_EVENT_RESPONSE_LOOK;
+    resp->type = EVENT_RESP_LOOK;
     resp->data.generic_response.client = p->client;
     resp->data.generic_response.response = buffer;
     return resp;
