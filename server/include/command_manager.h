@@ -65,7 +65,6 @@ void handle_gui_pin(void *ctx, void *data);
 void handle_gui_plv(void *ctx, void *data);
 void handle_gui_ppo(void *ctx, void *data);
 void handle_gui_pnw(void *ctx, void *data);
-void handle_gui_suc(void *ctx, void *);
 void handle_gui_sbp(void *ctx, void *);
 void handle_gui_enw(void *ctx, void *data);
 void handle_gui_smg(void *ctx, void *data);
@@ -83,6 +82,7 @@ void handle_gui_pie(void *ctx, void *data);
 
 
 /* Responses */
+void on_response_player_eat(void *ctx, void *data);
 void on_response_player_moved(void *ctx, void *data);
 void on_response_player_died(void *ctx, void *data);
 void on_response_connect_nbr(void *ctx, void *data);

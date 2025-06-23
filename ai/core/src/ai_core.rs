@@ -1,9 +1,11 @@
+use std::result;
 use std::sync::Arc;
 
 use lib_tcp::tcp_client::AsyncTcpClient;
 use tokio::sync::{mpsc, Mutex};
+use tokio::task::JoinHandle;
 
-use crate::ai::{ai_decision, AiCommand};
+use crate::ai::{ai_decision, spawn_child_process, AiCommand};
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
 use crate::init::{init_client, ClientInfos};
@@ -51,6 +53,7 @@ use crate::{CoreError, Result, ServerInfos};
 /// ```
 #[derive(Debug, Clone)]
 pub struct AiState {
+    pub is_child: bool,
     pub client_num: i32,
     pub position: (i32, i32),
     pub inventory: Inventory,
@@ -65,12 +68,13 @@ pub struct AiState {
 }
 
 impl AiState {
-    pub fn new(ci: ClientInfos) -> Self {
+    pub fn new(ci: ClientInfos, is_child: bool) -> Self {
         Self {
+            is_child,
             client_num: ci.client_num,
             position: (ci.x, ci.y),
             inventory: Inventory::new(),
-            world_map: Vec::new(),
+            world_map: vec![],
             is_running: true,
             role: match ci.client_num {
                 1 => Role::Alpha,
@@ -108,9 +112,8 @@ impl AiState {
                 distance = 0.5
             }
             for item in tile.get_items() {
-                value = value
-                    + (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
-                        / (item.0.probability() * distance);
+                value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
+                    / (item.0.probability() * distance)
             }
             if value > max_value {
                 max_value = value;
@@ -136,9 +139,7 @@ impl AiState {
                 selected_item = Some(item.clone());
             }
         }
-        if selected_item.is_none() {
-            return None;
-        }
+        selected_item.as_ref()?;
         selected_item.map(AiCommand::Take)
     }
 
@@ -262,7 +263,7 @@ impl AiCore {
         let (cmd_tx_, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
         let (err_tx_, err_rx_) = mpsc::unbounded_channel::<String>();
 
-        let state = Arc::new(Mutex::new(AiState::new(client_infos)));
+        let state = Arc::new(Mutex::new(AiState::new(client_infos, infos.is_child)));
 
         Ok(AiCore {
             client: Arc::new(Mutex::new(client)),
@@ -381,12 +382,15 @@ impl AiCore {
                 }
 
                 let command = ai_decision(&ai_state).await;
+                {
+                    let mut state = ai_state.lock().await;
+                    state.last_command = command.clone();
+                }
                 if let Some(cmd) = command {
                     if ai_cmd_queue.send(cmd).is_err() {
                         break;
                     }
                 }
-
                 // block until the server respond, the state has already been updated.
                 // You can use the response type for more decision control
                 resp_queue.recv().await;
@@ -445,7 +449,7 @@ impl AiCore {
     ///
     /// - `response` (`ServerResponse`) - ServerResponse to handle.
     ///
-    async fn handle_server_response(&self, response: ServerResponse) -> Result<()> {
+    async fn handle_server_response(&mut self, response: ServerResponse) -> Result<()> {
         println!("Received: {:?}", response);
 
         let mut state = self.state.lock().await;
@@ -459,7 +463,7 @@ impl AiCore {
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {
-                    state.inventory.remove_item(&item);
+                    let _ = state.inventory.remove_item(&item);
                     state.add_item_to_map(&item);
                 }
                 Some(AiCommand::Forward) => {
@@ -471,14 +475,18 @@ impl AiCore {
                 Some(AiCommand::Right) => {
                     state.direction = state.direction.right();
                 }
-                _ => {}
+                Some(AiCommand::Fork) => {
+                    spawn_child_process().await?;
+                }
+                _ => {
+                    println!("do nothing")
+                }
             },
-            ServerResponse::Ko => match last_command {
-                Some(AiCommand::Take(item)) => {
+            ServerResponse::Ko => {
+                if let Some(AiCommand::Take(item)) = last_command {
                     state.remove_item_from_map(&item);
                 }
-                _ => {}
-            },
+            }
             ServerResponse::Look(items) => {
                 let mut i = 0;
                 for item in items {
@@ -500,7 +508,6 @@ impl AiCore {
             ServerResponse::Message(msg) => {
                 // send message to AI
             }
-            _ => {}
         }
         self.resp_queue
             .send(response)

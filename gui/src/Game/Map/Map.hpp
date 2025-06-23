@@ -9,7 +9,7 @@
 #include "Game/Map/Tile/Tile.hpp"
 #include <vector>
 #include "Tools/Vector/Vector.hpp"
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include "Game/Renderer/Object/IStaticSprite.hpp"
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include "Tools/Error/Error.hpp"

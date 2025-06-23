@@ -7,6 +7,16 @@
 
 #include "Tile.hpp"
 
+const std::unordered_map<gui::Tile::Resource, std::string> gui::Tile::resToString = {
+    {gui::Tile::Resource::FOOD, "Food"},
+    {gui::Tile::Resource::LINEMATE, "Linemate"},
+    {gui::Tile::Resource::DERAUMERE, "Deraumere"},
+    {gui::Tile::Resource::SIBUR, "Sibur"},
+    {gui::Tile::Resource::MENDIANE, "Mendiane"},
+    {gui::Tile::Resource::PHIRAS, "Phiras"},
+    {gui::Tile::Resource::THYSTAME, "Thystame"}
+};
+
 /**
  * @brief Constructs an empty tile.
  *

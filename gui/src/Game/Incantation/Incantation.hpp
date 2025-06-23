@@ -10,11 +10,12 @@
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
 #include <vector>
 #include <memory>
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include <iostream>
 
 namespace gui {
     class IncantationState {
+
         public:
             IncantationState(tools::Vector2<int> pos,
                 int level,
@@ -35,6 +36,12 @@ namespace gui {
     class Incantation : public render::IRenderEntity, public IncantationState
     {
         public:
+            enum class IncantationAnimation {
+                IN_PROGRESS,
+                START,
+                SUCCESS,
+                FAIL
+            };
             Incantation(tools::Vector2<int> pos,
                 int level,
                 const std::vector<int>& playerIds,

@@ -30,6 +30,57 @@ std::unique_ptr<render::IStaticSprite> SFMLObjectFactory::createStaticSprite(con
     );
 }
 
+std::unique_ptr<render::IStaticSprite> SFMLObjectFactory::createStaticSprite(const std::string &texturePath)
+{
+    const std::string& path = texturePath;
+
+    if (_textureMap.find(path) == _textureMap.end()) {
+        sf::Texture texture;
+        if (!texture.loadFromFile(path))
+            throw std::runtime_error("Failed to load texture: " + path);
+        texture.setSmooth(true);
+        _textureMap[path] = std::move(texture);
+    }
+
+    return std::make_unique<SFMLStaticSprite>(
+        _textureMap.at(path),
+        _rWindow
+    );
+}
+
+std::unique_ptr<render::ICanva> SFMLObjectFactory::createCanva() const
+{
+    return std::make_unique<SFMLCanva>(_rWindow);
+}
+
+std::unique_ptr<render::IText> SFMLObjectFactory::createText(std::string fontPath)
+{
+    const std::string& path = fontPath;
+
+    if (_fontMap.find(path) == _fontMap.end()) {
+        sf::Font font;
+        if (!font.loadFromFile(path))
+            throw std::runtime_error("Failed to load font: " + path);
+        font.setSmooth(true);
+        _fontMap[path] = std::move(font);
+    }
+
+    return std::make_unique<SFMLText>(
+        _fontMap.at(path),
+        _rWindow
+    );
+}
+
+std::unique_ptr<render::IObject> SFMLObjectFactory::createRectangle() const
+{
+    return std::make_unique<SFMLRectangle>(_rWindow);
+}
+
+std::unique_ptr<render::IProgressBar> SFMLObjectFactory::createProgressBar() const
+{
+    return std::make_unique<SFMLProgressBar>(_rWindow);
+}
+
 std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite(const tools::AssetDefinition& definition)
 {
     const std::string& path = definition.getModelPath();

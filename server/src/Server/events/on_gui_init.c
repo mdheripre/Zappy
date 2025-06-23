@@ -37,7 +37,7 @@ static void emit_gui_egg_events(server_t *server)
             continue;
         event->type = GAME_EVENT_RESPONSE_EGG_LAID;
         event->data.egg.egg_id = egg->id;
-        event->data.egg.player_id = egg->player_id;
+        event->data.egg.player = egg->player;
         event->data.egg.x = egg->x;
         event->data.egg.y = egg->y;
         event->data.egg.team_name = egg->team_name;
@@ -66,6 +66,7 @@ void on_gui_init(void *ctx, void *data)
         return;
     client->type = CLIENT_GUI;
     client->player = NULL;
+    server->gui = client;
     console_log(LOG_SUCCESS, "Client %d is GUI", client->fd);
     EMIT(server->command_manager->dispatcher, "command_gui_msz", client);
     EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);

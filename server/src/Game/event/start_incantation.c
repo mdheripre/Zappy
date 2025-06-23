@@ -151,8 +151,7 @@ void on_start_incantation(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    player_t *starter = find_player_by_id(game,
-        event->data.generic_response.player_id);
+    player_t *starter = event->data.generic_response.client->player;
     incantation_t *inc = NULL;
 
     if (!game || !starter)

@@ -36,7 +36,7 @@ void handle_command_fork(void *ctx, void *data)
     if (!event)
         return;
     event->type = GAME_EVENT_EGG_LAID;
-    event->data.egg.player_id = player->id;
+    event->data.egg.player = player;
     event->data.egg.x = player->x;
     event->data.egg.y = player->y;
     event->data.egg.team_name = player->team_name;

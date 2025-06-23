@@ -51,8 +51,8 @@ impl Tile {
     /// - `Tile` - A new Tile instance with the parsed items and position.
     pub fn new_from_response(string: String, tile_number: i32, ai_state: AiState) -> Self {
         let mut tile = Tile::new(ai_state.time);
-        let mut y = ((tile_number as f64).sqrt().floor() as i32);
-        let mut x = (tile_number - y * (y + 1));
+        let y = (tile_number as f64).sqrt().floor() as i32;
+        let x = tile_number - y * (y + 1);
         match ai_state.direction {
             crate::ai_direction::Direction::North => {
                 tile.set_position((ai_state.position.0 + x, ai_state.position.1 - y));

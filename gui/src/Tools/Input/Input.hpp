@@ -15,6 +15,8 @@ namespace tools
         Up,
         Down,
         W,
-        S
+        S,
+        P,
+        M
     };
 } // namespace tools

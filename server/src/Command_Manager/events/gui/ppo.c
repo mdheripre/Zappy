@@ -103,7 +103,7 @@ void handle_gui_ppo(void *ctx, void *data)
 
     if (!server || !player)
         return;
-    gui_client = server->vtable->get_gui(server);
+    gui_client = server->gui;
     if (!gui_client)
         return;
     ppo_send_position(gui_client, player);

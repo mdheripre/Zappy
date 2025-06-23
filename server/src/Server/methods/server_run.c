@@ -8,6 +8,7 @@
 
 #include "server.h"
 #include "utils.h"
+#include "poll_manager.h"
 #include "player.h"
 
 /****************************************************************************/
@@ -136,7 +137,8 @@ static bool poll_clients(server_t *self,
 {
     int ret = 0;
 
-    memset(fds, 0, sizeof(struct pollfd) * (MAX_CLIENTS + 1));
+    if (!self || !fds || !nfds)
+        return false;
     self->vtable->setup_poll(self, fds, nfds);
     ret = poll(fds, *nfds, timeout);
     if (ret < 0) {
@@ -167,32 +169,41 @@ static void handle_after_poll(server_t *self, struct pollfd *fds)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Main loop of the server, handling timing, polling, and game updates.
- *
- * Continuously applies time, handles client input, and updates the game.
- *
- * @param self Pointer to the server instance.
- */
+
+static bool run_server_iteration(server_t *self, poll_manager_t *poll_mgr,
+    struct pollfd *fds)
+{
+    nfds_t nfds = 0;
+    int ticks_applied = 0;
+    int timeout = 0;
+
+    if (!poll_mgr->methods.resize(poll_mgr, self->game->max_players + 1))
+        return false;
+    fds = poll_mgr->fds;
+    self->vtable->setup_poll(self, fds, &nfds);
+    poll_mgr->nfds = nfds;
+    update_time(self);
+    ticks_applied = apply_ticks(self);
+    timeout = compute_timeout(self);
+    if (!poll_clients(self, fds, &nfds, timeout))
+        return false;
+    update_time(self);
+    ticks_applied += apply_ticks(self);
+    handle_after_poll(self, fds);
+    if (update_game_if_needed(self, ticks_applied))
+        return false;
+    return true;
+}
+
 void run_server(server_t *self)
 {
-    struct pollfd fds[MAX_CLIENTS + 1];
-    nfds_t nfds = 0;
-    int timeout = 0;
-    int ticks_applied = 0;
+    poll_manager_t *poll_mgr = NEW(poll_manager, self->game->max_players + 1);
+    struct pollfd *fds = NULL;
 
     self->last_tick_time = get_ms_time();
     self->accumulated_ms = 0.0f;
     while (true) {
-        update_time(self);
-        ticks_applied = apply_ticks(self);
-        timeout = compute_timeout(self);
-        if (!poll_clients(self, fds, &nfds, timeout))
-            break;
-        update_time(self);
-        ticks_applied += apply_ticks(self);
-        handle_after_poll(self, fds);
-        if (update_game_if_needed(self, ticks_applied))
+        if (!run_server_iteration(self, poll_mgr, fds))
             break;
     }
 }

@@ -87,7 +87,7 @@ void handle_gui_plv(void *ctx, void *data)
 
     if (!server || !data)
         return;
-    gui_client = server->vtable->get_gui(server);
+    gui_client = server->gui;
     if (!gui_client)
         return;
     snprintf(command, BUFFER_COMMAND_SIZE, "plv #%d", *(int *)data);

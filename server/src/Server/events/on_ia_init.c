@@ -26,10 +26,13 @@ static void init_player_from_egg(server_t *server, client_t *client,
     const char *team_name, egg_t *egg)
 {
     player_config_t config;
+    static int id = 1;
 
-    config.id = server->game->players->size + 1;
+    config.id = id;
+    id++;
     config.x = egg ? egg->x : 0;
     config.y = egg ? egg->y : 0;
+    config.client = client;
     config.orientation = (rand() % 4) + 1;
     config.team_name = team_name;
     client->player = NEW(player, config);
@@ -56,8 +59,7 @@ static int count_available_eggs(game_t *game, const char *team_name)
 
     for (list_node_t *n = game->eggs->head; n; n = n->next) {
         egg = n->data;
-        if (egg && strcmp(egg->team_name, team_name) == 0 &&
-                egg->player_id == -1)
+        if (egg && strcmp(egg->team_name, team_name) == 0)
             count++;
     }
     return count;

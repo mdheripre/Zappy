@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include "Game/Renderer/IRenderEntity/IRenderEntity.hpp"
+#include "Game/Renderer/Entity/IRenderEntity.hpp"
 #include "Game/GameState/EntityState/EntityState.hpp"
 #include "Game/Renderer/Object/IAnimatedSprite.hpp"
+#include "Tools/AssetDefinition/AssetDefinition.hpp"
 #include "Tools/Define.hpp"
 #include <string>
 #include <memory>
@@ -24,6 +25,7 @@ namespace gui {
         };
         Egg(int id, tools::Vector2<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedSprite> eggObject = nullptr);
         ~Egg() override = default;
+        static const tools::AssetDefinition defaultAsset;
     private:
         std::unique_ptr<render::IAnimatedSprite> _eggObject;
         void setDead() override;

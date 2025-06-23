@@ -113,7 +113,7 @@ void handle_gui_pin(void *ctx, void *data)
 
     if (!server || !player)
         return;
-    client = server->vtable->get_gui(server);
+    client = server->gui;
     if (!client)
         return;
     pin_send_inventory(client, player);
