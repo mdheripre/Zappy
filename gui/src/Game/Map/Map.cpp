@@ -125,6 +125,12 @@ void gui::Map::draw() const
     }
 }
 
+/**
+ * @brief Generates visual tile types for the map.
+ * 
+ * Based on the tile's position (borders), assigns a visual type from the _tileTypeMap.
+ * If no match is found, defaults to MID_GROUND.
+ */
 void gui::Map::generateTileTypes()
 {
     int height = _map.size();
