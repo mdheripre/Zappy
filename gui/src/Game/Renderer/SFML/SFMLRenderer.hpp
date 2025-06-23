@@ -31,6 +31,7 @@ namespace sfml
         render::IObjectFactory &getFactory();
         void setPositionView(int offsetX, int offsetY);
         void setZoomView(float factor);
+        void centerViewOn(float x, float y);
         void resetZoomView();
         void updateUI(float dt);
         void poll();
@@ -54,5 +55,7 @@ namespace sfml
         std::list<std::shared_ptr<render::IRenderEntity>> _entities;
         std::shared_ptr<render::IRenderEntity> _ui;
         float _zoomFactor = 1.0f;
+        tools::Vector2<float> _viewCenter = {0.0f, 0.0f};
+
     }; 
 } // namespace sfml

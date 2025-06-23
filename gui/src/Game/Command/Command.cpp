@@ -52,8 +52,12 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
 
     std::cout << "[MSZ] --- Map created ---" << std::endl;
     std::cout << "    Dimensions : " << size.x << " x " << size.y << std::endl;
-}
 
+    float centerX = (size.x * 64) / 2.f - 100.0f;
+    float centerY = (size.y * 64) / 2.f - 100.0f; //Solution temporaire pour centrer la vue
+    _renderer->centerViewOn(centerX, centerY);
+
+}
 
 /**
  * @brief Handles the BCT command (tile content).

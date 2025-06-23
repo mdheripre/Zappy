@@ -96,6 +96,14 @@ void sfml::SFMLRenderer::setPositionView(int offsetX, int offsetY)
     _rWindow->setView(view);
 }
 
+void sfml::SFMLRenderer::centerViewOn(float x, float y)
+{
+    sf::View view = _rWindow->getView();
+    view.setCenter(x, y);
+    _rWindow->setView(view);
+    _viewCenter = {x, y};
+}
+
 void sfml::SFMLRenderer::setZoomView(float factor)
 {
     float zoomFactor = _zoomFactor * factor;
@@ -114,9 +122,11 @@ void sfml::SFMLRenderer::setZoomView(float factor)
 void sfml::SFMLRenderer::resetZoomView()
 {
     sf::View view = _rWindow->getDefaultView();
+    view.setCenter(_viewCenter.x, _viewCenter.y); // recentre sur la map
     _rWindow->setView(view);
     _zoomFactor = 1.0f;
 }
+
 
 void sfml::SFMLRenderer::updateUI(float dt)
 {
