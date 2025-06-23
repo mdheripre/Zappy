@@ -44,14 +44,14 @@ static bool error_handling(char *args_line, char *arg, server_t *server,
     int *num)
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
-        console_log(LOG_WARNING, "PPO: Missing parameter");
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        console_log(LOG_WARNING, "SST: Missing parameter");
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
     *num = get_frequency_from_str(arg);
     if (*num <= 0) {
-        console_log(LOG_WARNING, "PPO: Wrong parameter format");
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        console_log(LOG_WARNING, "SST: Wrong parameter format");
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
     return true;

@@ -29,21 +29,9 @@ void handle_command_gui_msz(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
-    char buffer[BUFFER_SIZE];
-    response_payload_t *payload = NULL;
 
-    if (!server || !client)
+    if (!server || !client || !server->game)
         return;
-    snprintf(buffer, sizeof(buffer), "msz %d %d\n",
+    dprintf(client->fd, "msz %d %d\n",
         server->game->width, server->game->height);
-    payload = malloc(sizeof(response_payload_t));
-    if (!payload)
-        return;
-    payload->client = client;
-    payload->message = strdup(buffer);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
 }

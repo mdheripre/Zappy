@@ -24,5 +24,5 @@ void on_response_player_eat(void *ctx, void *data)
 
     if (!server || !player)
         return;
-    EMIT(server->command_manager->dispatcher, "gui_pin", player);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
 }

@@ -11,7 +11,6 @@
 
 typedef struct poll_manager_s poll_manager_t;
 
-
 typedef struct poll_manager_methods_s {
     bool (*resize)(poll_manager_t *, size_t);
     struct pollfd *(*get_fds)(poll_manager_t *, nfds_t *);

@@ -42,18 +42,18 @@ static const game_methods_t GAME_METHODS = {
  */
 static void register_event_game(dispatcher_t *dispatcher, game_t *game)
 {
-    REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
-    REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
-    REGISTER(dispatcher, "CONNECT_NBR", on_connect_nbr, game);
-    REGISTER(dispatcher, "LOOK_AROUND", on_look, game);
-    REGISTER(dispatcher, "CHECK_INVENTORY", on_inventory, game);
-    REGISTER(dispatcher, "PLAYER_EJECT", on_eject, game);
-    REGISTER(dispatcher, "EGG_LAID", on_egg_laid, game);
-    REGISTER(dispatcher, "START_INCANTATION", on_start_incantation, game);
-    REGISTER(dispatcher, "END_INCANTATION", on_end_incantation, game);
-    REGISTER(dispatcher, "BROADCAST_MESSAGE", on_broadcast, game);
-    REGISTER(dispatcher, "PLAYER_DROP_ITEM", on_drop, game);
-    REGISTER(dispatcher, "PLAYER_TAKE_ITEM", on_take, game);
+    REGISTER(dispatcher, EVENT_PLAYER_MOVED, on_player_moved, game);
+    REGISTER(dispatcher, EVENT_PLAYER_DIED, on_player_died, game);
+    REGISTER(dispatcher, EVENT_CONNECT_NBR, on_connect_nbr, game);
+    REGISTER(dispatcher, EVENT_LOOK_AROUND, on_look, game);
+    REGISTER(dispatcher, EVENT_CHECK_INVENTORY, on_inventory, game);
+    REGISTER(dispatcher, EVENT_PLAYER_EJECT, on_eject, game);
+    REGISTER(dispatcher, EVENT_EGG_LAID, on_egg_laid, game);
+    REGISTER(dispatcher, EVENT_START_INCANTATION, on_start_incantation, game);
+    REGISTER(dispatcher, EVENT_END_INCANTATION, on_end_incantation, game);
+    REGISTER(dispatcher, EVENT_BROADCAST_MESSAGE, on_broadcast, game);
+    REGISTER(dispatcher, EVENT_PLAYER_DROP_ITEM, on_drop, game);
+    REGISTER(dispatcher, EVENT_PLAYER_TAKE_ITEM, on_take, game);
 }
 
 /****************************************************************************/
@@ -247,7 +247,7 @@ game_t *game_create(config_game_t *config)
     game->last_tick_time = 0;
     game->tick_counter = 0;
     game->methods = &GAME_METHODS;
-    game->dispatcher = NEW(dispatcher, NULL);
+    game->dispatcher = NEW(dispatcher, NULL, NULL, 0);
     register_event_game(game->dispatcher, game);
     if (!game->dispatcher)
         return NULL;

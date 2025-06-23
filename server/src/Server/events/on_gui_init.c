@@ -27,21 +27,21 @@ static void emit_gui_egg_events(server_t *server)
     egg_t *egg = NULL;
     game_event_t *event = NULL;
 
-    for (list_node_t *node = server->game->eggs->head; node;
-        node = node->next) {
+    for (list_node_t *node = server->game->eggs->head;
+        node; node = node->next) {
         egg = node->data;
         if (!egg)
             continue;
         event = malloc(sizeof(game_event_t));
         if (!event)
             continue;
-        event->type = GAME_EVENT_RESPONSE_EGG_LAID;
+        event->type = EVENT_EGG_LAID;
         event->data.egg.egg_id = egg->id;
         event->data.egg.player = egg->player;
         event->data.egg.x = egg->x;
         event->data.egg.y = egg->y;
         event->data.egg.team_name = egg->team_name;
-        EMIT(server->command_manager->dispatcher, "gui_enw", event);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_ENW, event);
         free(event);
     }
 }
@@ -68,9 +68,9 @@ void on_gui_init(void *ctx, void *data)
     client->player = NULL;
     server->gui = client;
     console_log(LOG_SUCCESS, "Client %d is GUI", client->fd);
-    EMIT(server->command_manager->dispatcher, "command_gui_msz", client);
-    EMIT(server->command_manager->dispatcher, "command_gui_sgt", client);
-    EMIT(server->command_manager->dispatcher, "command_gui_mct", client);
-    EMIT(server->command_manager->dispatcher, "command_gui_tna", client);
+    EMIT(server->command_manager->dispatcher, CMD_GUI_MSZ, client);
+    EMIT(server->command_manager->dispatcher, CMD_GUI_SGT, client);
+    EMIT(server->command_manager->dispatcher, CMD_GUI_MCT, client);
+    EMIT(server->command_manager->dispatcher, CMD_GUI_TNA, client);
     emit_gui_egg_events(server);
 }

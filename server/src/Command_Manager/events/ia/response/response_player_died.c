@@ -23,7 +23,7 @@ static void notify_player_death(server_t *server, player_t *player)
 
     if (client)
         dprintf(client->fd, "dead\n");
-    EMIT(server->command_manager->dispatcher, "gui_pdi", player);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI, player);
 }
 
 void on_response_player_died(void *ctx, void *data)

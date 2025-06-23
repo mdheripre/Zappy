@@ -25,5 +25,5 @@ void on_response_egg_laid(void *ctx, void *data)
         return;
     dprintf(player->client->fd, "ok\n");
     server->game->max_players++;
-    EMIT(server->command_manager->dispatcher, "gui_enw", event);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_ENW, event);
 }

@@ -13,35 +13,6 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Format the content of a tile as a "bct" command string.
- *
- * @param tile Pointer to the tile to format.
- * @return Newly allocated string representing the tile, or NULL on failure.
- */
-static char *format_tile_bct(const tile_t *tile)
-{
-    char buffer[BUFFER_COMMAND_SIZE];
-
-    if (!tile)
-        return NULL;
-    snprintf(buffer, sizeof(buffer),
-        "bct %d %d %d %d %d %d %d %d %d\n",
-        tile->x, tile->y,
-        tile->resources[0], tile->resources[1], tile->resources[2],
-        tile->resources[3], tile->resources[4], tile->resources[5],
-        tile->resources[6]);
-    return strdup(buffer);
-}
-
-/**
- * @brief Parse les coordonnées d'une commande BCT.
- *
- * @param args La string contenant les arguments (ex: "3 5").
- * @param x Pointeur pour stocker X.
- * @param y Pointeur pour stocker Y.
- * @return true si les coordonnées sont valides, false sinon.
- */
 static bool parse_bct_coords(const char *args, int *x, int *y)
 {
     char *end = NULL;
@@ -55,34 +26,17 @@ static bool parse_bct_coords(const char *args, int *x, int *y)
     return true;
 }
 
-/**
- * @brief Envoie la réponse BCT pour une tuile spécifique au client GUI.
- *
- * @param server Le serveur.
- * @param client Le client GUI.
- * @param tile La tuile à envoyer.
- */
-static void emit_bct_response(server_t *server, client_t *client, tile_t *tile)
+static void send_bct_response(client_t *client, tile_t *tile)
 {
-    response_payload_t *payload = malloc(sizeof(response_payload_t));
-
-    if (!server || !client || !tile || !payload)
+    if (!client || !tile)
         return;
-    payload->client = client;
-    payload->message = format_tile_bct(tile);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(client->fd, "bct %d %d %d %d %d %d %d %d %d\n",
+        tile->x, tile->y,
+        tile->resources[0], tile->resources[1], tile->resources[2],
+        tile->resources[3], tile->resources[4], tile->resources[5],
+        tile->resources[6]);
 }
 
-/**
- * @brief Gère la commande BCT pour un client GUI.
- *
- * @param ctx Pointeur vers le serveur.
- * @param data Pointeur vers le client GUI.
- */
 void handle_command_gui_bct(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -90,6 +44,7 @@ void handle_command_gui_bct(void *ctx, void *data)
     const char *args = NULL;
     int x = 0;
     int y = 0;
+    tile_t *tile = NULL;
 
     if (!server || !client || !server->game)
         return;
@@ -99,5 +54,6 @@ void handle_command_gui_bct(void *ctx, void *data)
     if (x < 0 || y < 0 || x >= server->game->width ||
         y >= server->game->height)
         return;
-    emit_bct_response(server, client, &server->game->map[y][x]);
+    tile = &server->game->map[y][x];
+    send_bct_response(client, tile);
 }

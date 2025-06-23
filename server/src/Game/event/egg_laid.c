@@ -74,7 +74,7 @@ static game_event_t *create_egg_event(const egg_t *egg)
 
     if (!event)
         return NULL;
-    event->type = GAME_EVENT_RESPONSE_EGG_LAID;
+    event->type = EVENT_RESP_EGG_LAID;
     event->data.egg.player = egg->player;
     event->data.egg.team_name = egg->team_name;
     event->data.egg.x = egg->x;

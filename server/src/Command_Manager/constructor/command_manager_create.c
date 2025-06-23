@@ -42,7 +42,8 @@ command_manager_t *command_manager_create(void)
     if (!manager)
         return NULL;
     manager->methods = &COMMAND_MANAGER_METHODS;
-    manager->dispatcher = NEW(dispatcher, on_command_not_found);
+    manager->dispatcher = NEW(dispatcher, on_command_not_found,
+        EVENT_CMD_NAME, sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
     if (!manager->dispatcher)
         return NULL;
     return manager;

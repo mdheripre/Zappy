@@ -28,17 +28,8 @@ void handle_command_gui_sgt(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
-    char buffer[BUFFER_COMMAND_SIZE];
-    response_payload_t *payload = malloc(sizeof(response_payload_t));
 
-    if (!payload)
+    if (!server || !client || !server->game)
         return;
-    snprintf(buffer, sizeof(buffer), "sgt %d\n", (int)server->game->frequency);
-    payload->client = client;
-    payload->message = strdup(buffer);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(client->fd, "sgt %d\n", (int)server->game->frequency);
 }

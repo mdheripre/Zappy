@@ -65,7 +65,6 @@ bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     game_t *game);
 queued_command_t *client_peek_command(client_t *client);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
-const char *event_type_name(game_event_type_t type);
 player_t *find_player_by_id(game_t *game, int player_id);
 char *extract_command_name(const char *line, char *out, size_t size);
 const char *extract_command_args(const char *line);

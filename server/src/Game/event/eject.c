@@ -95,7 +95,7 @@ static void send_ejected_msg(game_t *game, player_t *src, player_t *tgt)
     ev = calloc(1, sizeof(game_event_t));
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_PLAYER_EJECTED;
+    ev->type = EVENT_RESP_PLAYER_EJECTED;
     ev->data.generic_response.client = tgt->client;
     ev->data.generic_response.response = strdup(msg);
     if (!ev->data.generic_response.response)
@@ -109,7 +109,7 @@ static void send_egg_death(game_t *game, egg_t *egg, list_node_t *node)
 
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_EGG_DIE;
+    ev->type = EVENT_RESP_EGG_DIE;
     ev->data.egg.egg_id = egg->id;
     ev->data.egg.x = egg->x;
     ev->data.egg.y = egg->y;
@@ -140,7 +140,7 @@ static void send_eject_response(game_t *game,
 
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_PLAYER_OWNER_EJECTED;
+    ev->type = EVENT_RESP_PLAYER_OWNER_EJECTED;
     ev->data.generic_response.client = src->client;
     ev->data.generic_response.response = strdup(
         ejected->size > 0 ? "ok\n" : "ko\n");

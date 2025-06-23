@@ -26,7 +26,7 @@ static void send_incantation_result(server_t *server,
     client->stuck = false;
     if (event->data.incantation.success) {
         dprintf(client->fd, "current level: %d\n", player->level);
-        EMIT(server->command_manager->dispatcher, "gui_plv", &player->id);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PLV, &player->id);
     } else {
         dprintf(client->fd, "ko\n");
     }
@@ -53,10 +53,10 @@ void on_response_end_incantation(void *ctx, void *data)
     if (!server || !event)
         return;
     for (list_node_t *n = event->data.incantation.participants->head;
-            n; n = n->next) {
+        n; n = n->next) {
         player = n->data;
         send_incantation_result(server, event, player);
         replan_next_command(server, player);
     }
-    EMIT(server->command_manager->dispatcher, "gui_pie", event);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_PIE, event);
 }

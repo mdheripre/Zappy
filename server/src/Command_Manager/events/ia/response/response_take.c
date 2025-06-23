@@ -25,10 +25,10 @@ void on_response_take(void *ctx, void *data)
 
     if (!server || !player || !client)
         return;
-    dprintf(client->fd, "%s", event->data.player_item.success ?
-        "ok\n" : "ko\n");
+    dprintf(client->fd, "%s", event->data.player_item.success ? "ok\n" :
+        "ko\n");
     if (event->data.player_item.success) {
-        EMIT(server->command_manager->dispatcher, "gui_pgt", event);
-        EMIT(server->command_manager->dispatcher, "gui_pin", player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PGT, event);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
     }
 }

@@ -139,8 +139,8 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
 	$(SRC_UTILS_HELPERS)/find_player_by_id.c \
+	$(SRC_UTILS_HELPERS)/events_helpers.c \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
-	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/find_team.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \

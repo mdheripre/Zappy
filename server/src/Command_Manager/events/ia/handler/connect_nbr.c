@@ -35,7 +35,7 @@ void handle_command_connect_nbr(void *ctx, void *data)
     if (!event)
         return;
     memset(event, 0, sizeof(game_event_t));
-    event->type = GAME_EVENT_CONNECT_NBR;
+    event->type = EVENT_CONNECT_NBR;
     event->data.generic_response.client = client;
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);

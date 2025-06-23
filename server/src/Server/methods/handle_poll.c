@@ -19,11 +19,14 @@ static void handle_gui_command(server_t *server, client_t *client,
     const char *cmd_name, const char *clean)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
+    event_type_t type;
 
     snprintf(built, sizeof(built), "command_gui_%s", cmd_name);
     console_log(LOG_INFO, "Executing GUI command immediately: %s", built);
+    type = event_type_from_string(built,
+        EVENT_CMD_NAME, sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
     client_enqueue_command(client, clean, 0, server->game);
-    EMIT(server->command_manager->dispatcher, built, client);
+    EMIT(server->command_manager->dispatcher, type, client);
     client_dequeue_command(client, NULL);
 }
 
@@ -35,7 +38,8 @@ static void handle_command_enqueue(server_t *server, client_t *client,
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
     if (strcmp(cmd_name, "Fork") == 0 && client->player)
-        EMIT(server->command_manager->dispatcher, "gui_pfk", client->player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PFK,
+            client->player);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
@@ -121,12 +125,14 @@ static int handle_client_read_error(server_t *server, client_t *client,
             return 1;
         console_log(LOG_WARNING,
             "Client (fd=%d) read error: %s", client->fd, strerror(errno));
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
         server->vtable->remove_client(server, client);
         return 1;
     }
     if (bytes == 0) {
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
         server->vtable->remove_client(server, client);
         return 1;
     }
@@ -147,7 +153,8 @@ void read_from_client(server_t *server, client_t *client)
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
         dprintf(client->fd, "ko\n");
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
         server->vtable->remove_client(server, client);
         return;
     }

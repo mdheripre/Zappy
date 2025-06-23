@@ -22,7 +22,7 @@ void emit_tile_update(game_t *game, int x, int y)
 
     if (!evt)
         return;
-    evt->type = GAME_EVENT_RESPONSE_TILE_UPDATED;
+    evt->type = EVENT_RESP_TILE_UPDATED;
     evt->data.tile.x = x;
     evt->data.tile.y = y;
     game->server_event_queue->methods->push_back(game->server_event_queue,
@@ -36,7 +36,7 @@ void send_drop_response(game_t *game, player_t *player,
 
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_DROP;
+    response->type = EVENT_RESP_DROP;
     response->data.player_item.player = player;
     response->data.player_item.type_item = event->data.player_item.type_item;
     response->data.player_item.success = success;

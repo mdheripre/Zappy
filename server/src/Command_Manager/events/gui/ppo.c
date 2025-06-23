@@ -31,12 +31,12 @@ static bool error_handling(char *args_line, char *arg, int *client_num,
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "PPO: Missing parameter");
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
     *client_num = get_player_number(arg);
     if (*client_num < 0) {
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
     return true;
@@ -84,7 +84,7 @@ void handle_command_gui_ppo(void *ctx, void *data)
     player = find_player_by_id(server->game, client_num);
     if (!player) {
         console_log(LOG_WARNING, "PPO: Player %d not found", client_num);
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return;
     }
     ppo_send_position(client, player);

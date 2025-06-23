@@ -26,7 +26,7 @@ static void send_end_incantation(game_t *self, incantation_t *inc)
 
     if (!self || !inc || !event)
         return;
-    event->type = GAME_EVENT_END_INCANTATION;
+    event->type = EVENT_END_INCANTATION;
     event->data.incantation.x = inc->x;
     event->data.incantation.y = inc->y;
     event->data.incantation.success = false;

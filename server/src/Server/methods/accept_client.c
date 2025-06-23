@@ -132,5 +132,5 @@ void accept_client(server_t *self)
     if (!client)
         return;
     self->client_count++;
-    EMIT(self->dispatcher, "client_connected", client);
+    EMIT(self->dispatcher, EVENT_CLIENT_CONNECTED, client);
 }
