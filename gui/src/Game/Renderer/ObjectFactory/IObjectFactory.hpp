@@ -27,6 +27,7 @@ namespace render
         virtual std::unique_ptr<ICanva> createCanva() const = 0;
         virtual std::unique_ptr<IText> createText(std::string fontPath) = 0;
         virtual std::unique_ptr<IObject> createRectangle() const = 0;
+        virtual std::unique_ptr<IObject> createRoundedRectangle(int radius) const = 0;
         virtual std::unique_ptr<IProgressBar> createProgressBar() const = 0;
     };
 } // namespace render
