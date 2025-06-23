@@ -26,7 +26,6 @@ static void register_gui_internal_command(command_manager_t *self,
     REGISTER(self->dispatcher, EVENT_GUI_PNW, handle_gui_pnw, server);
     REGISTER(self->dispatcher, EVENT_GUI_SBP, handle_gui_sbp, server);
     REGISTER(self->dispatcher, EVENT_GUI_ENW, handle_gui_enw, server);
-    REGISTER(self->dispatcher, EVENT_GUI_SMG, handle_gui_smg, server);
     REGISTER(self->dispatcher, EVENT_GUI_EBO, handle_gui_ebo, server);
     REGISTER(self->dispatcher, EVENT_GUI_PEX, handle_gui_pex, server);
     REGISTER(self->dispatcher, EVENT_GUI_PBC, handle_gui_pbc, server);
@@ -41,6 +40,8 @@ static void register_gui_internal_command(command_manager_t *self,
     REGISTER(self->dispatcher, EVENT_GUI_PIN, handle_gui_pin, server);
     REGISTER(self->dispatcher, EVENT_GUI_PLV, handle_gui_plv, server);
     REGISTER(self->dispatcher, EVENT_GUI_PPO, handle_gui_ppo, server);
+    REGISTER(self->dispatcher, EVENT_GUI_PMV, handle_gui_pmv, server);
+    REGISTER(self->dispatcher, EVENT_GUI_PEJ, handle_gui_pej, server);
 }
 
 /**

@@ -48,7 +48,6 @@ typedef enum event_type_e {
     EVENT_GUI_PNW,
     EVENT_GUI_SBP,
     EVENT_GUI_ENW,
-    EVENT_GUI_SMG,
     EVENT_GUI_EBO,
     EVENT_GUI_PEX,
     EVENT_GUI_PBC,
@@ -63,6 +62,8 @@ typedef enum event_type_e {
     EVENT_GUI_PIN,
     EVENT_GUI_PLV,
     EVENT_GUI_PPO,
+    EVENT_GUI_PEJ,
+    EVENT_GUI_PMV,
 
     // --- GUI command events
     CMD_GUI_MSZ,

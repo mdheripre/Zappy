@@ -30,6 +30,20 @@ static void handle_gui_command(server_t *server, client_t *client,
     client_dequeue_command(client, NULL);
 }
 
+static void maybe_emit_gui_command_event(server_t *server,
+    client_t *client, const char *cmd_name)
+{
+    if (strcmp(cmd_name, "Fork") == 0)
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PFK,
+            client->player);
+    else if (strcmp(cmd_name, "Forward") == 0)
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PMV,
+            client->player);
+    else if (strcmp(cmd_name, "Eject") == 0)
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PEJ,
+            client->player);
+}
+
 static void handle_command_enqueue(server_t *server, client_t *client,
     const char *clean, const char *cmd_name)
 {
@@ -37,9 +51,7 @@ static void handle_command_enqueue(server_t *server, client_t *client,
 
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
-    if (strcmp(cmd_name, "Fork") == 0 && client->player)
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_PFK,
-            client->player);
+    maybe_emit_gui_command_event(server, client, cmd_name);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
