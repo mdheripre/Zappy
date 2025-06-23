@@ -18,13 +18,23 @@ void sfml::SFMLRenderer::init(std::string title, int width, int height, int fram
 {
     if (!_rWindow)
         throw RenderError("Access to a null window in renderer init");
+
     _rWindow->create(
         sf::VideoMode(width, height),
         title,
         sf::Style::Close | sf::Style::Titlebar
     );
+    int posX = (1920 - width) / 2;
+    int posY = (1080 - height) / 2;
+    _rWindow->setPosition(sf::Vector2i(posX, posY));
     _rWindow->setFramerateLimit(frameRate);
+
+    sf::View defaultView = _rWindow->getDefaultView();
+    _rWindow->setView(defaultView);
+
+    _zoomFactor = 1.0f;
 }
+
 
 void sfml::SFMLRenderer::update(float dt)
 {
@@ -86,13 +96,37 @@ void sfml::SFMLRenderer::setPositionView(int offsetX, int offsetY)
     _rWindow->setView(view);
 }
 
-void sfml::SFMLRenderer::setZoomView(float factor)
+void sfml::SFMLRenderer::centerViewOn(float x, float y)
 {
     sf::View view = _rWindow->getView();
+    view.setCenter(x, y);
+    _rWindow->setView(view);
+    _viewCenter = {x, y};
+}
 
+void sfml::SFMLRenderer::setZoomView(float factor)
+{
+    float zoomFactor = _zoomFactor * factor;
+
+    if (zoomFactor < 0.5f || zoomFactor > 2.1f) {
+        return;
+    }
+
+    sf::View view = _rWindow->getView();
     view.zoom(factor);
     _rWindow->setView(view);
+    _zoomFactor = zoomFactor;
+
 }
+
+void sfml::SFMLRenderer::resetZoomView()
+{
+    sf::View view = _rWindow->getDefaultView();
+    view.setCenter(_viewCenter.x, _viewCenter.y); // recentre sur la map
+    _rWindow->setView(view);
+    _zoomFactor = 1.0f;
+}
+
 
 void sfml::SFMLRenderer::updateUI(float dt)
 {

@@ -33,7 +33,13 @@ namespace sfml {
         playAnimation(_currentAnimation, true);
     }
     
-
+    /**
+     * @brief Starts playing a specific animation.
+     * 
+     * @param keyAnim Key of the animation to play.
+     * @param loop Whether the animation should loop.
+     * @throws RenderError if the animation key is not found in the map.
+     */
     void SFMLAnimatedSprite::playAnimation(int keyAnim, bool loop)
     {
         auto animIt = _animationMap.find(keyAnim);
@@ -72,6 +78,12 @@ namespace sfml {
         ));
     }
 
+    /**
+     * @brief Updates the sprite's current animation frame based on time elapsed.
+     * 
+     * @param dt Delta time in seconds.
+     * @return true if animation was reset to default, false otherwise.
+     */
     bool SFMLAnimatedSprite::updateObject(float dt)
     {
         acc += dt;
@@ -97,6 +109,12 @@ namespace sfml {
         ));
         return false;
     }
+
+/**
+ * @brief Returns the current position of the sprite.
+ * 
+ * @return 2D vector representing the position.
+ */
 tools::Vector2<float> SFMLAnimatedSprite::getPosition() const
 {
     static tools::Vector2<float> pos;
@@ -106,6 +124,11 @@ tools::Vector2<float> SFMLAnimatedSprite::getPosition() const
     return pos;
 }
 
+/**
+ * @brief Returns the size of the sprite on screen.
+ * 
+ * @return 2D vector with width and height.
+ */
 tools::Vector2<float> SFMLAnimatedSprite::getSize() const
 {
     tools::Vector2<float> size;
@@ -116,6 +139,11 @@ tools::Vector2<float> SFMLAnimatedSprite::getSize() const
     return size;
 }
 
+/**
+ * @brief Sets the display size of the sprite.
+ * 
+ * @param size New size to apply.
+ */
 void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
 {
     sf::FloatRect bounds = sprite.getLocalBounds();
@@ -127,6 +155,11 @@ void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
     sprite.setScale(scaleX, scaleY);
 }
 
+/**
+ * @brief Sets the position of the sprite on screen.
+ * 
+ * @param pos New position.
+ */
 void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
 {
     sprite.setPosition(pos.x, pos.y);
@@ -134,12 +167,20 @@ void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
     _rect.top = pos.y;
 }
 
+/**
+ * @brief Draws the current animation frame to the render window.
+ */
 void SFMLAnimatedSprite::drawObject() const
 {
     if (_ctx && _ctx->isOpen())
         _ctx->draw(sprite);
 }
 
+/**
+ * @brief Creates a copy of the current animated sprite.
+ * 
+ * @return A unique_ptr to the new SFMLAnimatedSprite instance.
+ */
 std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const 
 {
     auto copy = std::make_unique<SFMLAnimatedSprite>(
@@ -157,12 +198,22 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
     copy->setSize(getSize());
     return copy;
 }
-
+/**
+ * @brief Checks whether the sprite contains the given screen position.
+ * 
+ * @param position The point to check.
+ * @return true if the point is inside the sprite's bounds.
+ */
 bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
 {
     return sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+/**
+ * @brief Sets the color overlay on the sprite.
+ * 
+ * @param color RGBA color to apply.
+ */
 void SFMLAnimatedSprite::setColor(const tools::Color &color)
 {
     sprite.setColor({color.r, color.g, color.b, color.a});

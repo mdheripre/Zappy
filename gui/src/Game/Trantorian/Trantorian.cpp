@@ -186,16 +186,29 @@ void gui::Trantorian::setPosition(tools::Vector2<int> pos)
     _pos = pos;
 }
 
+/**
+ * @brief Triggered when the mouse hovers over the Trantorian.
+ * Changes the color to highlight hover state.
+ */
 void gui::Trantorian::onHoverEnter()
 {
     _trantorianObject->setColor(tools::Color(255, 255, 180, 255));
 }
 
+/**
+ * @brief Triggered when the mouse stops hovering over the Trantorian.
+ * Resets the color to default.
+ */
 void gui::Trantorian::onHoverExit()
 {
     _trantorianObject->setColor(tools::Color(255, 255, 255, 255));
 }
 
+
+/**
+ * @brief Triggered when the Trantorian is clicked.
+ * Sends this Trantorian's info and a cloned sprite to the UI controller.
+ */
 void gui::Trantorian::onClick()
 {
     _uiController->setTrantInfo(shared_from_this(), _trantorianObject->clone());
