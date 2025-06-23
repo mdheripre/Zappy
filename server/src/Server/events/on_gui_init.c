@@ -37,7 +37,7 @@ static void emit_gui_egg_events(server_t *server)
             continue;
         event->type = GAME_EVENT_RESPONSE_EGG_LAID;
         event->data.egg.egg_id = egg->id;
-        event->data.egg.player_id = egg->player_id;
+        event->data.egg.player = egg->player;
         event->data.egg.x = egg->x;
         event->data.egg.y = egg->y;
         event->data.egg.team_name = egg->team_name;

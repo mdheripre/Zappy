@@ -22,7 +22,7 @@ typedef struct server_s server_t;
 typedef struct player_s player_t;
 typedef struct config_game_s config_game_t;
 typedef struct incantation_s incantation_t;
-
+typedef struct client_s client_t;
 enum resource_type_e {
     RESOURCE_FOOD = 0,
     RESOURCE_LINEMATE,
@@ -123,24 +123,22 @@ typedef enum move_direction_e {
     TURN_RIGHT
 } move_direction_t;
 
-
 typedef struct {
     game_event_type_t type;
     union {
         struct {
-            int player_id;
+            player_t *player;
             int x;
             int y;
             move_direction_t direction;
             int orientation;
-            int client_fd;
             bool ia_success;
         } player_moved;
         struct {
-            int player_id;
+            player_t *player;
         } player_died;
         struct {
-            int player_id;
+            player_t *player;
             int x;
             int y;
             const char *team_name;
@@ -157,13 +155,11 @@ typedef struct {
             list_t *participants;
         } incantation;
         struct {
-            int player_id;
-            int client_fd;
+            client_t *client;
             const char *response;
         } generic_response;
         struct {
-            int player_id;
-            int client_fd;
+            player_t *player;
             int type_item;
             bool success;
         } player_item;
@@ -185,7 +181,7 @@ struct game_methods_s {
 
 typedef struct egg_s {
     int id;
-    int player_id;
+    player_t *player;
     int x;
     int y;
     const char *team_name;

@@ -30,7 +30,7 @@ void on_player_died(void *ctx, void *data)
 
     if (!game || !event)
         return;
-    player = find_player_by_id(game, event->data.player_died.player_id);
+    player = event->data.player_died.player;
     if (!player)
         return;
     player->is_alive = false;
@@ -38,7 +38,7 @@ void on_player_died(void *ctx, void *data)
     if (!response)
         return;
     response->type = GAME_EVENT_RESPONSE_PLAYER_DIED;
-    response->data.player_died.player_id = player->id;
+    response->data.player_died.player = player;
     game->server_event_queue->methods->push_back(game->server_event_queue,
         response);
 }
