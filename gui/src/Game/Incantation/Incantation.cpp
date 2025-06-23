@@ -19,6 +19,15 @@ gui::Incantation::Incantation(tools::Vector2<int> pos, int level, const std::vec
     _position = pos;
 }
 
+
+/**
+ * @brief Updates the incantation animation.
+ * 
+ * Does nothing if the incantation is already finished or if the animation object is null.
+ * 
+ * @param dt Delta time since the last update.
+ * @return true if the incantation was updated, false otherwise.
+ */
 bool gui::Incantation::update(float dt)
 {
     if (_finished || !_incObject)
@@ -27,17 +36,32 @@ bool gui::Incantation::update(float dt)
     return true;
 }
 
+/**
+ * @brief Marks the incantation as successful.
+ * 
+ * Sets the internal state to finished, stopping further updates or animations.
+ */
+
 void gui::Incantation::succeed()
 {
     _finished = true;
 }
 
+/**
+ * @brief Marks the incantation as failed.
+ * 
+ * Sets the internal state to finished, stopping further updates or animations.
+ */
 void gui::Incantation::failed()
 {
     _finished = true;
 }
 
-
+/**
+ * @brief Draws the incantation animation to the screen.
+ * 
+ * Calls the internal draw method of the animated sprite.
+ */
 void gui::Incantation::draw() const
 {
     _incObject->drawObject();
