@@ -7,7 +7,10 @@
 #include <sstream>
 #include <iomanip>
 
-
+/**
+ * @brief Constructor for the TimeUnitDisplayer UI box.
+ * @param factory Object factory to build text and UI components.
+ */
 gui::TimeUnitDisplayer::TimeUnitDisplayer(render::IObjectFactory &factory)
     : UIBox("Time Unit", 0.4f, 0.1f, 0.05f, 0.3f,
             factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
@@ -36,6 +39,11 @@ gui::TimeUnitDisplayer::TimeUnitDisplayer(render::IObjectFactory &factory)
     updateText();
 }
 
+/**
+ * @brief Updates the values to be displayed.
+ * @param timeUnit Current time unit.
+ * @param elapsed Elapsed time since last tick.
+ */
 void gui::TimeUnitDisplayer::setValues(float timeUnit, float elapsed)
 {
     _elapsed = elapsed;
@@ -47,6 +55,10 @@ void gui::TimeUnitDisplayer::setValues(float timeUnit, float elapsed)
     updateText();
 }
 
+
+/**
+ * @brief Rebuilds the display text based on internal values.
+ */
 void gui::TimeUnitDisplayer::updateText()
 {
     std::ostringstream oss;
@@ -55,11 +67,18 @@ void gui::TimeUnitDisplayer::updateText()
     _valueText->setText(oss.str());
 }
 
+/**
+ * @brief Logic update function.
+ * @return Always true, placeholder for render loop compatibility.
+ */
 bool gui::TimeUnitDisplayer::update(float)
 {
     return true;
 }
 
+/**
+ * @brief Draws the UI box, the progress bar, and time text.
+ */
 void gui::TimeUnitDisplayer::draw() const
 {
     UIBox::draw();
