@@ -36,7 +36,7 @@ static void maybe_emit_gui_command_event(server_t *server,
     if (strcmp(cmd_name, "Fork") == 0)
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PFK,
             client->player);
-    else if (strcmp(cmd_name, "Forward") == 0)
+    if (strcmp(cmd_name, "Forward") == 0)
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PMV,
             client->player);
     else if (strcmp(cmd_name, "Eject") == 0)
