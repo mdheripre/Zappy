@@ -98,3 +98,16 @@ void gui::TeamDisplayer::draw() const
     _background->drawObject();
     _textDisplayer->drawObject();
 }
+
+void gui::TeamDisplayer::setPostion(const tools::Vector2<float> &pos)
+{
+    if (_background)
+        _background->setPosition(pos);
+    if (_textDisplayer)
+        _textDisplayer->setPosition(pos);
+}
+
+const tools::Vector2<float> &gui::TeamDisplayer::getSize()
+{
+    return _background->getSize();
+}

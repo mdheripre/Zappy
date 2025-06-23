@@ -888,7 +888,8 @@ void game::Game::segCommand(const std::vector<std::string> &token)
     }
 
     _gm.state = state::GameState::State::END;
-
+    _renderer->clear();
+    _ui->setEndGame(tokens);
     std::cout << "[SEG] --- Game ended ---" << std::endl;
     std::cout << "    New state : END" << std::endl;
     std::cout << "    Winner : " << tokens << std::endl;

@@ -29,6 +29,7 @@ namespace render
         virtual void setZoomView(float factor) = 0;
         virtual void setUI(std::shared_ptr<IRenderEntity> ui) = 0;
         virtual IObjectFactory &getFactory() = 0;
+        virtual void clear() = 0;
         virtual void poll() = 0;
     };
 } // namespace gui
