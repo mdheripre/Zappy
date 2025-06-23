@@ -27,6 +27,7 @@ namespace render
         virtual void setBindings(std::unordered_map<tools::KeyCode, std::function<void()>>) = 0;
         virtual void setPositionView(int offsetX, int offsetY) = 0;
         virtual void setZoomView(float factor) = 0;
+        virtual void resetZoomView() = 0;
         virtual void setUI(std::shared_ptr<IRenderEntity> ui) = 0;
         virtual IObjectFactory &getFactory() = 0;
         virtual void poll() = 0;
