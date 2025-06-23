@@ -42,7 +42,12 @@ namespace sfml
             { sf::Keyboard::W,     tools::KeyCode::W },
             { sf::Keyboard::S,     tools::KeyCode::S },
             { sf::Keyboard::P,     tools::KeyCode::P },
-            { sf::Keyboard::M,     tools::KeyCode::M }
+            { sf::Keyboard::M,     tools::KeyCode::M },
+            { sf::Keyboard::A,     tools::KeyCode::A },
+            { sf::Keyboard::Z,     tools::KeyCode::Z },
+            { sf::Keyboard::E,     tools::KeyCode::E },
+            { sf::Keyboard::R,     tools::KeyCode::R },
+            { sf::Keyboard::T,     tools::KeyCode::T }
         };
     private:
         void handleMouseInteraction();

@@ -108,7 +108,12 @@ namespace game
                 { tools::KeyCode::W,     [this]() { _renderer->setZoomView(1.1f);}},
                 { tools::KeyCode::S,     [this]() { _renderer->setZoomView(0.9f);}},
                 { tools::KeyCode::P,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit + 1) + "\n");}},
-                { tools::KeyCode::M,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit - 1) + "\n");}}
+                { tools::KeyCode::M,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit - 1) + "\n");}},
+                { tools::KeyCode::A,     [this]() { std::cout <<"freferferf"<< std::endl;_ui->changeBroadcastVisibility();}},
+                { tools::KeyCode::Z,     [this]() { _ui->changeTeamVisibility();}},
+                { tools::KeyCode::E,     [this]() { _ui->changeEventVisibility();}},
+                { tools::KeyCode::R,     [this]() { _ui->changePlayerVisibility();}},
+                { tools::KeyCode::T,     [this]() { _ui->changeTimeVisibility();}},
             };
     };
 } // namespace Game

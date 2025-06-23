@@ -57,6 +57,8 @@ namespace gui {
     template <int col>
     void TableDisplayer<col>::draw() const
     {
+        if (!_visible)
+            return;
         UIBox::draw();
     }
 

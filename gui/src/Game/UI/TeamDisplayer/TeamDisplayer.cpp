@@ -92,7 +92,7 @@ bool gui::TeamDisplayer::update(float)
 
 void gui::TeamDisplayer::draw() const
 {
-    if (!_textDisplayer || !_background)
+    if (!_textDisplayer || !_background || !_visible)
         return;
 
     _background->drawObject();

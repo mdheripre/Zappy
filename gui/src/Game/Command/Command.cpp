@@ -712,7 +712,6 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
 
     if (_gm.eggs.find(eggId) == _gm.eggs.end()) {
         tools::AssetDefinition asset = tranId >= 0 ? _tbManager.getTeamBranding(teamName).getEggAsset() : gui::Egg::defaultAsset;
-        std::cout << asset.getAnimation().size() << "frrrrrrrrrrrr" << std::endl;
         auto egg = std::make_shared<gui::Egg>(
             eggId,
             pos,
@@ -724,7 +723,7 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         std::shared_ptr<render::IRenderEntity> eggRender = egg;
 
         _renderer->pushEntity(eggRender);
-        _gm.eggs[egg->getId()] = eggState;
+        _gm.eggs.insert_or_assign(eggId, eggState);
         _ui->updateTeamInfo(_gm);
 
         std::cout << "[ENW] --- Egg laid ---" << std::endl;
@@ -861,8 +860,8 @@ void game::Game::sstCommand(const std::vector<std::string> &token)
 
     _gm.time_unit = std::stof(token[0]);
 
-    std::cout << "[SST] --- Time unit set by client ---" << std::endl;
-    std::cout << "    New time unit : " << _gm.time_unit << std::endl;
+    /* std::cout << "[SST] --- Time unit set by client ---" << std::endl;
+    std::cout << "    New time unit : " << _gm.time_unit << std::endl; */
 }
 
 
