@@ -18,6 +18,12 @@ gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory) :
         setCharaterSize(30);
     }
 
+/**
+ * @brief Build a row of team data from the game state.
+ * @param teamName The name of the team to analyze.
+ * @param gm The current game state.
+ * @return An array representing a row: [team name, player count, highest level, level 8 count, egg count].
+ */
 std::array<std::string, 5> gui::TeamDisplayer::buildTeamRow(const std::string &teamName, const state::GameState &gm)
 {
     int nbPlayers = 0;
@@ -47,6 +53,14 @@ std::array<std::string, 5> gui::TeamDisplayer::buildTeamRow(const std::string &t
     };
 }
 
+
+/**
+ * @brief Sorting logic for team rows.
+ * Teams are sorted by player count, then highest level, then level 8 count.
+ * @param a First row.
+ * @param b Second row.
+ * @return True if a should come before b.
+ */
 bool gui::TeamDisplayer::sortFunction(const std::array<std::string, 5> &a, const std::array<std::string, 5> &b)
 {
     int nbPlayersA = std::stoi(a[1]), nbPlayersB = std::stoi(b[1]);
@@ -61,6 +75,11 @@ bool gui::TeamDisplayer::sortFunction(const std::array<std::string, 5> &a, const
     return lvl8A > lvl8B;
 }
 
+/**
+ * @brief Sorts and trims the team rows to a maximum count.
+ * @param rows Vector of team rows.
+ * @param maxCount Maximum number of rows to keep.
+ */
 void gui::TeamDisplayer::sortTeamRow(std::vector<std::array<std::string, 5>> &rows, std::size_t maxCount)
 {
     std::sort(rows.begin(), rows.end(), sortFunction);
@@ -69,6 +88,10 @@ void gui::TeamDisplayer::sortTeamRow(std::vector<std::array<std::string, 5>> &ro
         rows.resize(maxCount);
 }
 
+/**
+ * @brief Updates the displayed team information based on current game state.
+ * @param gm The current game state.
+ */
 void gui::TeamDisplayer::updateInfo(const state::GameState &gm)
 {
     std::vector<std::array<std::string, 5>> rows;
@@ -85,10 +108,18 @@ void gui::TeamDisplayer::updateInfo(const state::GameState &gm)
     _background->setSize(_textDisplayer->getSize());
 }
 
+/**
+ * @brief Logic update function.
+ * @return Always true, placeholder for consistency with renderable interface.
+ */
 bool gui::TeamDisplayer::update(float)
 {
     return true;
 }
+
+/**
+ * @brief Draws the team displayer box and its contents.
+ */
 
 void gui::TeamDisplayer::draw() const
 {
