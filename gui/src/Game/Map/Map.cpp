@@ -99,6 +99,34 @@ void gui::Map::drawProps(const Tile &tile, const tools::Vector2<float> &tilePos)
     }
 }
 
+/**
+ * @brief Draws the Sea tiles.
+ *
+ * Draws Sea tiles around the map according to the margin
+ */
+void gui::Map::drawSea() const
+{
+    auto seaIt = _tilesObject.find(MapTileType::SEA);
+    if (seaIt == _tilesObject.end())
+        return;
+
+    auto &sprite = seaIt->second;
+    tools::Vector2<float> tileSize = _tileSize;
+
+    int margin = 7;
+
+    for (int y = -margin; y < _height + margin; ++y) {
+        for (int x = -margin; x < _width + margin; ++x) {
+            if (x >= 0 && x < _width && y >= 0 && y < _height)
+                continue;
+
+            tools::Vector2<float> pos(x * tileSize.x, y * tileSize.y);
+            sprite->setPosition(pos);
+            sprite->drawObject();
+        }
+    }
+}
+
 
 /**
  * @brief Draws the entire map.
@@ -110,11 +138,13 @@ void gui::Map::draw() const
     if (_map.empty() || _tilesObject.empty())
         return;
 
+    drawSea();
+
     for (int i = 0; i < _map.size(); ++i) {
         for (int j = 0; j < _map[i].size(); ++j) {
             tools::Vector2<float> pos(j * _tileSize.x, i * _tileSize.y);
             MapTileType type = _tileTypes[i][j];
-            
+
             auto it = _tilesObject.find(type);
             if (it == _tilesObject.end())
                 continue;
@@ -124,6 +154,7 @@ void gui::Map::draw() const
         }
     }
 }
+
 
 /**
  * @brief Generates visual tile types for the map.
