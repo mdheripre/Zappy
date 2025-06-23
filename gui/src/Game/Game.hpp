@@ -113,7 +113,7 @@ namespace game
                 { tools::KeyCode::A,     [this]() { std::cout <<"freferferf"<< std::endl;_ui->changeBroadcastVisibility();}},
                 { tools::KeyCode::Z,     [this]() { _ui->changeTeamVisibility();}},
                 { tools::KeyCode::E,     [this]() { _ui->changeEventVisibility();}},
-                { tools::KeyCode::R,     [this]() { _ui->changePlayerVisibility();}},
+                { tools::KeyCode::Y,     [this]() { _ui->changePlayerVisibility();}},
                 { tools::KeyCode::T,     [this]() { _ui->changeTimeVisibility();}},
             };
     };
