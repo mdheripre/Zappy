@@ -139,7 +139,7 @@ static void init_egg(const char *team_name, int *egg_id, game_t *game)
         return;
     egg->id = *egg_id;
     *egg_id += 1;
-    egg->player_id = -1;
+    egg->player = NULL;
     egg->team_name = team_name;
     egg->x = rand() % game->width;
     egg->y = rand() % game->height;

@@ -20,11 +20,9 @@ void on_response_player_eat(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    player_t *player = find_player_by_id(server->game,
-        event->data.generic_response.player_id);
+    player_t *player = event->data.generic_response.client->player;
 
     if (!server || !player)
         return;
-    EMIT(server->command_manager->dispatcher, "gui_pin",
-        player);
+    EMIT(server->command_manager->dispatcher, "gui_pin", player);
 }

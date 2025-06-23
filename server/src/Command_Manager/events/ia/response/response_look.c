@@ -16,31 +16,17 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Handle the response to a 'Look' command.
- *
- * Emits a send_response event with the look result for the client.
- *
- * @param ctx Pointer to the server.
- * @param data Pointer to the look response event.
- */
 void on_response_look(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    response_payload_t *payload = NULL;
+    client_t *client = NULL;
 
     if (!server || !event || !event->data.generic_response.response)
         return;
-    payload = malloc(sizeof(response_payload_t));
-    if (!payload)
+    client = event->data.generic_response.client;
+    if (!client)
         return;
-    payload->client = get_client_by_fd(server,
-        event->data.generic_response.client_fd);
-    payload->message = (char *)event->data.generic_response.response;
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(client->fd, "%s", event->data.generic_response.response);
+    free((char *)event->data.generic_response.response);
 }

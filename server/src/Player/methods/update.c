@@ -30,7 +30,7 @@ static void add_event_died(player_t *self, game_t *game)
         return;
     memset(event, 0, sizeof(game_event_t));
     event->type = GAME_EVENT_PLAYER_DIED;
-    event->data.player_died.player_id = self->id;
+    event->data.player_died.player = self;
     game->event_queue->methods->push_back(game->event_queue, event);
 }
 
@@ -42,7 +42,7 @@ static void add_event_player_eat(player_t *self, game_t *game)
         return;
     memset(event, 0, sizeof(game_event_t));
     event->type = GAME_EVENT_RESPONSE_PLAYER_EAT;
-    event->data.generic_response.player_id = self->id;
+    event->data.generic_response.client = self->client;
     game->server_event_queue->methods->push_back(game->server_event_queue,
         event);
 }
