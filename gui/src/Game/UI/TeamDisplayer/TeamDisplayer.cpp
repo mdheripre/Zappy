@@ -138,7 +138,7 @@ void gui::TeamDisplayer::setPostion(const tools::Vector2<float> &pos)
         _textDisplayer->setPosition(pos);
 }
 
-const tools::Vector2<float> &gui::TeamDisplayer::getSize()
+tools::Vector2<float> gui::TeamDisplayer::getSize()
 {
     return _background->getSize();
 }

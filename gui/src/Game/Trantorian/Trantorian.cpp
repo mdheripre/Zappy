@@ -63,7 +63,48 @@ void gui::Trantorian::expulse()
         break;
     }
     _currentAction = "Expulse";
-};
+}
+
+void gui::Trantorian::setForward(bool value)
+{
+    if (value) {
+        switch (_orientation)
+        {
+            case Orientation::NORTH:
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_NORTH), false);
+                break;
+            case Orientation::EAST:
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_EAST), false);
+                break;
+            case Orientation::SOUTH:
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_SOUTH), false);
+                break;
+            case Orientation::WEST:
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_WEST), false);
+                break;
+            default:
+                break;
+        }
+    } else {
+        _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::IDLE), true);
+    }
+}
+
+tools::Vector2<float> gui::Trantorian::orientationToVector(Orientation o)
+{
+    switch (o) {
+        case Orientation::NORTH:
+            return {0.f, -1.f};
+        case Orientation::EAST:
+            return {1.f, 0.f};
+        case Orientation::SOUTH:
+            return {0.f, 1.f};
+        case Orientation::WEST:
+            return {-1.f, 0.f};
+        default:
+            return {0.f, 0.f};
+    }
+}
 
 /**
  * @brief Moves the Trantorian away from a given direction.
@@ -132,6 +173,20 @@ void gui::Trantorian::startIncantation()
     _currentAction = "Do an incantation ";
 }
 
+void gui::Trantorian::forwardAnimation(float dt)
+{
+    if (!_forward)
+        return;
+
+    const float speed = TILE_SIZE / 7.0f;
+    tools::Vector2<float> sPos = _trantorianObject->getPosition();
+    tools::Vector2<float> direction = orientationToVector(_orientation);
+    tools::Vector2<float> movement = direction * (speed * dt);
+
+    sPos += direction * (speed * dt);
+    _trantorianObject->setPosition(sPos);
+}
+
 /**
  * @brief Updates the Trantorian's animation state.
  *
@@ -145,10 +200,12 @@ bool gui::Trantorian::update(float dt)
 {
     bool anim_end = true;
 
-    if (_trantorianObject)
+    if (_trantorianObject) {
+        forwardAnimation(dt);
         anim_end = _trantorianObject->updateObject(dt);
-    else
+    } else
         return false;
+
     if (!_alive)
         return false;
     return true;
@@ -170,7 +227,6 @@ void gui::Trantorian::setPosition(tools::Vector2<int> pos)
         std::srand(42);
         seeded = true;
     }
-
     tools::Vector2<float> tranSize = _trantorianObject->getSize();
 
     const float maxOffset = TILE_SIZE * 0.05f;

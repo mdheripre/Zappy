@@ -34,10 +34,10 @@ gui::UIBox::UIBox(
     );
     _background->setPosition(absPos);
     _background->setSize(absSize);
-
+    _background->setColor(tools::Color(75, 163, 199, 230));
     _textDisplayer->setPosition(absPos);
     _textDisplayer->setSize(absSize);
-    _textDisplayer->setText(_title);
+    _textDisplayer->setText("  " + _title);
     _textDisplayer->setCharacterSize(20);
 }
 

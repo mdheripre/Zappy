@@ -50,7 +50,7 @@ namespace gui {
             virtual void setInventory(const std::array<int, 7>& inv) = 0;
             virtual void laidAnEgg() = 0;
             virtual void expulse() = 0;
-            
+            virtual void setForward(bool value) = 0;
             virtual void expulseFrom(Orientation O, int maxWidth, int maxHeight) = 0;
             virtual void removeFromInventory(Tile::Resource res) = 0;
             virtual void broadcast(const std::string &msg) = 0;
@@ -62,6 +62,7 @@ namespace gui {
             std::string _currentAction = "";
             int _level;
             std::array<int, 7> _inventory;
+            bool _forward = false;
         };
         
         class Trantorian : public TrantorianState,
@@ -74,9 +75,12 @@ namespace gui {
                     EJECT_NORTH,
                     EJECT_EAST,
                     EJECT_SOUTH,
-                    EJECT_WEST
+                    EJECT_WEST,
+                    WALK_NORTH,
+                    WALK_EAST,
+                    WALK_SOUTH,
+                    WALK_WEST,
                 };
-            
                 Trantorian(int id,
                         tools::Vector2<int>  pos,
                            const std::string& teamName,
@@ -86,7 +90,6 @@ namespace gui {
                            std::shared_ptr<ITrantorianUI> uiController = nullptr);
                 ~Trantorian() override = default;
             private:
-                bool _isTagged = false;
                 std::shared_ptr<ITrantorianUI> _uiController;
                 std::unique_ptr<render::IAnimatedSprite> _trantorianObject;
                 void setDead() override { _alive = false; }
@@ -103,11 +106,14 @@ namespace gui {
                 void addToInventory(Tile::Resource res);
                 void startIncantation();
                 void broadcast(const std::string &msg) {std::cout << "Brodcast from player " << _id << ": "<< msg << std::endl;}
+                void forwardAnimation(float dt);
                 bool update(float dt);
                 void draw() const;
                 bool isMouseOver(const tools::Vector2<float>& mousePosition) const;
                 void onHoverEnter() override;
                 void onHoverExit() override;
                 void onClick();
+                void setForward(bool value);
+                tools::Vector2<float> orientationToVector(Orientation o);
             };         
 } // namespace game
