@@ -137,6 +137,7 @@ struct game_s {
     unsigned long tick_counter;
     bool has_finished;
     int max_players;
+    int egg_id_current;
 
     tile_t **map;
     list_t *teams;

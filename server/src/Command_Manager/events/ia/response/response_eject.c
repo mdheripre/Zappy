@@ -29,5 +29,8 @@ void on_response_eject(void *ctx, void *data)
         strcmp(msg, "ok\n") == 0) {
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PEX, client);
     }
+    if (event->type == EVENT_RESP_PLAYER_EJECTED)
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PPO,
+            client->player);
     free((char *)event->data.generic_response.response);
 }

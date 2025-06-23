@@ -131,14 +131,14 @@ static bool game_init_teams(game_t *game, config_game_t *config)
  * @param egg_id Pointer to the egg ID counter (auto-incremented).
  * @param game Pointer to the game instance.
  */
-static void init_egg(const char *team_name, int *egg_id, game_t *game)
+static void init_egg(const char *team_name, game_t *game)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 
     if (!egg)
         return;
-    egg->id = *egg_id;
-    *egg_id += 1;
+    egg->id = game->egg_id_current;
+    game->egg_id_current += 1;
     egg->player = NULL;
     egg->team_name = team_name;
     egg->x = rand() % game->width;
@@ -158,18 +158,18 @@ static void init_egg(const char *team_name, int *egg_id, game_t *game)
  */
 static void game_init_eggs(game_t *game)
 {
-    int egg_id = 1;
     list_node_t *node = NULL;
     team_info_t *team = NULL;
 
     if (!game || !game->teams)
         return;
+    game->egg_id_current = 1;
     for (node = game->teams->head; node; node = node->next) {
         team = node->data;
         if (!team)
             continue;
         for (int i = 0; i < team->team_size; i++) {
-            init_egg(team->team_name, &egg_id, game);
+            init_egg(team->team_name, game);
         }
     }
 }
