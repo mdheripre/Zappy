@@ -56,6 +56,11 @@ typedef struct {
     write_ctx_t writer;
 } explore_ctx_t;
 
+typedef struct {
+    const char *name;
+    event_type_t event;
+} gui_command_event_t;
+
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);
