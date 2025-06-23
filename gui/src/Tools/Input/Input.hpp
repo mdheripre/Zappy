@@ -22,7 +22,7 @@ namespace tools
         A,
         Z,
         E,
-        Y,
-        T
+        T,
+        Y
     };
 } // namespace tools
