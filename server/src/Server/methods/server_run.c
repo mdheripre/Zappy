@@ -180,8 +180,6 @@ static bool run_server_iteration(server_t *self, poll_manager_t *poll_mgr,
     if (!poll_mgr->methods.resize(poll_mgr, self->game->max_players + 1))
         return false;
     fds = poll_mgr->fds;
-    // self->vtable->setup_poll(self, fds, &nfds);
-    // poll_mgr->nfds = nfds;
     update_time(self);
     ticks_applied = apply_ticks(self);
     timeout = compute_timeout(self);
