@@ -57,6 +57,8 @@ static void register_core_args(config_t *config)
     REGISTER(config->dispatcher, "-h", help_arg, config);
     REGISTER(config->dispatcher, "--help", help_arg, config);
     REGISTER(config->dispatcher, "-help", help_arg, config);
+    REGISTER(config->dispatcher, "--debug", debug_arg, config);
+    REGISTER(config->dispatcher, "-d", debug_arg, config);
 }
 
 /****************************************************************************/
@@ -93,6 +95,7 @@ static bool init_config(config_t *config)
     config->port = -1;
     config->frequency = -1.0f;
     config->exit = false;
+    config->debug = false;
     register_core_args(config);
     return true;
 }

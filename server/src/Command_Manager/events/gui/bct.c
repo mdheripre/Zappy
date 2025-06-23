@@ -95,9 +95,9 @@ void handle_command_gui_bct(void *ctx, void *data)
         return;
     args = extract_command_args(client_peek_command(client)->content);
     if (!parse_bct_coords(args, &x, &y))
-        return;
+        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
     if (x < 0 || y < 0 || x >= server->game->width ||
         y >= server->game->height)
-        return;
+        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
     emit_bct_response(server, client, &server->game->map[y][x]);
 }

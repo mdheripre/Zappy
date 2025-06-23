@@ -29,6 +29,12 @@ typedef enum log_level_e {
     LOG_ERROR
 } log_level_t;
 
+typedef enum debug_state_e {
+    DEBUG_ON,
+    DEBUG_OFF,
+    DEBUG_GET
+} debug_state_t;
+
 typedef struct {
     int x;
     int y;
@@ -56,6 +62,7 @@ typedef struct {
     write_ctx_t writer;
 } explore_ctx_t;
 
+debug_state_t debug_state(debug_state_t state);
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);
