@@ -27,6 +27,11 @@ SFMLStaticSprite::SFMLStaticSprite(const sf::Texture &texture, std::shared_ptr<s
     _sprite.setTexture(texture);
 }
 
+/**
+ * @brief Gets the position of the sprite.
+ * 
+ * @return Position vector.
+ */
 tools::Vector2<float> SFMLStaticSprite::getPosition() const
 {
     tools::Vector2<float> pos;
@@ -36,6 +41,11 @@ tools::Vector2<float> SFMLStaticSprite::getPosition() const
     return pos;
 }
 
+/**
+ * @brief Gets the size of the sprite.
+ * 
+ * @return Size vector.
+ */
 tools::Vector2<float> SFMLStaticSprite::getSize() const
 {
     tools::Vector2<float> size;
@@ -47,11 +57,21 @@ tools::Vector2<float> SFMLStaticSprite::getSize() const
 }
 
 
+/**
+ * @brief Sets the position of the sprite.
+ * 
+ * @param pos New position.
+ */
 void SFMLStaticSprite::setPosition(const tools::Vector2<float>& pos)
 {
     _sprite.setPosition(pos.x, pos.y);
 }
 
+/**
+ * @brief Sets the size of the sprite, adjusting scale accordingly.
+ * 
+ * @param size Target size.
+ */
 void SFMLStaticSprite::setSize(const tools::Vector2<float>& size)
 {
     sf::FloatRect bounds = _sprite.getLocalBounds();
@@ -63,6 +83,11 @@ void SFMLStaticSprite::setSize(const tools::Vector2<float>& size)
     _sprite.setScale(scaleX, scaleY);
 }
 
+
+/**
+ * @brief Draws the sprite to the window.
+ */
+
 void SFMLStaticSprite::drawObject() const
 {
     if (_window && _window->isOpen()) {
@@ -70,11 +95,23 @@ void SFMLStaticSprite::drawObject() const
     }
 }
 
+
+/**
+ * @brief Checks if a point is inside the sprite.
+ * 
+ * @param position Point to check.
+ * @return true if inside.
+ */
 bool SFMLStaticSprite::contains(tools::Vector2<float> position)
 {
     return _sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+/**
+ * @brief Sets the sprite's color.
+ * 
+ * @param color Color to apply.
+ */
 void SFMLStaticSprite::setColor(const tools::Color &color)
 {
     _sprite.setColor({color.r, color.g, color.b, color.a});
