@@ -33,7 +33,7 @@ static egg_t *create_egg_from_player(player_t *player)
         return NULL;
     egg->id = egg_id;
     egg_id++;
-    egg->player_id = player->id;
+    egg->player = player;
     egg->team_name = player->team_name;
     egg->x = player->x;
     egg->y = player->y;
@@ -75,7 +75,7 @@ static game_event_t *create_egg_event(const egg_t *egg)
     if (!event)
         return NULL;
     event->type = GAME_EVENT_RESPONSE_EGG_LAID;
-    event->data.egg.player_id = egg->player_id;
+    event->data.egg.player = egg->player;
     event->data.egg.team_name = egg->team_name;
     event->data.egg.x = egg->x;
     event->data.egg.y = egg->y;
@@ -116,7 +116,7 @@ void on_egg_laid(void *ctx, void *data)
 
     if (!game || !event)
         return;
-    player = find_player_by_id(game, event->data.egg.player_id);
+    player = event->data.egg.player;
     if (!player)
         return;
     egg = add_egg_to_game(game, player);

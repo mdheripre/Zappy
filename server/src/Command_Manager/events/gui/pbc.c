@@ -20,12 +20,12 @@ void handle_gui_pbc(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *gui = server->vtable->get_gui(server);
+    client_t *gui = server->gui;
 
     if (!server || !event || !gui || !event->data.generic_response.response)
         return;
     dprintf(gui->fd, "pbc #%d %s\n",
-        event->data.generic_response.player_id,
+        event->data.generic_response.client->player->id,
         event->data.generic_response.response);
     free((char *)event->data.generic_response.response);
 }

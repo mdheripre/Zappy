@@ -14,6 +14,7 @@ void net::Client::sendMessage(const std::string &message) const
     pfd.fd = this->_sock->getFd();
     pfd.events = POLLOUT;
 
+    std::cout << "Message " << message << std::endl;
     if (poll(&pfd, 1, 100) <= 0 || (pfd.revents & POLLHUP) || !(pfd.revents & POLLOUT))
         throw NetworkError("Socket isn't ready or has been closed");
     if (write(this->_sock->getFd(), message.c_str(), message.length()) < 0)

@@ -31,6 +31,7 @@ typedef struct {
     int y;
     player_orientation_t orientation;
     const char *team_name;
+    client_t *client;
 } player_config_t;
 
 
@@ -48,6 +49,7 @@ struct player_s {
     int x;
     int y;
     player_orientation_t orientation;
+    client_t *client;
     int level;
     bool is_alive;
     char *team_name;

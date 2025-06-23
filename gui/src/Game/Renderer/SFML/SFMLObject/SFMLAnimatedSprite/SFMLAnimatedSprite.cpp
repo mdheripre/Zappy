@@ -42,7 +42,6 @@ namespace sfml {
         if (animIt == _animationMap.end()) {
             throw RenderError("Error animation " + std::to_string(keyAnim) + " doesn't exist");
         }
-        
         _currentAnimRow = animIt->second;
         _currentFrame = 0;
         _loop = loop;
@@ -100,6 +99,17 @@ tools::Vector2<float> SFMLAnimatedSprite::getSize() const
     return size;
 }
 
+void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
+{
+    sf::FloatRect bounds = sprite.getLocalBounds();
+    if (bounds.width == 0 || bounds.height == 0)
+        return;
+
+    float scaleX = size.x / bounds.width;
+    float scaleY = size.y / bounds.height;
+    sprite.setScale(scaleX, scaleY);
+}
+
 void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
 {
     sprite.setPosition(pos.x, pos.y);
@@ -111,6 +121,36 @@ void SFMLAnimatedSprite::drawObject() const
 {
     if (_ctx && _ctx->isOpen())
         _ctx->draw(sprite);
+}
+
+std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const 
+{
+    auto copy = std::make_unique<SFMLAnimatedSprite>(
+        *sprite.getTexture(),
+        _ctx,
+        _columns,
+        _rows,
+        sprite.getScale().x,
+        _animationMap,
+        _fps,
+        _defaultAnimation
+    );
+
+    copy->playAnimation(_defaultAnimation, _loop);
+    copy->setPosition(getPosition());
+    copy->setSize(getSize());
+    return copy;
+}
+
+bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
+{
+    return sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
+}
+
+void SFMLAnimatedSprite::setColor(const tools::Color &color)
+{
+    sprite.setColor({color.r, color.g, color.b, color.a});
+
 }
 
 } // namespace sfml

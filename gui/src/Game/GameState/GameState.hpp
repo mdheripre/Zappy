@@ -13,17 +13,12 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <map>
 #include <string>
+#include "Tools/TeamBranding/TeamBranding.hpp"
 
 namespace state
 {
-    struct Player {
-        int id;
-        int x;
-        int y;
-        int orientation;
-    };
-
     class GameState
     {
     public:
@@ -35,10 +30,9 @@ namespace state
         GameState() = default;
         ~GameState() = default;
         State state;
-        float time_unit = 0;
+        int time_unit = 0;
         std::shared_ptr<gui::MapState> map;
-        std::unordered_set<std::string> teams;
-        std::unordered_map<int, Player> players;
+        std::map<std::string, tools::TeamBranding> teams;
         std::unordered_map<int, std::shared_ptr<gui::TrantorianState>> trantorians;
         std::unordered_map<int, std::shared_ptr<EntityState>> eggs;
         std::unordered_map<tools::Vector2<int>, std::shared_ptr<gui::IncantationState>> incantations;

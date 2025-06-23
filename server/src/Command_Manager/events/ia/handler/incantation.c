@@ -38,8 +38,7 @@ void handle_command_incantation(void *ctx, void *data)
     if (!event)
         return;
     event->type = GAME_EVENT_START_INCANTATION;
-    event->data.generic_response.player_id = client->player->id;
-    event->data.generic_response.client_fd = client->fd;
+    event->data.generic_response.client = client;
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);
 }

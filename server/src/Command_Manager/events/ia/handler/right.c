@@ -36,8 +36,7 @@ void handle_command_right(void *ctx, void *data)
     if (!event)
         return;
     event->type = GAME_EVENT_PLAYER_MOVED;
-    event->data.player_moved.player_id = player->id;
-    event->data.player_moved.client_fd = client->fd;
+    event->data.player_moved.player = player;
     event->data.player_moved.ia_success = true;
     event->data.player_moved.direction = TURN_RIGHT;
     event->data.player_moved.x = player->x;

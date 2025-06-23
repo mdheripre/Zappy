@@ -20,7 +20,7 @@ namespace net
         std::unique_ptr<Client> _client;
         std::shared_ptr<tools::MessageQueue> _incoming;
         std::shared_ptr<tools::MessageQueue> _outgoing;
-        bool _running;
+        bool _running = true;
     public:
         Network(std::shared_ptr<tools::MessageQueue> incoming,
             std::shared_ptr<tools::MessageQueue> outgoing,

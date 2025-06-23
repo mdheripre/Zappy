@@ -28,7 +28,7 @@ void handle_gui_pie(void *ctx, void *data)
 
     if (!server || !event)
         return;
-    gui = server->vtable->get_gui(server);
+    gui = server->gui;
     if (!gui)
         return;
     x = event->data.incantation.x;

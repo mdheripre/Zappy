@@ -49,8 +49,7 @@ static char *format_inventory(player_t *player)
  * @param player Pointer to the player.
  * @param event Original inventory request event.
  */
-static void send_inventory_response(game_t *game, player_t *player,
-    game_event_t *event)
+static void send_inventory_response(game_t *game, player_t *player)
 {
     char *inventory_str = format_inventory(player);
     game_event_t *response = NULL;
@@ -63,8 +62,7 @@ static void send_inventory_response(game_t *game, player_t *player,
         return;
     }
     response->type = GAME_EVENT_RESPONSE_INVENTORY;
-    response->data.generic_response.client_fd =
-        event->data.generic_response.client_fd;
+    response->data.generic_response.client = player->client;
     response->data.generic_response.response = inventory_str;
     game->server_event_queue->methods->push_back(game->server_event_queue,
         response);
@@ -84,8 +82,8 @@ void on_inventory(void *ctx, void *data)
 
     if (!game || !event)
         return;
-    player = find_player_by_id(game, event->data.generic_response.player_id);
+    player = event->data.generic_response.client->player;
     if (!player)
         return;
-    send_inventory_response(game, player, event);
+    send_inventory_response(game, player);
 }

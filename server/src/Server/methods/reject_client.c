@@ -25,12 +25,11 @@
  */
 void reject_client(server_t *server, client_t *client, const char *reason)
 {
+    if (!server || !client || !reason)
+        return;
     write(client->fd, "ko\n", 3);
     console_log(LOG_WARNING, "%s (fd=%d)", reason, client->fd);
-    for (int i = 0; i < server->client_count; i++) {
-        if (&server->clients[i] == client) {
-            server->vtable->remove_client(server, i);
-            return;
-        }
-    }
+    if (server->gui == client)
+        server->gui = NULL;
+    server->vtable->remove_client(server, client);
 }

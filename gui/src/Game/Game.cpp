@@ -26,8 +26,10 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     for (const auto& [name, handler] : commands) {
         _cm.addCommand(name, handler);
     }
-    _renderer->init("Zappy", 1920, 1080, 60);
+    _renderer->init("Zappy", WIDTH_WINDOW, HEIGHT_WINDOW, 60);
     _renderer->setBindings(bindings);
+    _ui = std::make_shared<gui::UI>(_renderer->getFactory());
+    _renderer->setUI(_ui);
 }
 
 /**
@@ -63,11 +65,14 @@ void game::Game::gameLoop()
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
+    float acc = 0;
 
     while (!_renderer->isClose()) {
         auto currentTime = clock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
         float dt = elapsed.count();
+        acc += dt * static_cast<float>(_gm.time_unit);
+        _ui->updateTimeUnit(_gm.time_unit, acc);
         lastTime = currentTime;
         try {
             if (!errorCaught) {
@@ -77,7 +82,8 @@ void game::Game::gameLoop()
                 }
             }
             _renderer->poll();
-            _renderer->update(dt);
+            _renderer->update(dt * static_cast<float>(_gm.time_unit));
+            _renderer->updateUI(dt);
             if (_gm.map)
                 _renderer->render();
         } catch (const Error& e) {
