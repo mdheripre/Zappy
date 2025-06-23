@@ -17,6 +17,7 @@ namespace tools
         W,
         S,
         P,
-        M
+        M,
+        R
     };
 } // namespace tools
