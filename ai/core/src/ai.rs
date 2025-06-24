@@ -1,4 +1,4 @@
-use crate::{ai_state::AiState, item::Item, packet::Packet, Result};
+use crate::{ai_state::AiState, broadcast::Message, broadcast::MessageType, item::Item, packet::Packet, Result};
 use std::{env, process::Stdio, sync::Arc, time::Duration};
 use tokio::{process::Command, sync::Mutex};
 
@@ -110,40 +110,42 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     tokio::time::sleep(Duration::from_millis(500)).await;
 
     if !state.is_child() {
-        return Some(AiCommand::Fork);
+        let msg = Message::new(1, 2, MessageType::Gather, None);
+
+        return Some(AiCommand::Broadcast(msg.to_string()));
     }
-    if state.last_command.is_some() {
+    if state.last_command().is_some() {
         return None;
     }
 
-    if state.is_there_things_in_map() && state.destination.is_none() {
-        state.destination = state.chose_destination_tile()
+    if state.is_there_things_in_map() && state.destination().is_none() {
+        *state.destination() = state.chose_destination_tile()
     }
-    if let Some(dest) = state.destination.clone() {
-        let dest_diff = dest.distance_as_pair(state.position);
+    if let Some(dest) = state.destination().clone() {
+        let dest_diff = dest.distance_as_pair(state.position());
         if dest_diff.0 == 0 && dest_diff.1 == 0 {
             if dest.nb_items <= 1 {
-                state.destination = None;
+                *state.destination() = None;
             }
             let command = state.chose_best_item(dest.get_items().keys().cloned().collect());
-            state.last_command = command.clone();
+            *state.last_command() = command.clone();
             return command;
         }
-        if !state.direction.is_along(dest_diff) {
-            let command = Some(state.direction.get_best_turn_to(dest_diff));
-            state.last_command = command.clone();
+        if !state.direction().is_along(dest_diff) {
+            let command = Some(state.direction().get_best_turn_to(dest_diff));
+            *state.last_command() = command.clone();
             return command;
         }
-        state.last_command = Some(AiCommand::Forward);
+        *state.last_command() = Some(AiCommand::Forward);
         return Some(AiCommand::Forward);
     }
-    match state.previous_command {
+    match state.previous_command() {
         Some(AiCommand::Look) => {
-            state.last_command = Some(AiCommand::Forward);
+            *state.last_command() = Some(AiCommand::Forward);
             Some(AiCommand::Forward)
         }
         _ => {
-            state.last_command = Some(AiCommand::Look);
+            *state.last_command() = Some(AiCommand::Look);
             Some(AiCommand::Look)
         }
     }

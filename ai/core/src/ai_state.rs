@@ -1,7 +1,8 @@
-use crate::ai::{AiCommand};
+use crate::ai::AiCommand;
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
-use crate::init::{ClientInfos};
+use crate::broadcast::Broadcast;
+use crate::init::ClientInfos;
 use crate::inventory::Inventory;
 use crate::item::Item;
 use crate::tile::Tile;
@@ -43,18 +44,19 @@ use crate::tile::Tile;
 /// ```
 #[derive(Debug, Clone)]
 pub struct AiState {
-    pub is_child: bool,
-    pub client_num: i32,
-    pub position: (i32, i32),
-    pub inventory: Inventory,
-    pub world_map: Vec<Tile>,
-    pub is_running: bool,
-    pub role: Role,
-    pub time: i32,
-    pub direction: Direction,
-    pub last_command: Option<AiCommand>,
-    pub previous_command: Option<AiCommand>,
-    pub destination: Option<Tile>,
+    is_child: bool,
+    client_num: i32,
+    position: (i32, i32),
+    inventory: Inventory,
+    world_map: Vec<Tile>,
+    is_running: bool,
+    role: Role,
+    time: i32,
+    direction: Direction,
+    last_command: Option<AiCommand>,
+    previous_command: Option<AiCommand>,
+    destination: Option<Tile>,
+    broadcast: Broadcast,
 }
 
 impl AiState {
@@ -76,6 +78,7 @@ impl AiState {
             last_command: None,
             previous_command: None,
             destination: None,
+            broadcast: Broadcast::new(123),
         }
     }
 
@@ -97,7 +100,7 @@ impl AiState {
     pub fn set_client_num(&mut self, new: i32) {
         self.client_num = new
     }
-    
+
     pub fn position(&self) -> (i32, i32) {
         self.position
     }
@@ -136,6 +139,10 @@ impl AiState {
 
     pub fn destination(&mut self) -> &mut Option<Tile> {
         &mut self.destination
+    }
+
+    pub fn broadcast(&mut self) -> &mut Broadcast {
+        &mut self.broadcast
     }
 
     /// Make the AI move forward in the current direction

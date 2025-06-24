@@ -1,9 +1,10 @@
 mod ai;
 mod ai_core;
-mod ai_state;
 mod ai_direction;
 mod ai_role;
+mod ai_state;
 mod broadcast;
+mod cypher;
 mod error;
 mod init;
 mod inventory;

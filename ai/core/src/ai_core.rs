@@ -4,14 +4,12 @@ use lib_tcp::tcp_client::AsyncTcpClient;
 use tokio::sync::{mpsc, Mutex};
 
 use crate::ai::{ai_decision, spawn_child_process, AiCommand};
-use crate::init::{init_client};
+use crate::ai_state::AiState;
+use crate::init::init_client;
 use crate::packet::{Packet, PacketSender};
 use crate::server_response::ServerResponse;
 use crate::tile::Tile;
 use crate::{CoreError, Result, ServerInfos};
-use crate::ai_state::AiState;
-
-
 
 /// Ai core structure for thread communication and main loop
 ///
@@ -277,28 +275,26 @@ impl AiCore {
         match &response {
             ServerResponse::Ok => match last_command {
                 Some(AiCommand::Take(item)) => {
-                    state.inventory.add_item(&item);
+                    state.inventory().add_item(&item);
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {
-                    let _ = state.inventory.remove_item(&item);
+                    let _ = state.inventory().remove_item(&item);
                     state.add_item_to_map(&item);
                 }
                 Some(AiCommand::Forward) => {
                     state.forward();
                 }
                 Some(AiCommand::Left) => {
-                    *state.direction() = state.direction.left();
+                    *state.direction() = state.direction().left();
                 }
                 Some(AiCommand::Right) => {
-                    *state.direction() = state.direction.right();
+                    *state.direction() = state.direction().right();
                 }
                 Some(AiCommand::Fork) => {
                     spawn_child_process().await?;
                 }
-                Some(AiCommand::Broadcast(msg)) => {
-                    
-                }
+                Some(AiCommand::Broadcast(msg)) => {}
                 _ => {
                     println!("Received Ok but no command was sent.")
                 }
@@ -312,7 +308,9 @@ impl AiCore {
                 let mut i = 0;
                 for item in items {
                     let tile = Tile::new_from_response(item.clone(), i, state.clone());
-                    state.world_map().retain(|t| t.position() != tile.position());
+                    state
+                        .world_map()
+                        .retain(|t| t.position() != tile.position());
                     state.world_map().push(tile);
                     i += 1;
                 }
@@ -324,7 +322,9 @@ impl AiCore {
                 state.inventory().food = *food as usize;
             }
             ServerResponse::Message(msg) => {
-                // send message to AI
+                if let Err(e) = state.broadcast().receive_message(msg) {
+                    eprintln!("Error in message received: {}", e);
+                }
             }
             _ => {}
         }
@@ -332,5 +332,4 @@ impl AiCore {
             .send(response)
             .map_err(CoreError::SendChannelErrorSR)
     }
-
 }
