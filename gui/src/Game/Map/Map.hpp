@@ -64,7 +64,8 @@ class Map : public MapState, public render::IRenderEntity {
             LEFT_BOT_GROUND,
             LEFT_TOP_GROUND,
             RIGHT_TOP_GROUND,
-            RIGHT_BOT_GROUND
+            RIGHT_BOT_GROUND,
+            SEA
         };
 
         Map(int width,
@@ -75,6 +76,7 @@ class Map : public MapState, public render::IRenderEntity {
             
             void setTile(const Tile& tile, const tools::Vector2<int>& pos);
             void drawProps(const Tile& tile, const tools::Vector2<float> &tilePos) const;
+            void drawSea() const;
             void draw() const override;
             bool update(float dt) override;
             bool popResource(Tile::Resource res, tools::Vector2<int> pos);
