@@ -48,10 +48,13 @@ void sfml::SFMLRenderer::update(float dt)
 void sfml::SFMLRenderer::render()
 {
     _rWindow->clear(sf::Color::Black);
+
     for (auto& entity : _entities) {
         if (entity)
             entity->draw();
     }
+    if (_ui)
+        _ui->draw();
     _rWindow->display();
 }
 
@@ -63,6 +66,11 @@ bool sfml::SFMLRenderer::isClose() const
 void sfml::SFMLRenderer::pushEntity(std::shared_ptr<render::IRenderEntity> renderEntity)
 {
     _entities.push_back(renderEntity);
+}
+
+void sfml::SFMLRenderer::setUI(std::shared_ptr<render::IRenderEntity> ui)
+{
+    _ui = ui;
 }
 
 render::IObjectFactory &sfml::SFMLRenderer::getFactory()
@@ -86,6 +94,12 @@ void sfml::SFMLRenderer::setZoomView(float factor)
     _rWindow->setView(view);
 }
 
+void sfml::SFMLRenderer::updateUI(float dt)
+{
+    if (_ui)
+        _ui->update(dt);
+}
+
 void sfml::SFMLRenderer::poll()
 {
     sf::Event event;
@@ -96,6 +110,7 @@ void sfml::SFMLRenderer::poll()
             manageKeyCode(event);
         }
     }
+    handleMouseInteraction();
 }
 
 void sfml::SFMLRenderer::manageKeyCode(const sf::Event &event)
@@ -109,3 +124,30 @@ void sfml::SFMLRenderer::manageKeyCode(const sf::Event &event)
             bindIt->second();
     }
 }
+
+void sfml::SFMLRenderer::handleMouseInteraction()
+{
+    sf::Vector2i pixelPos = sf::Mouse::getPosition(*_rWindow);
+    sf::Vector2f worldPos = _rWindow->mapPixelToCoords(pixelPos);
+    tools::Vector2<float> mouse(worldPos.x, worldPos.y);
+
+    bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+    bool hoverHandled = false;
+
+    for (auto it = _entities.rbegin(); it != _entities.rend(); ++it) {
+        auto* interactive = dynamic_cast<render::AInteractiveEntity*>(it->get());
+        if (!interactive)
+            continue;
+
+        if (!hoverHandled && interactive->isMouseOver(mouse)) {
+            interactive->computeHover(mouse);
+            interactive->processClick(mousePressed, true);
+            hoverHandled = true;
+        } else {
+            interactive->computeHover({-9999.f, -9999.f});
+            interactive->processClick(mousePressed, false);
+        }
+    }
+}
+
+

@@ -78,6 +78,15 @@ void game::Game::bctCommand(const std::vector<std::string> &token)
     gui::Tile newTile(res);
     _gm.map->setTile(newTile, pos);
 
+    std::ostringstream oss;
+    oss << "Tile (" << pos.x << "," << pos.y << ") updated: ";
+    oss << "FOOD=" << res[0] << ", LINEMATE=" << res[1]
+        << ", DERAUMERE=" << res[2] << ", SIBUR=" << res[3]
+        << ", MENDIANE=" << res[4] << ", PHIRAS=" << res[5]
+        << ", THYSTAME=" << res[6];
+
+    _ui->addNewEvent(oss.str());
+
     std::cout << "[BCT] --- Tile updated ---" << std::endl;
     std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
     std::cout << "    Content  : ";
@@ -101,17 +110,18 @@ void game::Game::tnaCommand(const std::vector<std::string> &token)
     }
 
     std::string tokens;
-    for (const auto &i : token) {
-        tokens += " ";
-        tokens += i;
+    for (int i = 0; i < token.size(); i++) {
+        tokens += token[i];
+        if (i + 1 != token.size())
+            tokens += " ";
     }
+    std::string teamName = tokens;
+    tools::TeamBranding tb = _tbManager.getTeamBranding(teamName);
 
-    std::string teamName = token[0];
-
-    if (_gm.teams.insert(teamName.substr(1)).second) {
-        std::cout << "[TNA] --- Team registered ---" << std::endl;
-        std::cout << "    Name : " << teamName.substr(1) << std::endl;
-    }
+    _gm.teams.insert_or_assign(teamName, tb);
+    _ui->updateTeamInfo(_gm);
+    std::cout << "[TNA] --- Team registered ---" << std::endl;
+    std::cout << "    Name : " << teamName << std::endl;
 }
 
 
@@ -135,8 +145,9 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     const auto& tran = it->second;
     std::string tokens;
     for (int i = 5; i < token.size(); i++) {
-        tokens += " ";
         tokens += token[i];
+        if (i + 1 != token.size())
+            tokens += " ";
     }
     tools::TeamBranding tb = _tbManager.getTeamBranding(tokens);
 
@@ -146,7 +157,8 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
         tokens,
         static_cast<gui::Trantorian::Orientation>(orientation),
         lvl,
-        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset())
+        _renderer->getFactory().createAnimatedSprite(tb.getPlayerAsset()),
+        _ui
     );
 
     std::shared_ptr<gui::TrantorianState> tranState = trantorian;
@@ -154,6 +166,7 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
 
     _renderer->pushEntity(tranRender);
     _gm.trantorians[id] = tranState;
+    _ui->updateTeamInfo(_gm);
 
     std::cout << "[PNW] --- Trantorian Created ---" << std::endl;
     std::cout << "    ID         : " << id << std::endl;
@@ -161,6 +174,11 @@ void game::Game::pnwCommand(const std::vector<std::string> &token)
     std::cout << "    Orientation: " << orientation << std::endl;
     std::cout << "    Level      : " << lvl << std::endl;
     std::cout << "    Team       : " << tokens << std::endl;
+
+    std::ostringstream oss;
+    oss << "New Trantorian #" << id << " (Lvl " << lvl << ") from team \"" << tokens << "\" at ("
+        << pos.x << ", " << pos.y << ")";
+    _ui->addNewEvent(oss.str());
 }
 
 /**
@@ -200,6 +218,10 @@ void game::Game::ppoCommand(const std::vector<std::string> &token)
     std::cout << "    ID         : " << id << std::endl;
     std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
     std::cout << "    Orientation: " << orientation << std::endl;
+
+    std::ostringstream oss;
+    oss << "Trantorian #" << id << " moved to (" << pos.x << ", " << pos.y << "), orientation " << orientation;
+    _ui->addNewEvent(oss.str());
 }
 
 
@@ -234,6 +256,10 @@ void game::Game::plvCommand(const std::vector<std::string> &token)
     } else {
         printErrorCommand("Unknown id in plv for trantorian", token);
     }
+    std::ostringstream oss;
+    oss << "Trantorian #" << id << " reached level " << lvl;
+    _ui->addNewEvent(oss.str());
+    _ui->updateTeamInfo(_gm);
 }
 
 
@@ -269,6 +295,13 @@ void game::Game::pinCommand(const std::vector<std::string> &token)
         for (int i = 0; i < 7; ++i)
             std::cout << res[i] << (i < 6 ? ", " : "");
         std::cout << std::endl;
+
+        std::ostringstream oss;
+        oss << "Trantorian " << id << " updated inventory at (" << pos.x << ", " << pos.y << "):\n";
+        oss << "  Food: " << res[0] << ", Linemate: " << res[1] << ", Deraumere: " << res[2] << "\n";
+        oss << "  Sibur: " << res[3] << ", Mendiane: " << res[4] << ", Phiras: " << res[5] << ", Thystame: " << res[6];
+        _ui->addNewEvent(oss.str());
+        
     } else {
         printErrorCommand("Unknown id in pin for trantorian", token);
     }
@@ -306,6 +339,20 @@ void game::Game::pexCommand(const std::vector<std::string> &token)
         std::cout << "    ID        : " << id << std::endl;
         std::cout << "    Position  : (" << trantorian->getPosition().x << ", " << trantorian->getPosition().y << ")" << std::endl;
         std::cout << "    Direction : " << static_cast<int>(trantorian->getOrientation()) << std::endl;
+
+        std::ostringstream oss;
+        oss << "Trantorian " << id << " performed an expulsion at ("
+            << trantorian->getPosition().x << ", " << trantorian->getPosition().y << ")";
+        oss << "\n  Direction: ";
+
+        switch (trantorian->getOrientation()) {
+            case gui::Trantorian::Orientation::NORTH:    oss << "North"; break;
+            case gui::Trantorian::Orientation::EAST: oss << "East";  break;
+            case gui::Trantorian::Orientation::SOUTH:  oss << "South"; break;
+            case gui::Trantorian::Orientation::WEST:  oss << "West";  break;
+            default: oss << "Unknown"; break;
+        }
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in pex for trantorian", token);
     }
@@ -336,6 +383,10 @@ void game::Game::pbcCommand(const std::vector<std::string> &token)
         std::cout << "[PBC] --- Broadcast message ---" << std::endl;
         std::cout << "    ID      : " << id << std::endl;
         std::cout << "    Message : \"" << token[1] << "\"" << std::endl;
+
+        std::stringstream ss;
+        ss << "Broadcast from #" << id << ": \"" << token[1] << "\"";
+        _ui->addNewMessage(ss.str());
     } else {
         printErrorCommand("Unknown id in pbc for trantorian", token);
     }
@@ -398,6 +449,17 @@ void game::Game::picCommand(const std::vector<std::string> &token)
     std::cout << "    Position : (" << x << ", " << y << ")" << std::endl;
     std::cout << "    Level    : " << level << std::endl;
     std::cout << "    Players  : ";
+
+    std::ostringstream oss;
+    oss << "An incantation has started at (" << x << ", " << y << ")";
+    oss << "\n  Level: " << level;
+    oss << "\n  Players involved: ";
+
+    for (std::size_t i = 0; i < playerIds.size(); ++i) {
+        oss << playerIds[i];
+        if (i + 1 < playerIds.size())
+            oss << ", ";
+    }
     for (size_t i = 0; i < playerIds.size(); ++i)
         std::cout << playerIds[i] << (i < playerIds.size() - 1 ? ", " : "");
     std::cout << std::endl;
@@ -447,13 +509,16 @@ void game::Game::pieCommand(const std::vector<std::string> &token)
                 jt->second->setLevel(it->second->getTargetLevel());
             }
         }
-
         std::cout << "[PIE] --- Incantation result ---" << std::endl;
         std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
         std::cout << "    Result   : SUCCESS" << std::endl;
     }
-
     _gm.incantations.erase(pos);
+
+    std::ostringstream oss;
+    oss << "Incantation ended at (" << pos.x << ", " << pos.y << ")";
+    oss << "\n  Result: " << (success ? "SUCCESS" : "FAILED");
+    _ui->addNewEvent(oss.str());
 }
 
 
@@ -573,9 +638,14 @@ void game::Game::pdiCommand(const std::vector<std::string> &token)
     if (it != _gm.trantorians.end()) {
         it->second->setDead();
         _gm.trantorians.erase(id);
+        _ui->updateTeamInfo(_gm);
 
         std::cout << "[PDI] --- Trantorian removed ---" << std::endl;
         std::cout << "    ID : " << id << std::endl;
+
+        std::ostringstream oss;
+        oss << "Player #" << id << " has left the game.";
+        _ui->addNewEvent(oss.str());
     } else {
         printErrorCommand("Unknown id in pdi for trantorian", token);
     }
@@ -625,12 +695,15 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
 
         _renderer->pushEntity(eggRender);
         _gm.eggs[egg->getId()] = eggState;
+        _ui->updateTeamInfo(_gm);
+
 
         std::cout << "[ENW] --- Egg laid ---" << std::endl;
         std::cout << "    Egg ID     : " << eggId << std::endl;
         std::cout << "    Trantorian : " << tranId << std::endl;
         std::cout << "    Team       : " << (teamName.empty() ? "(unknown)" : teamName) << std::endl;
         std::cout << "    Position   : (" << pos.x << ", " << pos.y << ")" << std::endl;
+        
     } else {
         printErrorCommand("Egg ID already exists in enw", token);
     }
@@ -659,6 +732,7 @@ void game::Game::eboCommand(const std::vector<std::string> &token)
 
         egg->setDead();
         _gm.eggs.erase(id);
+        _ui->updateTeamInfo(_gm);
 
         std::cout << "[EBO] --- Egg hatched ---" << std::endl;
         std::cout << "    Egg ID : " << id << std::endl;
@@ -688,6 +762,7 @@ void game::Game::ediCommand(const std::vector<std::string> &token)
     if (it != _gm.eggs.end()) {
         it->second->setDead();
         _gm.eggs.erase(id);
+        _ui->updateTeamInfo(_gm);
 
         std::cout << "[EDI] --- Egg removed ---" << std::endl;
         std::cout << "    Egg ID : " << id << std::endl;
@@ -753,10 +828,19 @@ void game::Game::segCommand(const std::vector<std::string> &token)
         return;
     }
 
+    std::string tokens;
+
+    for (int i = 0; i < token.size(); i++) {
+        tokens += token[i];
+        if (i + 1 != token.size())
+            tokens += " ";
+    }
+
     _gm.state = state::GameState::State::END;
 
     std::cout << "[SEG] --- Game ended ---" << std::endl;
     std::cout << "    New state : END" << std::endl;
+    std::cout << "    Winner : " << tokens << std::endl;
 }
 
 

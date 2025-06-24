@@ -8,6 +8,7 @@
 #pragma once
 
 #include "IStaticSprite.hpp"
+#include <memory>
 
 namespace render
 {
@@ -18,5 +19,6 @@ namespace render
 
         virtual void playAnimation(int clipIndex, bool loop) = 0;
         virtual bool updateObject(float dt) = 0;
+        virtual std::unique_ptr<IAnimatedSprite> clone() const = 0;
     };
 }

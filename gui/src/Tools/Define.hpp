@@ -8,3 +8,5 @@
 #pragma once
 
 #define TILE_SIZE 50.0f
+#define WIDTH_WINDOW 1920.0f
+#define HEIGHT_WINDOW 1080.0f

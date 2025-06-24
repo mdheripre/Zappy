@@ -22,6 +22,8 @@ typedef enum event_type_e {
     EVENT_ARG_HELP_SHORT,
     EVENT_ARG_HELP_LONG,
     EVENT_ARG_HELP_ALT,
+    EVENT_ARG_DEBUG_SHORT,
+    EVENT_ARG_DEBUG_LONG,
 
     // --- Game logic events (used in game loop / dispatcher)
     EVENT_PLAYER_MOVED,
@@ -127,6 +129,8 @@ static const event_type_map_entry_t EVENT_CLI_MAP[] = {
     {"-h", EVENT_ARG_HELP_SHORT},
     {"--help", EVENT_ARG_HELP_LONG},
     {"-help", EVENT_ARG_HELP_ALT},
+    {"--debug", EVENT_ARG_DEBUG_LONG},
+    {"-d", EVENT_ARG_DEBUG_SHORT},
 };
 
 static const event_type_map_entry_t EVENT_CMD_NAME[] = {

@@ -31,8 +31,12 @@ namespace sfml
             bool updateObject(float dt);
             tools::Vector2<float> getPosition() const;
             tools::Vector2<float> getSize() const;
+            void setSize(const tools::Vector2<float>& size);
             void setPosition(const tools::Vector2<float> &pos);
             void drawObject() const;
+            std::unique_ptr<IAnimatedSprite> clone() const;
+            bool contains(tools::Vector2<float> position);
+            void setColor(const tools::Color &color);
         private:
             std::unordered_map<int, int> _animationMap;
             sf::Sprite sprite;
