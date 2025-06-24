@@ -6,6 +6,7 @@
 */
 
 #include "config.h"
+#include "event.h"
 #include "shared.h"
 #include "utils.h"
 #include <bits/getopt_core.h>
@@ -57,6 +58,8 @@ static void register_core_args(config_t *config)
     REGISTER(config->dispatcher, EVENT_ARG_HELP_SHORT, help_arg, config);
     REGISTER(config->dispatcher, EVENT_ARG_HELP_LONG, help_arg, config);
     REGISTER(config->dispatcher, EVENT_ARG_HELP_ALT, help_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_DEBUG_LONG, debug_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_DEBUG_SHORT, debug_arg, config);
 }
 
 /****************************************************************************/
