@@ -9,6 +9,10 @@
 
 namespace gui {
 
+    /**
+     * @brief Constructor that sets up the UI layout.
+     * @param factory Object factory used to build all subcomponents.
+     */
     TrantorianInfoDisplayer::TrantorianInfoDisplayer(render::IObjectFactory &factory)
     : UIBox("Trantorian Info",
         0.2f, 0.6f, 0.02f, 0.75f,
@@ -53,6 +57,12 @@ namespace gui {
     _currentAction->setPosition(absPos);
 }
 
+/**
+ * @brief Updates the display for the selected Trantorian.
+ * If the Trantorian is dead, the display is hidden.
+ * @param dt Delta time for animations.
+ * @return True if still visible and valid.
+ */
 bool TrantorianInfoDisplayer::update(float dt)
 {
     if (_trantorianSprite)
@@ -84,11 +94,14 @@ bool TrantorianInfoDisplayer::update(float dt)
         for (std::size_t i = 0; i < inv.size(); ++i)
             _inventory->pushRow({names[i], std::to_string(inv[i])});
 
-        _currentAction->setText("Current Action : Idle");
+        _currentAction->setText(_trantState->getCurrentAction());
         }
     return true;
 }
 
+/**
+ * @brief Draws the info box, tables, and current action if visible.
+ */
 void TrantorianInfoDisplayer::draw() const
 {
     if (!_visible)
@@ -106,6 +119,11 @@ void TrantorianInfoDisplayer::draw() const
         _trantorianSprite->drawObject();
 }
 
+/**
+ * @brief Sets the Trantorian to display and its animated visual.
+ * @param trantState The selected Trantorian state.
+ * @param visual A unique animated sprite to show.
+ */
 void TrantorianInfoDisplayer::updateTrantorianInfo(std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual)
 {
     const float padding = 0.005f;

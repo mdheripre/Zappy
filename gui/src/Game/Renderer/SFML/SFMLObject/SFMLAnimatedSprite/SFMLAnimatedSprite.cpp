@@ -15,14 +15,12 @@ namespace sfml {
         int columns,
         int rows,
         float pixelSize,
-        std::unordered_map<int, int> animationMap,
-        float fps,
-        int defaultAnimation)
-        : _animationMap(std::move(animationMap)), _rows(rows), _columns(columns), _ctx(std::move(ctx)), _fps(fps)
+        std::unordered_map<int, tools::AssetDefinition::AnimationInfo> animationMap,
+        float fps)
+        : _animationMap(animationMap), _rows(rows), _columns(columns), _ctx(std::move(ctx)), _fps(fps)
     {
         sprite.setTexture(texture);
         auto texSize = texture.getSize();
-        
         _frameWidth = texSize.x / _columns;
         _frameHeight = texSize.y / _rows;
     
@@ -30,24 +28,31 @@ namespace sfml {
         float scaleFactor = pixelSize / frameMax;
         sprite.setScale(sf::Vector2f(scaleFactor, scaleFactor));
         
-        _currentAnimation = defaultAnimation;
-        _defaultAnimation = defaultAnimation;
+        _currentAnimation = animationMap.at(0);
+        _defaultAnimation = animationMap.at(0);
         playAnimation(_currentAnimation, true);
     }
     
-
+    /**
+     * @brief Starts playing a specific animation.
+     * 
+     * @param keyAnim Key of the animation to play.
+     * @param loop Whether the animation should loop.
+     * @throws RenderError if the animation key is not found in the map.
+     */
     void SFMLAnimatedSprite::playAnimation(int keyAnim, bool loop)
     {
         auto animIt = _animationMap.find(keyAnim);
         if (animIt == _animationMap.end()) {
             throw RenderError("Error animation " + std::to_string(keyAnim) + " doesn't exist");
         }
-        
-        _currentAnimRow = animIt->second;
+        _currentAnimRow = animIt->second.line;
         _currentFrame = 0;
         _loop = loop;
-        _currentAnimation = keyAnim;
-    
+        _currentAnimation = animIt->second;
+        _reversed = animIt->second.reverse;
+
+        updateSpriteDirection(); 
         sprite.setTextureRect(sf::IntRect(
             _currentFrame * _frameWidth,
             _currentAnimRow * _frameHeight,
@@ -56,6 +61,29 @@ namespace sfml {
         ));
     }
 
+    void SFMLAnimatedSprite::playAnimation(tools::AssetDefinition::AnimationInfo animInfo, bool loop)
+    {
+        _currentAnimRow = animInfo.line;
+        _currentFrame = 0;
+        _loop = loop;
+        _currentAnimation = animInfo;
+        _reversed = animInfo.reverse;
+
+        updateSpriteDirection();    
+        sprite.setTextureRect(sf::IntRect(
+            _currentFrame * _frameWidth,
+            _currentAnimRow * _frameHeight,
+            _frameWidth,
+            _frameHeight
+        ));
+    }
+
+    /**
+     * @brief Updates the sprite's current animation frame based on time elapsed.
+     * 
+     * @param dt Delta time in seconds.
+     * @return true if animation was reset to default, false otherwise.
+     */
     bool SFMLAnimatedSprite::updateObject(float dt)
     {
         acc += dt;
@@ -65,7 +93,7 @@ namespace sfml {
         }
         acc = 0.0f;
         _currentFrame++;
-        if (_currentFrame >= _columns) {
+        if (_currentFrame >= _currentAnimation.frames) {
             if (_loop) {
                 _currentFrame = 0;
             } else {
@@ -81,6 +109,12 @@ namespace sfml {
         ));
         return false;
     }
+
+/**
+ * @brief Returns the current position of the sprite.
+ * 
+ * @return 2D vector representing the position.
+ */
 tools::Vector2<float> SFMLAnimatedSprite::getPosition() const
 {
     static tools::Vector2<float> pos;
@@ -90,6 +124,11 @@ tools::Vector2<float> SFMLAnimatedSprite::getPosition() const
     return pos;
 }
 
+/**
+ * @brief Returns the size of the sprite on screen.
+ * 
+ * @return 2D vector with width and height.
+ */
 tools::Vector2<float> SFMLAnimatedSprite::getSize() const
 {
     tools::Vector2<float> size;
@@ -100,6 +139,11 @@ tools::Vector2<float> SFMLAnimatedSprite::getSize() const
     return size;
 }
 
+/**
+ * @brief Sets the display size of the sprite.
+ * 
+ * @param size New size to apply.
+ */
 void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
 {
     sf::FloatRect bounds = sprite.getLocalBounds();
@@ -111,6 +155,11 @@ void SFMLAnimatedSprite::setSize(const tools::Vector2<float>& size)
     sprite.setScale(scaleX, scaleY);
 }
 
+/**
+ * @brief Sets the position of the sprite on screen.
+ * 
+ * @param pos New position.
+ */
 void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
 {
     sprite.setPosition(pos.x, pos.y);
@@ -118,12 +167,20 @@ void SFMLAnimatedSprite::setPosition(const tools::Vector2<float>& pos)
     _rect.top = pos.y;
 }
 
+/**
+ * @brief Draws the current animation frame to the render window.
+ */
 void SFMLAnimatedSprite::drawObject() const
 {
     if (_ctx && _ctx->isOpen())
         _ctx->draw(sprite);
 }
 
+/**
+ * @brief Creates a copy of the current animated sprite.
+ * 
+ * @return A unique_ptr to the new SFMLAnimatedSprite instance.
+ */
 std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const 
 {
     auto copy = std::make_unique<SFMLAnimatedSprite>(
@@ -133,8 +190,7 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
         _rows,
         sprite.getScale().x,
         _animationMap,
-        _fps,
-        _defaultAnimation
+        _fps
     );
 
     copy->playAnimation(_defaultAnimation, _loop);
@@ -142,16 +198,33 @@ std::unique_ptr<render::IAnimatedSprite> SFMLAnimatedSprite::clone() const
     copy->setSize(getSize());
     return copy;
 }
-
+/**
+ * @brief Checks whether the sprite contains the given screen position.
+ * 
+ * @param position The point to check.
+ * @return true if the point is inside the sprite's bounds.
+ */
 bool SFMLAnimatedSprite::contains(tools::Vector2<float> position)
 {
     return sprite.getGlobalBounds().contains(sf::Vector2f(position.x, position.y));
 }
 
+/**
+ * @brief Sets the color overlay on the sprite.
+ * 
+ * @param color RGBA color to apply.
+ */
 void SFMLAnimatedSprite::setColor(const tools::Color &color)
 {
     sprite.setColor({color.r, color.g, color.b, color.a});
+}
 
+void SFMLAnimatedSprite::updateSpriteDirection()
+{
+    float scaleX = _reversed ? -std::abs(sprite.getScale().x) : std::abs(sprite.getScale().x);
+
+    sprite.setScale(scaleX, sprite.getScale().y);
+    sprite.setOrigin(_reversed ? static_cast<float>(_frameWidth) : 0.f, 0.f);
 }
 
 } // namespace sfml

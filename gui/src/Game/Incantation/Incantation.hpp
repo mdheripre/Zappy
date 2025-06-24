@@ -15,6 +15,7 @@
 
 namespace gui {
     class IncantationState {
+
         public:
             IncantationState(tools::Vector2<int> pos,
                 int level,
@@ -35,6 +36,12 @@ namespace gui {
     class Incantation : public render::IRenderEntity, public IncantationState
     {
         public:
+            enum class IncantationAnimation {
+                IN_PROGRESS = 0,
+                START,
+                SUCCESS,
+                FAIL
+            };
             Incantation(tools::Vector2<int> pos,
                 int level,
                 const std::vector<int>& playerIds,

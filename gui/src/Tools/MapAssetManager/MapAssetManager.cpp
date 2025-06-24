@@ -13,9 +13,13 @@ namespace tools
     MapAssetManager::MapAssetManager()
     {
         for (const auto& [type, filename] : _tileTypeToFilename) {
+            std::string path = (type == gui::Map::MapTileType::SEA)
+                ? "gui/assets/Tiny Swords/Terrain/Water/" + filename
+                : _basePathTinySword + filename;
+    
             _tiles.emplace(
                 type,
-                AssetDefinition(_basePathTinySword + filename, {}, TILE_SIZE, 1, 1)
+                AssetDefinition(path, {}, TILE_SIZE, 1, 1)
             );
         }
     }

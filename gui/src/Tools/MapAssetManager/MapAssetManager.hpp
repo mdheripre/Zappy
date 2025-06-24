@@ -36,7 +36,8 @@ namespace tools
             { gui::Map::MapTileType::LEFT_BOT_GROUND,    "groundBotLeftCorner.png" },
             { gui::Map::MapTileType::RIGHT_BOT_GROUND,   "groundBotRightCorner.png" },
             { gui::Map::MapTileType::LEFT_TOP_GROUND,    "groundTopLeftCorner.png" },
-            { gui::Map::MapTileType::RIGHT_TOP_GROUND,   "groundTopRightCorner.png" }
+            { gui::Map::MapTileType::RIGHT_TOP_GROUND,   "groundTopRightCorner.png" },
+            { gui::Map::MapTileType::SEA,                "Water.png" }
         };
     };
 }
