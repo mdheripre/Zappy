@@ -109,15 +109,59 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
 
     tokio::time::sleep(Duration::from_millis(500)).await;
 
-    if !state.is_child() {
-        let msg = Message::new(1, 2, MessageType::Gather, None);
-
-        return Some(AiCommand::Broadcast(msg.to_string()));
-    }
     if state.last_command().is_some() {
         return None;
     }
-
+    if state.time() == 0 {
+        let msg = Message::new(0, 0, MessageType::Hello, None);
+        state.inc_time();
+        *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
+        state.broadcast().send_message(msg.clone());
+        return Some(AiCommand::Broadcast(msg.to_string()));
+    }
+    if state.time() >= 10 && !*state.welcomed() && *state.id_getter_queue() == 0 {
+        *state.alpha() = true;
+    }
+    while !state.broadcast().get_received_messages().is_empty() {
+        if let Some(msg) = state.broadcast().pop_received() {
+            match msg.msg_type() {
+                MessageType::Hello => {
+                    *state.teammate_nb() += 1;
+                    if *state.alpha() {
+                        let mut str: String = String::from(state.teammate_nb().to_string());
+                        str.push(':');
+                        str.push_str(state.team_inventory().as_broadcast().as_str());
+                        let output_msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(str));
+                        *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
+                        return Some(AiCommand::Broadcast(msg.to_string()));
+                    } else {
+                        *state.id_getter_queue() += 1;
+                    }
+                }
+                MessageType::Welcome => {
+                    if !*state.welcomed() && *state.id_getter_queue() == 0 {
+                        if let Some(content) = msg.content() {
+                            let parts: Vec<u32> = content.split(':').map(|x| x.parse().unwrap()).collect();
+                            *state.client_num() = parts[0] as i32;
+                            state.team_inventory().linemate = parts[1] as usize;
+                            state.team_inventory().deraumere = parts[2] as usize;
+                            state.team_inventory().sibur = parts[3] as usize;
+                            state.team_inventory().mendiane = parts[4] as usize;
+                            state.team_inventory().phiras = parts[5] as usize;
+                            state.team_inventory().thystame = parts[6] as usize;
+                        }
+                    }
+                    if *state.id_getter_queue() != 0 {
+                        *state.id_getter_queue() -= 1;
+                    }
+                }
+                MessageType::Gather => {}
+                MessageType::Dead => {}
+                MessageType::Need => {}
+            }
+        }
+    }
+    state.inc_time();
     if state.is_there_things_in_map() && state.destination().is_none() {
         *state.destination() = state.chose_destination_tile()
     }

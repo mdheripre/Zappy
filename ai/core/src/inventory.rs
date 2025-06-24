@@ -106,4 +106,20 @@ impl Inventory {
             Item::Thystame => self.thystame,
         }
     }
+
+    pub fn as_broadcast(&self) -> String {
+        let mut str: String = String::new();
+        str.push_str(&self.linemate.to_string());
+        str.push(':');
+        str.push_str(&self.deraumere.to_string());
+        str.push(':');
+        str.push_str(&self.sibur.to_string());
+        str.push(':');
+        str.push_str(&self.mendiane.to_string());
+        str.push(':');
+        str.push_str(&self.phiras.to_string());
+        str.push(':');
+        str.push_str(&self.thystame.to_string());
+        str
+    }
 }

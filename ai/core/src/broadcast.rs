@@ -5,6 +5,8 @@ pub enum MessageType {
     Gather,
     Dead,
     Need,
+    Hello,
+    Welcome,
 }
 
 impl fmt::Display for MessageType {
@@ -13,6 +15,8 @@ impl fmt::Display for MessageType {
             MessageType::Gather => "GATHER".to_string(),
             MessageType::Dead => "DEAD".to_string(),
             MessageType::Need => "NEED".to_string(),
+            MessageType::Hello => "HELLO".to_string(),
+            MessageType::Welcome => "WELCOME".to_string(),
         };
         write!(f, "{}", out)
     }
@@ -45,6 +49,8 @@ impl Message {
     pub fn msg_type(&self) -> &MessageType {
         &self.msg_type
     }
+    
+    pub fn content(&self) -> &Option<String> { &self.content }
 }
 
 impl fmt::Display for Message {
@@ -84,7 +90,7 @@ impl Broadcast {
         let parsed_msg = self.parse_message(&msg)?;
 
         self.is_valid_message(&parsed_msg)?;
-        self.received.push(parsed_msg);
+        self.received.insert(0, parsed_msg);
         Ok(())
     }
 
@@ -119,6 +125,8 @@ impl Broadcast {
             "GATHER" => Ok(MessageType::Gather),
             "NEED" => Ok(MessageType::Need),
             "DEAD" => Ok(MessageType::Dead),
+            "HELLO" => Ok(MessageType::Hello),
+            "WELCOME" => Ok(MessageType::Welcome),
             _ => Err(format!("Invalid msg type: {}", type_str)),
         }
     }
@@ -144,5 +152,9 @@ impl Broadcast {
 
     pub fn get_received_messages(&self) -> &[Message] {
         &self.received
+    }
+    
+    pub fn pop_received(&mut self) -> Option<Message> {
+        self.received.pop()
     }
 }

@@ -1,7 +1,7 @@
 use crate::ai::AiCommand;
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
-use crate::broadcast::Broadcast;
+use crate::broadcast::{Broadcast, Message};
 use crate::init::ClientInfos;
 use crate::inventory::Inventory;
 use crate::item::Item;
@@ -50,13 +50,18 @@ pub struct AiState {
     inventory: Inventory,
     world_map: Vec<Tile>,
     is_running: bool,
-    role: Role,
+    is_alpha: bool,
     time: i32,
     direction: Direction,
     last_command: Option<AiCommand>,
     previous_command: Option<AiCommand>,
     destination: Option<Tile>,
     broadcast: Broadcast,
+    id_getter_queue: u32,
+    welcomed: bool,
+    teammate_nb: u32,
+    message_id: u32,
+    team_inventory: Inventory,
 }
 
 impl AiState {
@@ -66,19 +71,20 @@ impl AiState {
             client_num: ci.client_num,
             position: (ci.x, ci.y),
             inventory: Inventory::new(),
+            team_inventory: Inventory::new(),
             world_map: vec![],
             is_running: true,
-            role: match ci.client_num {
-                1 => Role::Alpha,
-                2..=5 => Role::Beta,
-                _ => Role::Gamma,
-            },
+            is_alpha: false,
             time: 0,
             direction: Direction::North,
             last_command: None,
             previous_command: None,
             destination: None,
             broadcast: Broadcast::new(123),
+            id_getter_queue: 0,
+            welcomed: false,
+            teammate_nb: 1,
+            message_id: 0
         }
     }
 
@@ -93,8 +99,8 @@ impl AiState {
         self.is_child
     }
 
-    pub fn client_num(&self) -> i32 {
-        self.client_num
+    pub fn client_num(&mut self) -> &mut i32 {
+        &mut self.client_num
     }
 
     pub fn set_client_num(&mut self, new: i32) {
@@ -112,17 +118,31 @@ impl AiState {
     pub fn inventory(&mut self) -> &mut Inventory {
         &mut self.inventory
     }
+    
+    pub fn team_inventory(&mut self) -> &mut Inventory { &mut self.team_inventory }
 
     pub fn world_map(&mut self) -> &mut Vec<Tile> {
         &mut self.world_map
     }
 
-    pub fn role(&mut self) -> &mut Role {
-        &mut self.role
+    pub fn alpha(&mut self) -> &mut bool {
+        &mut self.is_alpha
     }
+    
+    pub fn id_getter_queue(&mut self) -> &mut u32 { &mut self.id_getter_queue }
+    
+    pub fn welcomed(&mut self) -> &mut bool { &mut self.welcomed }
+    
+    pub fn teammate_nb(&mut self) -> &mut u32 { &mut self.teammate_nb }
+    
+    pub fn message_id(&mut self) -> &mut u32 { &mut self.message_id }
 
     pub fn time(&mut self) -> i32 {
         self.time
+    }
+    
+    pub fn inc_time(&mut self) {
+        self.time += 1;
     }
 
     pub fn direction(&mut self) -> &mut Direction {
