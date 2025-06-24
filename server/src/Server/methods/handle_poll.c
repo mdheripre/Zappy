@@ -67,21 +67,19 @@ static void handle_command_enqueue(server_t *server, client_t *client,
 
 void process_command_line(server_t *server, client_t *client, const char *line)
 {
-    char *space = NULL;
-    char *newline = NULL;
+    char clean[BUFFER_COMMAND_SIZE] = {0};
+    char cmd_name[BUFFER_CMD_NAME] = {0};
 
     if (!server || !client || !line)
         return;
-    newline = strchr(line, '\n');
-    if (newline)
-        *newline = '\0';
-    space = strchr(line, ' ');
-    if (space)
-        *space = '\0';
+    strncpy(clean, line, sizeof(clean) - 1);
+    clean[sizeof(clean) - 1] = '\0';
+    strip_linefeed(clean);
+    extract_command_name(clean, cmd_name, sizeof(cmd_name));
     if (client->type == CLIENT_GUI)
-        handle_gui_command(server, client, line, line);
+        handle_gui_command(server, client, cmd_name, clean);
     else
-        handle_command_enqueue(server, client, line, line);
+        handle_command_enqueue(server, client, clean, cmd_name);
 }
 
 static void extract_commands_from_buffer(server_t *server,
