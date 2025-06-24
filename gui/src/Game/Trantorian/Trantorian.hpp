@@ -35,7 +35,6 @@ namespace gui {
                 const std::string& teamName,
                 Orientation orientation = Orientation::NORTH)
                 : EntityState(id, pos, teamName), _orientation(orientation), _level(1) {
-                std::cout << "Un trantorian est creer";
                 _inventory.fill(0);
             }
             virtual ~TrantorianState() = default;
