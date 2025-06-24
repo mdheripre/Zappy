@@ -29,6 +29,12 @@ typedef enum log_level_e {
     LOG_ERROR
 } log_level_t;
 
+typedef enum debug_state_e {
+    DEBUG_ON,
+    DEBUG_OFF,
+    DEBUG_GET
+} debug_state_t;
+
 typedef struct {
     int x;
     int y;
@@ -56,6 +62,12 @@ typedef struct {
     write_ctx_t writer;
 } explore_ctx_t;
 
+typedef struct {
+    const char *name;
+    event_type_t event;
+} gui_command_event_t;
+
+debug_state_t debug_state(debug_state_t state);
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);
 long get_ms_time(void);
@@ -65,7 +77,6 @@ bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     game_t *game);
 queued_command_t *client_peek_command(client_t *client);
 bool client_dequeue_command(client_t *client, queued_command_t *out);
-const char *event_type_name(game_event_type_t type);
 player_t *find_player_by_id(game_t *game, int player_id);
 char *extract_command_name(const char *line, char *out, size_t size);
 const char *extract_command_args(const char *line);

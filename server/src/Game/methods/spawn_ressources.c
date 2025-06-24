@@ -60,7 +60,7 @@ void add_tile_update_event(game_t *game, int x, int y)
 
     if (!event)
         return;
-    event->type = GAME_EVENT_RESPONSE_TILE_UPDATED;
+    event->type = EVENT_RESP_TILE_UPDATED;
     event->data.tile.x = x;
     event->data.tile.y = y;
     game->server_event_queue->methods->push_back(

@@ -35,7 +35,7 @@ void handle_command_eject(void *ctx, void *data)
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_PLAYER_EJECT;
+    event->type = EVENT_PLAYER_EJECT;
     event->data.generic_response.client = client;
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);

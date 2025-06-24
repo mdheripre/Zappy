@@ -29,7 +29,7 @@ static void send_player_moved_response(game_t *game, player_t *player)
 
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_PLAYER_MOVED;
+    response->type = EVENT_RESP_PLAYER_MOVED;
     response->data.player_moved.player = player;
     response->data.player_moved.x = player->x;
     response->data.player_moved.y = player->y;

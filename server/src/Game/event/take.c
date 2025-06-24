@@ -23,7 +23,7 @@ void send_take_response(game_t *game, player_t *player,
 
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_TAKE;
+    response->type = EVENT_RESP_TAKE;
     response->data.player_item.player = player;
     response->data.player_item.type_item = event->data.player_item.type_item;
     response->data.player_item.success = success;

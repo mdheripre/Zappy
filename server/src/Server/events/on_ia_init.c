@@ -40,7 +40,7 @@ static void init_player_from_egg(server_t *server, client_t *client,
         return;
     server->game->players->methods->push_back(server->game->players,
         client->player);
-    EMIT(server->command_manager->dispatcher, "gui_ebo", egg);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_EBO, egg);
     if (egg)
         free(egg);
 }
@@ -84,7 +84,8 @@ static void send_player_init(server_t *server, client_t *client)
     dprintf(client->fd, "%d\n", available);
     dprintf(client->fd, "%d %d\n",
         server->game->width, server->game->height);
-    EMIT(server->command_manager->dispatcher, "gui_pnw", client);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW, client);
+    EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, client->player);
 }
 
 /**

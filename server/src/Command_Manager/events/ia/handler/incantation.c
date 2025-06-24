@@ -33,11 +33,10 @@ void handle_command_incantation(void *ctx, void *data)
 
     if (!server || !client || !player)
         return;
-    printf("%d\n", player->id);
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_START_INCANTATION;
+    event->type = EVENT_START_INCANTATION;
     event->data.generic_response.client = client;
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);

@@ -36,6 +36,6 @@ void process_identify(command_manager_t *, server_t *server)
             continue;
         if (!client_peek_command(client))
             continue;
-        EMIT(server->dispatcher, "client_identify", client);
+        EMIT(server->dispatcher, EVENT_CLIENT_IDENTIFY, client);
     }
 }

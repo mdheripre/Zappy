@@ -35,14 +35,14 @@ static void emit_identify_event(server_t *server,
     client_t *client, const char *message)
 {
     response_payload_t *payload = malloc(sizeof(response_payload_t));
-    const char *event = strcmp(message, "GRAPHIC") == 0 ? "gui_init"
-        : "ia_init";
+    event_type_t event = (strcmp(message, "GRAPHIC") == 0)
+        ? EVENT_GUI_INIT : EVENT_IA_INIT;
 
     if (!payload)
         return;
     payload->client = client;
-    payload->message = strdup(strncmp(message, "TEAM-", 5) == 0 ?
-        message + 5 : message);
+    payload->message = strdup(strncmp(message, "TEAM-", 5) == 0
+        ? message + 5 : message);
     if (!payload->message) {
         free(payload);
         return;

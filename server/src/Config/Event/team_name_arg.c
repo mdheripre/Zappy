@@ -58,6 +58,10 @@ static bool check_name(config_t *config, parser_t *parser, char *name)
         parser->error_msg = "Team name cannot be 'GRAPHIC' (reserved for GUI)";
         return false;
     }
+    if (strcmp(name, "NULL") == 0) {
+        parser->error_msg = "Team name cannot be 'NULL'";
+        return false;
+    }
     return true;
 }
 
@@ -73,9 +77,14 @@ static bool check_name(config_t *config, parser_t *parser, char *name)
 static bool add_team(config_t *config, parser_t *parser)
 {
     char *team_name = NULL;
+    size_t name_length = strlen(parser->argv[parser->index + 1]);
 
     if (!check_name(config, parser, parser->argv[parser->index + 1]))
         return false;
+    if (name_length > 100) {
+        parser->error_msg = "Team name is too long (max 100 characters)";
+        return false;
+    }
     team_name = strdup(parser->argv[parser->index + 1]);
     if (!team_name) {
         parser->error_msg = "Failed to allocate memory for team name";
