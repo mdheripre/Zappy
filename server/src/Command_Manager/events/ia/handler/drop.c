@@ -79,7 +79,7 @@ static bool prepare_drop_event(server_t *server, client_t *client,
     event = calloc(1, sizeof(game_event_t));
     if (!event)
         return false;
-    event->type = GAME_EVENT_PLAYER_DROP_ITEM;
+    event->type = EVENT_PLAYER_DROP_ITEM;
     event->data.player_item.player = client->player;
     event->data.player_item.type_item = type;
     event->data.player_item.success = false;

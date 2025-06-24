@@ -119,9 +119,10 @@ SRCS = \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pdr.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/enw.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/pmv.c \
+	$(SRC_CMD_MANAGER_EVENTS_GUI)/pej.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/sgt.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/tna.c \
-	$(SRC_CMD_MANAGER_EVENTS_GUI)/smg.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/ebo.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/pfk.c \
 	$(SRC_CMD_MANAGER_EVENTS_GUI)/mct.c \
@@ -139,8 +140,8 @@ SRCS = \
 	$(SRC_UTILS_HELPERS)/time.c \
 	$(SRC_UTILS_HELPERS)/strip_linefeed.c \
 	$(SRC_UTILS_HELPERS)/find_player_by_id.c \
+	$(SRC_UTILS_HELPERS)/events_helpers.c \
 	$(SRC_UTILS_HELPERS)/parsing_command.c \
-	$(SRC_UTILS_HELPERS)/event_type_name.c \
 	$(SRC_UTILS_HELPERS)/find_team.c \
 	$(SRC_UTILS_QUEUE)/handle_queue.c \
 	$(SRC_DISP_CTOR)/dispatcher_create.c \
@@ -166,6 +167,7 @@ SRCS = \
 	$(SRC_CONFIG_METHODS)/is_int.c \
 	$(SRC_CONFIG_METHODS)/parse_args.c \
 	$(SRC_CONFIG_METHODS)/str_are_equals.c \
+	$(SRC_CONFIG_METHODS_EVT)/debug_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/frequency_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/height_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/help_arg.c \

@@ -2,28 +2,30 @@
 ** EPITECH PROJECT, 2025
 ** B-YEP-400-LIL-4-1-zappy-nicolas.dumetz
 ** File description:
-** response_egg_laid
+** pej
 */
 
-#include "game.h"
+#include "command_manager.h"
+#include "shared.h"
 #include "server.h"
-#include "player.h"
+#include "client.h"
 
 /****************************************************************************/
 /*                                                                          */
-/*                        RESPONSE COMMAND                                  */
+/*                            GUI COMMANDS                                  */
 /*                                                                          */
 /****************************************************************************/
 
-void on_response_egg_laid(void *ctx, void *data)
+void handle_gui_pej(void *ctx, void *data)
 {
     server_t *server = ctx;
-    game_event_t *event = data;
-    player_t *player = event->data.egg.player;
+    player_t *player = data;
+    client_t *gui = NULL;
 
-    if (!server || !event || !player || !player->client)
+    if (!server || !player)
         return;
-    dprintf(player->client->fd, "ok\n");
-    server->game->max_players++;
-    EMIT(server->command_manager->dispatcher, EVENT_GUI_ENW, event);
+    gui = server->gui;
+    if (!gui)
+        return;
+    dprintf(gui->fd, "smg pej #%d\n", player->id);
 }

@@ -35,7 +35,7 @@ void handle_command_fork(void *ctx, void *data)
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_EGG_LAID;
+    event->type = EVENT_EGG_LAID;
     event->data.egg.player = player;
     event->data.egg.x = player->x;
     event->data.egg.y = player->y;

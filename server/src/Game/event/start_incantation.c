@@ -42,7 +42,7 @@ static void send_incantation_response(game_t *game, player_t *starter,
 
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_START_INCANTATION;
+    response->type = EVENT_RESP_START_INCANTATION;
     response->data.incantation.x = starter->x;
     response->data.incantation.y = starter->y;
     response->data.incantation.success = success;

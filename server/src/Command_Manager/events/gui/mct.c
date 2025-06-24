@@ -32,8 +32,7 @@ static void emit_bct_for_all_tiles(server_t *server, client_t *client,
             snprintf(bct_cmd, sizeof(bct_cmd), "bct %d %d", x, y);
             strncpy(cmd->content, bct_cmd, sizeof(cmd->content) - 1);
             cmd->content[sizeof(cmd->content) - 1] = '\0';
-            EMIT(server->command_manager->dispatcher, "command_gui_bct",
-                client);
+            EMIT(server->command_manager->dispatcher, CMD_GUI_BCT, client);
         }
     }
 }

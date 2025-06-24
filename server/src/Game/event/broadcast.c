@@ -121,8 +121,8 @@ static game_event_t *create_broadcast_event(player_t *player,
     if (!event)
         return NULL;
     memset(event, 0, sizeof(game_event_t));
-    event->type = to_gui ? GAME_EVENT_RESPONSE_BROADCAST_TO_GUI :
-        GAME_EVENT_RESPONSE_BROADCAST;
+    event->type = to_gui ? EVENT_RESP_BROADCAST_TO_GUI :
+        EVENT_RESP_BROADCAST;
     event->data.generic_response.client = player->client;
     event->data.generic_response.response = strdup(msg);
     return event;
