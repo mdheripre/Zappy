@@ -36,12 +36,10 @@ static int get_frequency_from_str(char *arg)
 * @brief Handles errors checkk for sst command
 * @param args_line The line containing the remaining arguments.
 * @param arg Buffer to store extracted argument.
-* @param server Pointer to the Server' structure
 * @param num int pointer where too store the wanted frequency after extraction.
 * @return bool true if no error false otherwise
 */
-static bool error_handling(char *args_line, char *arg, server_t *server,
-    int *num)
+static bool error_handling(char *args_line, char *arg, int *num)
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "SST: Missing parameter");
@@ -77,8 +75,10 @@ void handle_command_gui_sst(void *ctx, void *data)
         return;
     if (!extract_command_arguments(client_peek_command(client)->content,
             args_line, CLIENT_BUFFER_SIZE)
-        || !error_handling(args_line, arg, server, &num))
+        || !error_handling(args_line, arg, &num)) {
+        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
         return;
+    }
     server->game->frequency = num;
     dprintf(client->fd, "sst %d\n", num);
 }

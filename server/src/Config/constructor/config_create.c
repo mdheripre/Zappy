@@ -94,6 +94,7 @@ static bool init_config(config_t *config)
     config->port = -1;
     config->frequency = -1.0f;
     config->exit = false;
+    config->debug = false;
     register_core_args(config);
     return true;
 }

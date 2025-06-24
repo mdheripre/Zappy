@@ -38,6 +38,24 @@ static const char *LOG_LABELS[] = {
 };
 
 /**
+ * debug_state - Manages the debug state of the server.
+ *
+ * This function allows setting or getting the current debug state.
+ * If DEBUG_GET is passed, it returns the current debug state without changing it.
+ * Otherwise, it sets the debug state to the provided value.
+ *
+ * @param state The new debug state to set, or DEBUG_GET to retrieve the current state.
+ * @return The current debug state after setting or retrieving it.
+ */
+debug_state_t debug_state(debug_state_t state)
+{
+    static debug_state_t debug = DEBUG_ON;
+
+    debug = (state != DEBUG_GET) ? state : debug;
+    return debug;
+}
+
+/**
  * @brief Logs a formatted message to stderr with timestamp and log level.
  *
  * @param level The log level to use (index for LOG_COLORS and LOG_LABELS).
@@ -52,6 +70,8 @@ void console_log(log_level_t level, const char *format, ...)
     char time_buf[9];
     va_list args;
 
+    if (debug_state(DEBUG_GET) != DEBUG_ON)
+        return;
     strftime(time_buf, sizeof(time_buf), "%H:%M:%S", tm_info);
     fprintf(stderr, "%s[%s] [%s] ", LOG_COLORS[level], time_buf,
         LOG_LABELS[level]);

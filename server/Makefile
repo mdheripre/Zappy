@@ -167,6 +167,7 @@ SRCS = \
 	$(SRC_CONFIG_METHODS)/is_int.c \
 	$(SRC_CONFIG_METHODS)/parse_args.c \
 	$(SRC_CONFIG_METHODS)/str_are_equals.c \
+	$(SRC_CONFIG_METHODS_EVT)/debug_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/frequency_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/height_arg.c \
 	$(SRC_CONFIG_METHODS_EVT)/help_arg.c \

@@ -122,6 +122,24 @@ static bool parse_args_loop(int argc, char **argv,
 }
 
 /**
+ * @brief Sets the debug state based on the config.
+ *
+ * If debug is enabled in the config, it sets the debug state to DEBUG_ON,
+ * otherwise it sets it to DEBUG_OFF.
+ *
+ * @param config The configuration object containing the debug flag.
+ * @return false to indicate no error occurred (as per original design).
+ */
+static bool set_debug(config_t *config)
+{
+    if (config->debug)
+        debug_state(DEBUG_ON);
+    else
+        debug_state(DEBUG_OFF);
+    return false;
+}
+
+/**
  * @brief Main entry point for command-line parsing.
  *
  * Iterates over argv, dispatches handlers, validates each arg,

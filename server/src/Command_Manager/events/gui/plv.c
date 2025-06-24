@@ -22,11 +22,9 @@
 * @param args_line The line containing the command arguments.
 * @param arg Buffer to store the extracted argument.
 * @param client_num Pointer to store the player number.
-* @param server Pointer to the server structure.
 * @return true if no errors, false if an error occurred.
 */
-static bool error_handling(char *args_line, char *arg, int *client_num,
-    server_t *server)
+static bool error_handling(char *args_line, char *arg, int *client_num)
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "PLV: Missing parameter");
@@ -63,8 +61,8 @@ void handle_command_gui_plv(void *ctx, void *data)
         return;
     if (!extract_command_arguments(client_peek_command(client)->content,
         args_line, BUFFER_COMMAND_SIZE)
-        || !error_handling(args_line, arg, &client_num, server))
-        return;
+        || !error_handling(args_line, arg, &client_num))
+        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
     player = find_player_by_id(server->game, client_num);
     if (!player) {
         console_log(LOG_WARNING, "PLV: Player %d not found", client_num);
