@@ -8,6 +8,21 @@
 #include "Trantorian.hpp"
 #include "Tools/Error/Error.hpp"
 
+
+gui::Trantorian::Trantorian(int id, tools::Vector2<int> pos, 
+    const std::string &teamName,
+    Orientation orientation,
+    int level,
+    std::unique_ptr<render::IAnimatedSprite> trantorianObject,
+    std::shared_ptr<ITrantorianUI> uiController)
+        : TrantorianState(id, pos, teamName, orientation),
+        _trantorianObject(std::move(trantorianObject)),
+        _uiController(uiController) 
+{
+    _level = level;
+    setPosition(pos);
+}
+
 /**
  * @brief Draws the Trantorian on screen.
  *
@@ -30,6 +45,23 @@ void gui::Trantorian::laidAnEgg()
 }
 void gui::Trantorian::expulse()
 {
+    switch (_orientation)
+    {
+    case Orientation::NORTH:
+        _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_NORTH), false);
+        break;
+    case Orientation::EAST:
+        _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_EAST), false);
+        break;
+    case Orientation::SOUTH:
+        _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_SOUTH), false);
+        break;
+    case Orientation::WEST:
+        _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_WEST), false);
+        break;
+    default:
+        break;
+    }
     _currentAction = "Expulse";
 };
 
@@ -132,11 +164,23 @@ bool gui::Trantorian::update(float dt)
 
 void gui::Trantorian::setPosition(tools::Vector2<int> pos)
 {
+    static bool seeded = false;
+    if (!seeded)
+    {
+        std::srand(42);
+        seeded = true;
+    }
+
     tools::Vector2<float> tranSize = _trantorianObject->getSize();
+
+    const float maxOffset = TILE_SIZE * 0.05f;
+    float offsetX = (static_cast<float>(std::rand()) / RAND_MAX) * 2.0f * maxOffset - maxOffset;
+    float offsetY = (static_cast<float>(std::rand()) / RAND_MAX) * 2.0f * maxOffset - maxOffset;
+
     tools::Vector2<float> dPos(
-        (static_cast<float>(pos.x) * TILE_SIZE) + (TILE_SIZE - tranSize.x) / 2.0f,
-        (static_cast<float>(pos.y) * TILE_SIZE) + (TILE_SIZE - tranSize.y) / 2.0f
-    );
+        (static_cast<float>(pos.x) * TILE_SIZE) + (TILE_SIZE - tranSize.x) / 2.0f + offsetX,
+        (static_cast<float>(pos.y) * TILE_SIZE) + (TILE_SIZE - tranSize.y) / 2.0f + offsetY);
+
     _currentAction = "Move";
     _trantorianObject->setPosition(dPos);
     _pos = pos;

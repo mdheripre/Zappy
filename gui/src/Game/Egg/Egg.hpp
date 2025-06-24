@@ -20,7 +20,7 @@ namespace gui {
     class Egg : public state::EntityState, public render::IRenderEntity {
     public:
         enum class EggAnimation {
-            IDLE,
+            IDLE = 0,
             DIE
         };
         Egg(int id, tools::Vector2<int> pos, const std::string& teamName, std::unique_ptr<render::IAnimatedSprite> eggObject = nullptr);

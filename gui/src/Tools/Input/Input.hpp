@@ -18,6 +18,11 @@ namespace tools
         S,
         P,
         M,
-        R
+        R,
+        A,
+        Z,
+        E,
+        T,
+        Y
     };
 } // namespace tools

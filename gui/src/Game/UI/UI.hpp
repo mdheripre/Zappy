@@ -31,6 +31,11 @@ namespace gui
             void addNewMessage(const std::string &message);
             void updateTimeUnit(const float timeUnit, const float elasped);
             void setTrantInfo(const std::shared_ptr<gui::TrantorianState> trantState, std::unique_ptr<render::IAnimatedSprite> visual);
+            void changeTeamVisibility() {_teamDisplayer->setVisible(!_teamDisplayer->isVisible());};
+            void changeTimeVisibility() {_TUDisplayer->setVisible(!_TUDisplayer->isVisible());};
+            void changeEventVisibility() {_eventLog->setVisible(!_eventLog->isVisible());};
+            void changeBroadcastVisibility() {_broadcast->setVisible(!_broadcast->isVisible());};
+            void changePlayerVisibility() {_trantInfo->setVisible(false);};
             bool update(float dt);
             void draw() const;
         private:

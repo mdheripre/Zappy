@@ -37,7 +37,7 @@ namespace gui {
     {
         public:
             enum class IncantationAnimation {
-                IN_PROGRESS,
+                IN_PROGRESS = 0,
                 START,
                 SUCCESS,
                 FAIL

@@ -29,7 +29,7 @@ gui::TimeUnitDisplayer::TimeUnitDisplayer(render::IObjectFactory &factory)
         HEIGHT_WINDOW * _height
     );
 
-    _progressBar->setRange(100.0f, 10000.0f);
+    _progressBar->setRange(1.0f, 1000.0f);
     _progressBar->setValue(_timeUnit);
     _progressBar->setPosition({absPos.x + 10.f, absPos.y + absSize.y - 20.f});
     _progressBar->setSize({absSize.x - 20.f, 10.f});
@@ -81,6 +81,8 @@ bool gui::TimeUnitDisplayer::update(float)
  */
 void gui::TimeUnitDisplayer::draw() const
 {
+    if (!_visible)
+        return;
     UIBox::draw();
     if (_valueText)
         _valueText->drawObject();

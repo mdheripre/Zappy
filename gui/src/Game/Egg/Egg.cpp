@@ -11,7 +11,7 @@
 const tools::AssetDefinition gui::Egg::defaultAsset = tools::AssetDefinition(
     "gui/assets/Tiny Swords/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.png",
     {
-        {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+        {static_cast<int>(gui::Egg::EggAnimation::IDLE), {false, 0, 6}}
     },
     TILE_SIZE,
     6,

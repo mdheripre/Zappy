@@ -60,7 +60,11 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         // Animation Mapping
                         {
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), {false, 0, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -74,7 +78,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), {false, 0, 7}}
                         },
                         //Scaling to apply
                         TILE_SIZE,
@@ -88,7 +92,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), {false, 0, 6}}
                         },
                         //Scaling to Apply
                         TILE_SIZE * 1.2,
@@ -106,7 +110,11 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png",
                         // Animation Mapping
                         {
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), {false, 0, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -120,7 +128,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), {false, 0, 7}}
                         },
                         //Scaling to apply
                         TILE_SIZE,
@@ -134,7 +142,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), {false, 0, 6}}
                         },
                         //Scaling to Apply
                         TILE_SIZE * 1.2,
@@ -152,7 +160,11 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.png",
                         // Animation Mapping
                         {
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), {false, 0, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -166,7 +178,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), {false, 0, 7}}
                         },
                         //Scaling to apply
                         TILE_SIZE,
@@ -180,7 +192,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), {false, 0, 6}}
                         },
                         //Scaling to Apply
                         TILE_SIZE * 1.2,
@@ -198,7 +210,11 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.png",
                         // Animation Mapping
                         {
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::IDLE), {false, 0, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -212,7 +228,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Effects/Fire/Fire.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), 0}
+                            {static_cast<int>(gui::Incantation::IncantationAnimation::IN_PROGRESS), {false, 0, 7}}
                         },
                         //Scaling to apply
                         TILE_SIZE,
@@ -226,7 +242,7 @@ namespace tools
                         "gui/assets/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.png",
                         //Animation Mapping
                         {
-                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), 0}
+                            {static_cast<int>(gui::Egg::EggAnimation::IDLE), {false, 0, 6}}
                         },
                         //Scaling to Apply
                         TILE_SIZE * 1.2,
