@@ -116,7 +116,7 @@ namespace game
                 { tools::KeyCode::R,      [this]() { _renderer->resetZoomView(); }},
                 { tools::KeyCode::P,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit + 1) + "\n");}},
                 { tools::KeyCode::M,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit - 1) + "\n");}},
-                { tools::KeyCode::A,     [this]() { std::cout <<"freferferf"<< std::endl;_ui->changeBroadcastVisibility();}},
+                { tools::KeyCode::A,     [this]() { _ui->changeBroadcastVisibility();}},
                 { tools::KeyCode::Z,     [this]() { _ui->changeTeamVisibility();}},
                 { tools::KeyCode::E,     [this]() { _ui->changeEventVisibility();}},
                 { tools::KeyCode::Y,     [this]() { _ui->changePlayerVisibility();}},

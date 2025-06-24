@@ -71,22 +71,24 @@ void gui::Trantorian::setForward(bool value)
         switch (_orientation)
         {
             case Orientation::NORTH:
-                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_NORTH), false);
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::WALK_NORTH), true);
                 break;
             case Orientation::EAST:
-                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_EAST), false);
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::WALK_EAST), true);
                 break;
             case Orientation::SOUTH:
-                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_SOUTH), false);
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::WALK_SOUTH), true);
                 break;
             case Orientation::WEST:
-                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::EJECT_WEST), false);
+                _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::WALK_WEST), true);
                 break;
             default:
                 break;
         }
+        _forward = true;
     } else {
         _trantorianObject->playAnimation(static_cast<int>(Trantorian::TrantorianAnimation::IDLE), true);
+        _forward = false;
     }
 }
 

@@ -118,7 +118,11 @@ namespace tools
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_NORTH), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_EAST), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_SOUTH), {true, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_WEST), {true, 1, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -168,7 +172,11 @@ namespace tools
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_NORTH), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_EAST), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_SOUTH), {true, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_WEST), {true, 1, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
@@ -218,7 +226,11 @@ namespace tools
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_NORTH), {false, 6, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_EAST), {false, 3, 6}},
                             {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_SOUTH), {false, 5, 6}},
-                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}}
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::EJECT_WEST), {true, 2, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_NORTH), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_EAST), {false, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_SOUTH), {true, 1, 6}},
+                            {static_cast<int>(gui::Trantorian::TrantorianAnimation::WALK_WEST), {true, 1, 6}}
                         },
                         // Scaling to apply
                         TILE_SIZE * 2,
