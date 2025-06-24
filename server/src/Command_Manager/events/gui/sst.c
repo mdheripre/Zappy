@@ -39,17 +39,15 @@ static int get_frequency_from_str(char *arg)
 * @param num int pointer where too store the wanted frequency after extraction.
 * @return bool true if no error false otherwise
 */
-static bool error_handling(char *args_line, char *arg, int *num)
+static bool sst_error_handling(const char *args_line, char *arg, int *freq)
 {
-    if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
+    if (!get_next_arg((char *)args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "SST: Missing parameter");
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
-    *num = get_frequency_from_str(arg);
-    if (*num <= 0) {
-        console_log(LOG_WARNING, "SST: Wrong parameter format");
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+    *freq = get_frequency_from_str(arg);
+    if (*freq <= 0) {
+        console_log(LOG_WARNING, "SST: Invalid frequency value");
         return false;
     }
     return true;
@@ -69,16 +67,16 @@ void handle_command_gui_sst(void *ctx, void *data)
     client_t *client = data;
     char args_line[CLIENT_BUFFER_SIZE] = {0};
     char arg[BUFFER_SIZE] = {0};
-    int num = 0;
+    int freq = 0;
 
     if (!server || !client)
         return;
     if (!extract_command_arguments(client_peek_command(client)->content,
-            args_line, CLIENT_BUFFER_SIZE)
-        || !error_handling(args_line, arg, &num)) {
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+        args_line, CLIENT_BUFFER_SIZE)
+        || !sst_error_handling(args_line, arg, &freq)) {
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return;
     }
-    server->game->frequency = num;
-    dprintf(client->fd, "sst %d\n", num);
+    server->game->frequency = freq;
+    dprintf(client->fd, "sst %d\n", freq);
 }

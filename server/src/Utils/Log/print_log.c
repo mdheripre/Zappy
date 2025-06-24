@@ -41,10 +41,12 @@ static const char *LOG_LABELS[] = {
  * debug_state - Manages the debug state of the server.
  *
  * This function allows setting or getting the current debug state.
- * If DEBUG_GET is passed, it returns the current debug state without changing it.
+ * If DEBUG_GET is passed, it returns the current debug state
+ * without changing it.
  * Otherwise, it sets the debug state to the provided value.
  *
- * @param state The new debug state to set, or DEBUG_GET to retrieve the current state.
+ * @param state The new debug state to set, or DEBUG_GET to retrieve
+ * the current state.
  * @return The current debug state after setting or retrieving it.
  */
 debug_state_t debug_state(debug_state_t state)
@@ -62,7 +64,6 @@ debug_state_t debug_state(debug_state_t state)
  * @param format The printf-style format string.
  * @param ... Arguments for the format string.
  */
-
 void console_log(log_level_t level, const char *format, ...)
 {
     time_t now = time(NULL);

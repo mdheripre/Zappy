@@ -22,8 +22,8 @@ static bool parse_bct_coords(const char *args, int *x, int *y)
     *x = strtol(args, &end, 10);
     if (!end || *end != ' ')
         return false;
-    *y = strtol(end + 1, NULL, 10);
-    return true;
+    *y = strtol(end + 1, &end, 10);
+    return (*end == '\0' || *end == '\n');
 }
 
 static void send_bct_response(client_t *client, tile_t *tile)
@@ -49,11 +49,12 @@ void handle_command_gui_bct(void *ctx, void *data)
     if (!server || !client || !server->game)
         return;
     args = extract_command_args(client_peek_command(client)->content);
-    if (!parse_bct_coords(args, &x, &y))
-        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
-    if (x < 0 || y < 0 || x >= server->game->width ||
-        y >= server->game->height)
-        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+    if (!parse_bct_coords(args, &x, &y) ||
+        x < 0 || y < 0 ||
+        x >= server->game->width || y >= server->game->height) {
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+        return;
+    }
     tile = &server->game->map[y][x];
     send_bct_response(client, tile);
 }

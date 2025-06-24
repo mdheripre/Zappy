@@ -25,19 +25,15 @@
 * @param client_num Pointer to store the player number.
 * @return true if no errors, false if an error occurred.
 */
-static bool error_handling(char *args_line, char *arg, int *client_num)
+static bool error_handling_pin(char *args_line, char *arg,
+    int *client_num)
 {
     if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "PIN: Missing parameter");
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
         return false;
     }
     *client_num = get_player_number(arg);
-    if (*client_num < 0) {
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
-        return false;
-    }
-    return true;
+    return *client_num >= 0;
 }
 
 /**
@@ -63,6 +59,27 @@ static void pin_send_inventory(client_t *client, player_t *player)
         player->inventory[RESOURCE_THYSTAME]);
 }
 
+static player_t *get_player_from_pin_command(server_t *server,
+    client_t *client, int *client_num)
+{
+    char args_line[BUFFER_COMMAND_SIZE] = {0};
+    char arg[BUFFER_SIZE] = {0};
+    player_t *player = NULL;
+
+    if (!extract_command_arguments(client_peek_command(client)->content,
+        args_line, BUFFER_COMMAND_SIZE) ||
+        !error_handling_pin(args_line, arg, client_num)) {
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+        return NULL;
+    }
+    player = find_player_by_id(server->game, *client_num);
+    if (!player) {
+        console_log(LOG_WARNING, "PIN: Player %d not found", *client_num);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+    }
+    return player;
+}
+
 /**
  * @brief Handles the PIN command from a GUI client.
  *
@@ -77,23 +94,14 @@ void handle_command_gui_pin(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
-    player_t *player = NULL;
-    char args_line[BUFFER_COMMAND_SIZE] = {0};
-    char arg[BUFFER_SIZE] = {0};
     int client_num = -1;
+    player_t *player = NULL;
 
     if (!server || !client)
         return;
-    if (!extract_command_arguments(client_peek_command(client)->content,
-        args_line, BUFFER_COMMAND_SIZE)
-        || !error_handling(args_line, arg, &client_num))
-        return EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
-    player = find_player_by_id(server->game, client_num);
-    if (!player) {
-        console_log(LOG_WARNING, "PIN: Player %d not found", client_num);
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+    player = get_player_from_pin_command(server, client, &client_num);
+    if (!player)
         return;
-    }
     pin_send_inventory(client, player);
 }
 
