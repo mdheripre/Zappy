@@ -60,16 +60,17 @@ static void emit_gui_egg_events(server_t *server)
  */
 static void emit_gui_players(server_t *server)
 {
-    int index;
+    list_node_t *node = NULL;
     player_t *player = NULL;
-    list_t *players = server->game->players;
 
-    for (index = 0; index < server->game->players->size; index++) {
-        player = players->methods->index(players, index);
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW,
-            player->client);
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN,
-            player);
+    if (!server || !server->game || !server->game->players)
+        return;
+    for (node = server->game->players->head; node; node = node->next) {
+        player = node->data;
+        if (!player || !player->client)
+            continue;
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW, player->client);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
     }
 }
 
@@ -82,17 +83,19 @@ static void emit_gui_players(server_t *server)
  */
 static void emit_gui_incantations(server_t *server)
 {
-    game_event_t event;
-    int index;
-    list_t *list = server->game->incantations;
-    incantation_t *incantation = NULL;
+    list_node_t *node = NULL;
+    incantation_t *inc = NULL;
+    game_event_t event = { .type = EVENT_GUI_PIC };
 
-    event.type = EVENT_GUI_PIC;
-    for (index = 0; index < list->size; ++index) {
-        incantation = list->methods->index(list, index);
-        event.data.incantation.x = incantation->x;
-        event.data.incantation.y = incantation->y;
-        event.data.incantation.participants = incantation->participants;
+    if (!server || !server->game || !server->game->incantations)
+        return;
+    for (node = server->game->incantations->head; node; node = node->next) {
+        inc = node->data;
+        if (!inc)
+            continue;
+        event.data.incantation.x = inc->x;
+        event.data.incantation.y = inc->y;
+        event.data.incantation.participants = inc->participants;
         event.data.incantation.success = false;
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PIC, &event);
     }
