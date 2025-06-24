@@ -13,53 +13,56 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Emit a "bct" command for each tile on the map.
- *
- * Used to simulate multiple GUI requests from a single "mct" command.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client issuing the command.
- * @param cmd Pointer to the queued command being processed.
- */
-static void emit_bct_for_all_tiles(server_t *server, client_t *client,
-    queued_command_t *cmd)
-{
-    char bct_cmd[BUFFER_COMMAND_SIZE] = {0};
+#include "utils.h"
 
-    for (int y = 0; y < server->game->height; y++) {
-        for (int x = 0; x < server->game->width; x++) {
-            snprintf(bct_cmd, sizeof(bct_cmd), "bct %d %d", x, y);
-            strncpy(cmd->content, bct_cmd, sizeof(cmd->content) - 1);
-            cmd->content[sizeof(cmd->content) - 1] = '\0';
-            EMIT(server->command_manager->dispatcher, CMD_GUI_BCT, client);
+static void emit_bct_for_tile(server_t *srv, client_t *cli,
+    queued_command_t *cmd, vector2i_t pos)
+{
+    char bct[BUFFER_COMMAND_SIZE] = {0};
+
+    snprintf(bct, sizeof(bct), "bct %d %d", pos.x, pos.y);
+    if (cmd) {
+        strncpy(cmd->content, bct, sizeof(cmd->content) - 1);
+        cmd->content[sizeof(cmd->content) - 1] = '\0';
+    }
+    EMIT(srv->command_manager->dispatcher, CMD_GUI_BCT, cli);
+}
+
+static void emit_bct_for_tile_range(server_t *srv, client_t *cli,
+    queued_command_t *cmd, char *backup)
+{
+    vector2i_t pos;
+
+    for (pos.y = 0; pos.y < srv->game->height; pos.y++) {
+        for (pos.x = 0; pos.x < srv->game->width; pos.x++) {
+            emit_bct_for_tile(srv, cli, cmd, pos);
         }
+    }
+    if (cmd) {
+        strncpy(cmd->content, backup, sizeof(cmd->content) - 1);
+        cmd->content[sizeof(cmd->content) - 1] = '\0';
     }
 }
 
-/**
- * @brief Handle the GUI "mct" command (map content).
- *
- * Emits a "bct" command for each tile on the map to provide full map data.
- *
- * @param ctx Pointer to the server instance.
- * @param data Pointer to the client issuing the command.
- */
 void handle_command_gui_mct(void *ctx, void *data)
 {
-    server_t *server = ctx;
-    client_t *client = data;
+    server_t *srv = ctx;
+    client_t *cli = data;
     queued_command_t *cmd = NULL;
     char backup[BUFFER_COMMAND_SIZE] = {0};
+    bool temp = false;
 
-    if (!server || !client)
+    if (!srv || !cli)
         return;
-    cmd = client_peek_command(client);
-    if (!cmd)
-        return;
-    strncpy(backup, cmd->content, sizeof(backup) - 1);
-    backup[sizeof(backup) - 1] = '\0';
-    emit_bct_for_all_tiles(server, client, cmd);
-    strncpy(cmd->content, backup, sizeof(cmd->content) - 1);
-    cmd->content[sizeof(cmd->content) - 1] = '\0';
+    cmd = client_peek_command(cli);
+    if (!cmd) {
+        client_enqueue_command(cli, "mct", 0.0f, srv->game);
+        temp = true;
+        cmd = client_peek_command(cli);
+    }
+    if (cmd)
+        strncpy(backup, cmd->content, sizeof(backup) - 1);
+    emit_bct_for_tile_range(srv, cli, cmd, backup);
+    if (temp)
+        client_dequeue_command(cli, NULL);
 }

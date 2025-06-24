@@ -214,7 +214,7 @@ SRCS = \
 
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Iinclude -g -lm
+CFLAGS = -Wall -Wextra -Iinclude -lm -g
 
 all: $(NAME)
 

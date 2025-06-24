@@ -65,8 +65,8 @@ void width_arg(void *ctx, void *data)
         return;
     }
     config->width = atoi(parser->argv[parser->index + 1]);
-    if (config->width <= 0) {
-        parser->error_msg = "Width must be a positive integer";
+    if (config->width < 10 || config->width > 42) {
+        parser->error_msg = "Width must be between 10 and 42";
         parser->error = true;
         return;
     }

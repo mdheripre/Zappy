@@ -52,6 +52,8 @@ static bool check_other_unset_values(config_t *config, parser_t *parser)
  */
 static bool check_unset_values(config_t *config, parser_t *parser)
 {
+    if (config->exit)
+        return true;
     if (config->port == -1) {
         parser->error_msg = "Port is not set (-p)";
         return false;
@@ -158,7 +160,7 @@ bool parse_args(int argc, char **argv, config_t *config)
         return false;
     if (!parse_args_loop(argc, argv, config, &parser))
         return false;
-    if (!check_unset_values(config, &parser)) {
+    if (!check_unset_values(config, &parser) || set_debug(config)) {
         console_log(LOG_ERROR, "Parse error: %s, see -h", parser.error_msg);
         return false;
     }

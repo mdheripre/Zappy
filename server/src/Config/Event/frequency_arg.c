@@ -68,8 +68,8 @@ void frequency_arg(void *ctx, void *data)
         return;
     }
     config->frequency = atof(parser->argv[parser->index + 1]);
-    if (config->frequency <= 0.0f) {
-        parser->error_msg = "Frequency must be a positive number";
+    if (config->frequency < 1.f || config->frequency > 10000.f) {
+        parser->error_msg = "Frequency must be between 1 and 10000";
         parser->error = true;
         return;
     }

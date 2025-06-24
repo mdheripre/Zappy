@@ -5,7 +5,11 @@
 ** on_gui_init
 */
 
+#include "client.h"
+#include "game.h"
+#include "list.h"
 #include "server.h"
+#include "shared.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -47,6 +51,57 @@ static void emit_gui_egg_events(server_t *server)
 }
 
 /**
+ * @brief Emits GUI player events for all players in the game.
+ *
+ * Iterates through the list of players and emits GUI events for each,
+ * informing the GUI about player positions and inventories.
+ *
+ * @param server Pointer to the server instance.
+ */
+static void emit_gui_players(server_t *server)
+{
+    list_node_t *node = NULL;
+    player_t *player = NULL;
+
+    if (!server || !server->game || !server->game->players)
+        return;
+    for (node = server->game->players->head; node; node = node->next) {
+        player = node->data;
+        if (!player || !player->client)
+            continue;
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW, player->client);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
+    }
+}
+
+/**
+ * @brief Emits GUI incantation events for all ongoing incantations.
+ *
+ * Iterates through the list of incantations and emits GUI events for each.
+ *
+ * @param server Pointer to the server instance.
+ */
+static void emit_gui_incantations(server_t *server)
+{
+    list_node_t *node = NULL;
+    incantation_t *inc = NULL;
+    game_event_t event = { .type = EVENT_GUI_PIC };
+
+    if (!server || !server->game || !server->game->incantations)
+        return;
+    for (node = server->game->incantations->head; node; node = node->next) {
+        inc = node->data;
+        if (!inc)
+            continue;
+        event.data.incantation.x = inc->x;
+        event.data.incantation.y = inc->y;
+        event.data.incantation.participants = inc->participants;
+        event.data.incantation.success = false;
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PIC, &event);
+    }
+}
+
+/**
  * @brief Initializes a GUI client after connection.
  *
  * Sets the client type to GUI, clears its player pointer, and emits
@@ -73,4 +128,6 @@ void on_gui_init(void *ctx, void *data)
     EMIT(server->command_manager->dispatcher, CMD_GUI_MCT, client);
     EMIT(server->command_manager->dispatcher, CMD_GUI_TNA, client);
     emit_gui_egg_events(server);
+    emit_gui_players(server);
+    emit_gui_incantations(server);
 }
