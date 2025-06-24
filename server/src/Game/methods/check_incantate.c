@@ -119,18 +119,22 @@ bool check_incantate(game_t *game, incantation_t *inc)
 {
     const incantation_rule_t *rule = NULL;
     tile_t *tile = NULL;
+    incantation_t *other = NULL;
 
     if (!game || !inc || !inc->participants)
         return false;
+    for (list_node_t *n = game->incantations->head; n; n = n->next) {
+        other = n->data;
+        if (other && other != inc && other->x == inc->x && other->y == inc->y)
+            return false;
+    }
     if (inc->target_level < 2 || inc->target_level > 8)
         return false;
     rule = &INCANTATION_RULES[inc->target_level - 2];
     tile = &game->map[inc->y][inc->x];
-    if (!check_incantate_players(inc, rule)) {
+    if (!check_incantate_players(inc, rule))
         return false;
-    }
-    if (!check_incantate_resources(tile, rule)) {
+    if (!check_incantate_resources(tile, rule))
         return false;
-    }
     return true;
 }

@@ -31,6 +31,8 @@ namespace sfml
         render::IObjectFactory &getFactory();
         void setPositionView(int offsetX, int offsetY);
         void setZoomView(float factor);
+        void centerViewOn(float x, float y);
+        void resetZoomView();
         void updateUI(float dt);
         void poll();
         void manageKeyCode(const sf::Event &event);
@@ -42,7 +44,13 @@ namespace sfml
             { sf::Keyboard::W,     tools::KeyCode::W },
             { sf::Keyboard::S,     tools::KeyCode::S },
             { sf::Keyboard::P,     tools::KeyCode::P },
-            { sf::Keyboard::M,     tools::KeyCode::M }
+            { sf::Keyboard::M,     tools::KeyCode::M },
+            { sf::Keyboard::A,     tools::KeyCode::A },
+            { sf::Keyboard::Z,     tools::KeyCode::Z },
+            { sf::Keyboard::E,     tools::KeyCode::E },
+            { sf::Keyboard::Y,     tools::KeyCode::Y },
+            { sf::Keyboard::T,     tools::KeyCode::T },
+            { sf::Keyboard::R,     tools::KeyCode::R },
         };
     private:
         void handleMouseInteraction();
@@ -51,5 +59,8 @@ namespace sfml
         std::unique_ptr<SFMLObjectFactory> _objFactory;
         std::list<std::shared_ptr<render::IRenderEntity>> _entities;
         std::shared_ptr<render::IRenderEntity> _ui;
+        float _zoomFactor = 1.0f;
+        tools::Vector2<float> _viewCenter = {0.0f, 0.0f};
+
     }; 
 } // namespace sfml

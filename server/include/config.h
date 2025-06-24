@@ -29,6 +29,7 @@ struct config_s {
     int team_size;
     list_t *team_name;
     dispatcher_t *dispatcher;
+    bool debug;
     bool exit;
     const config_methods_t *methods;
 };
@@ -61,4 +62,5 @@ void team_name_arg(void *ctx, void *event_data);
 void team_size_arg(void *ctx, void *event_data);
 void frequency_arg(void *ctx, void *event_data);
 void help_arg(void *ctx, void *);
+void debug_arg(void *ctx, void *event_data);
 #endif /* CONFIG_H_ */

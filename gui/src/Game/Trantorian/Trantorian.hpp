@@ -70,11 +70,11 @@ namespace gui {
             public std::enable_shared_from_this<Trantorian> {
             public:
                 enum class TrantorianAnimation {
-                    IDLE,
-                    WALK,
-                    TALK,
-                    INCANT,
-                    DIE
+                    IDLE = 0,
+                    EJECT_NORTH,
+                    EJECT_EAST,
+                    EJECT_SOUTH,
+                    EJECT_WEST
                 };
             
                 Trantorian(int id,
@@ -83,13 +83,7 @@ namespace gui {
                            Orientation orientation = Orientation::NORTH,
                            int level = 1,
                            std::unique_ptr<render::IAnimatedSprite> trantorianObject = nullptr,
-                           std::shared_ptr<ITrantorianUI> uiController = nullptr)
-                    : TrantorianState(id, pos, teamName, orientation),
-                    _trantorianObject(std::move(trantorianObject)),
-                    _uiController(uiController) {
-                    _level = level;
-                    setPosition(pos);
-                }
+                           std::shared_ptr<ITrantorianUI> uiController = nullptr);
                 ~Trantorian() override = default;
             private:
                 bool _isTagged = false;

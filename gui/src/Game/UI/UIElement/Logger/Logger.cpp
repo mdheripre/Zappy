@@ -97,7 +97,7 @@ bool gui::Logger::update(float)
 
 void gui::Logger::draw() const
 {
-    if (!_textDisplayer || !_background)
+    if (!_textDisplayer || !_background || !_visible)
         return;
 
     _background->drawObject();

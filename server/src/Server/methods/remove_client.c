@@ -14,32 +14,20 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Removes a client from the server's client list.
- *
- * Closes the client's socket, removes the associated player if any,
- * shifts the client array to fill the gap, and decrements the client
- * count.
- *
- * @param self Pointer to the server instance.
- * @param index Index of the client to remove.
- */
-void remove_client(server_t *self, int index)
+void remove_client(server_t *self, client_t *client)
 {
-    client_t *client = NULL;
     player_t *player = NULL;
 
-    if (index < 0 || index >= self->client_count)
+    if (!self || !client)
         return;
-    client = &self->clients[index];
     if (client->player) {
         player = client->player;
         self->game->players->methods->remove(self->game->players, player);
         client->player = NULL;
     }
+    console_log(LOG_INFO, "Client (fd=%d) disconnected", client->fd);
     close(client->fd);
-    for (int i = index; i < self->client_count - 1; i++)
-        self->clients[i] = self->clients[i + 1];
-    self->client_count--;
-    console_log(LOG_INFO, "Client at index %d disconnected", index);
+    if (self->gui == client)
+        self->gui = NULL;
+    self->clients->methods->remove(self->clients, client);
 }

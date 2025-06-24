@@ -51,7 +51,7 @@ static void prepare_and_emit_bct(server_t *server,
         created_temp = true;
     } else
         backup_and_replace_command_content(cmd, tmp, backup, sizeof(backup));
-    EMIT(server->command_manager->dispatcher, "command_gui_bct", client);
+    EMIT(server->command_manager->dispatcher, CMD_GUI_BCT, client);
     if (created_temp)
         client_dequeue_command(client, NULL);
     else if (cmd) {
@@ -70,7 +70,7 @@ void on_response_tile_updated(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *client = server->vtable->get_gui(server);
+    client_t *client = server->gui;
 
     if (!server || !event || !client)
         return;

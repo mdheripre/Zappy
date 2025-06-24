@@ -9,13 +9,14 @@
 #ifndef SHARED_H_
     #define SHARED_H_
     #include <stdlib.h>
-    #define MAX_GC_OBJECTS 1028
+    #define MAX_GC_OBJECTS 5028
     #define NEW_CTOR(T, ...) T##_create(__VA_ARGS__)
     #define NEW_DTOR(T) (destructor_fn_t)T##_destroy
     #define NEW(T, ...) gc_new(NEW_CTOR(T, __VA_ARGS__), NEW_DTOR(T))
     #define DELETE() gc_cleanup()
     #define REGISTER(d, n, cb, ctx) (d)->vtable->register_event(d, n, cb, ctx)
     #define EMIT(d, n, data) (d)->vtable->emit(d, n, data)
+
 
 
 typedef void (*destructor_fn_t)(void *);

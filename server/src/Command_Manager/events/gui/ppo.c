@@ -23,22 +23,18 @@
  * @param args_line The line containing the command arguments.
  * @param arg Buffer to store the extracted argument.
  * @param client_num Pointer to store the player number.
- * @param server Pointer to the server' structure.
  * @return true if no errors, false if an error occurred.
  */
-static bool error_handling(char *args_line, char *arg, int *client_num,
-    server_t *server)
+static bool error_handling_ppo(const char *args_line, char *arg,
+    int *client_num)
 {
-    if (!get_next_arg(args_line, arg, BUFFER_SIZE)) {
+    if (!get_next_arg((char *)args_line, arg, BUFFER_SIZE)) {
         console_log(LOG_WARNING, "PPO: Missing parameter");
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
         return false;
     }
     *client_num = get_player_number(arg);
-    if (*client_num < 0) {
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
+    if (*client_num < 0)
         return false;
-    }
     return true;
 }
 
@@ -57,6 +53,28 @@ static void ppo_send_position(client_t *client, player_t *player)
         player->id, player->x, player->y, player->orientation);
 }
 
+static player_t *get_ppo_player(server_t *server, client_t *client,
+    int *client_num)
+{
+    char args_line[BUFFER_COMMAND_SIZE] = {0};
+    char arg[BUFFER_SIZE] = {0};
+    player_t *player = NULL;
+
+    if (!extract_command_arguments(client_peek_command(client)->content,
+        args_line, BUFFER_COMMAND_SIZE) ||
+        !error_handling_ppo(args_line, arg, client_num)) {
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+        return NULL;
+    }
+    player = find_player_by_id(server->game, *client_num);
+    if (!player) {
+        console_log(LOG_WARNING, "PPO: Player %d not found", *client_num);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_SBP, NULL);
+        return NULL;
+    }
+    return player;
+}
+
 /**
  * @brief Handles the PPO command from a GUI client.
  *
@@ -70,23 +88,14 @@ void handle_command_gui_ppo(void *ctx, void *data)
 {
     server_t *server = ctx;
     client_t *client = data;
-    char args_line[BUFFER_COMMAND_SIZE] = {0};
-    char arg[BUFFER_SIZE] = {0};
     int client_num = -1;
     player_t *player = NULL;
 
     if (!server || !client)
         return;
-    if (!extract_command_arguments(client_peek_command(client)->content,
-        args_line, BUFFER_COMMAND_SIZE)
-        || !error_handling(args_line, arg, &client_num, server))
+    player = get_ppo_player(server, client, &client_num);
+    if (!player)
         return;
-    player = find_player_by_id(server->game, client_num);
-    if (!player) {
-        console_log(LOG_WARNING, "PPO: Player %d not found", client_num);
-        EMIT(server->command_manager->dispatcher, "gui_sbp", NULL);
-        return;
-    }
     ppo_send_position(client, player);
 }
 
@@ -107,7 +116,7 @@ void handle_gui_ppo(void *ctx, void *data)
 
     if (!server || !player)
         return;
-    gui_client = server->vtable->get_gui(server);
+    gui_client = server->gui;
     if (!gui_client)
         return;
     ppo_send_position(gui_client, player);

@@ -20,31 +20,16 @@
 
 
 /**
- * @brief Sends the team name to the GUI client.
+ * @brief Sends the team name to the GUI client via dprintf.
  *
- * @param server Pointer to the server structure.
  * @param client Pointer to the GUI client.
  * @param team Pointer to the team information.
  */
-static void send_team_name_to_gui(server_t *server, client_t *client,
-    team_info_t *team)
+static void send_team_name_to_gui(client_t *client, team_info_t *team)
 {
-    char buffer[BUFFER_COMMAND_SIZE];
-    response_payload_t *payload = NULL;
-
-    if (!team || !team->team_name)
+    if (!client || !team || !team->team_name)
         return;
-    snprintf(buffer, sizeof(buffer), "tna %s\n", team->team_name);
-    payload = malloc(sizeof(response_payload_t));
-    if (!payload)
-        return;
-    payload->client = client;
-    payload->message = strdup(buffer);
-    if (!payload->message) {
-        free(payload);
-        return;
-    }
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(client->fd, "tna %s\n", team->team_name);
 }
 
 /**
@@ -57,7 +42,7 @@ static void send_team_name_to_gui(server_t *server, client_t *client,
 void handle_command_gui_tna(void *ctx, void *)
 {
     server_t *server = ctx;
-    client_t *client = server->vtable->get_gui(server);
+    client_t *client = server ? server->gui : NULL;
     team_info_t *team = NULL;
 
     if (!server || !client || !server->game || !server->game->teams)
@@ -65,6 +50,6 @@ void handle_command_gui_tna(void *ctx, void *)
     for (list_node_t *node = server->game->teams->head; node;
         node = node->next) {
         team = node->data;
-        send_team_name_to_gui(server, client, team);
+        send_team_name_to_gui(client, team);
     }
 }

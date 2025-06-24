@@ -22,7 +22,7 @@ void emit_tile_update(game_t *game, int x, int y)
 
     if (!evt)
         return;
-    evt->type = GAME_EVENT_RESPONSE_TILE_UPDATED;
+    evt->type = EVENT_RESP_TILE_UPDATED;
     evt->data.tile.x = x;
     evt->data.tile.y = y;
     game->server_event_queue->methods->push_back(game->server_event_queue,
@@ -36,9 +36,8 @@ void send_drop_response(game_t *game, player_t *player,
 
     if (!response)
         return;
-    response->type = GAME_EVENT_RESPONSE_DROP;
-    response->data.player_item.player_id = player->id;
-    response->data.player_item.client_fd = event->data.player_item.client_fd;
+    response->type = EVENT_RESP_DROP;
+    response->data.player_item.player = player;
     response->data.player_item.type_item = event->data.player_item.type_item;
     response->data.player_item.success = success;
     game->server_event_queue->methods->push_back(
@@ -49,7 +48,7 @@ void on_drop(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    player_t *p = find_player_by_id(game, event->data.player_item.player_id);
+    player_t *p = event->data.player_item.player;
     int type = event->data.player_item.type_item;
 
     if (!game || !event || !p || type < 0 || type >= RESOURCE_COUNT)

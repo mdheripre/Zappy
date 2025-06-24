@@ -52,8 +52,12 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
 
     std::cout << "[MSZ] --- Map created ---" << std::endl;
     std::cout << "    Dimensions : " << size.x << " x " << size.y << std::endl;
-}
 
+    float centerX = (size.x * 64) / 2.f - 100.0f;
+    float centerY = (size.y * 64) / 2.f - 100.0f; //Solution temporaire pour centrer la vue
+    _renderer->centerViewOn(centerX, centerY);
+
+}
 
 /**
  * @brief Handles the BCT command (tile content).
@@ -723,7 +727,7 @@ void game::Game::enwCommand(const std::vector<std::string> &token)
         std::shared_ptr<render::IRenderEntity> eggRender = egg;
 
         _renderer->pushEntity(eggRender);
-        _gm.eggs[egg->getId()] = eggState;
+        _gm.eggs.insert_or_assign(eggId, eggState);
         _ui->updateTeamInfo(_gm);
 
         std::cout << "[ENW] --- Egg laid ---" << std::endl;
@@ -860,8 +864,8 @@ void game::Game::sstCommand(const std::vector<std::string> &token)
 
     _gm.time_unit = std::stof(token[0]);
 
-    std::cout << "[SST] --- Time unit set by client ---" << std::endl;
-    std::cout << "    New time unit : " << _gm.time_unit << std::endl;
+    /* std::cout << "[SST] --- Time unit set by client ---" << std::endl;
+    std::cout << "    New time unit : " << _gm.time_unit << std::endl; */
 }
 
 

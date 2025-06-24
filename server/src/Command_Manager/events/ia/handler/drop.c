@@ -72,7 +72,6 @@ static bool prepare_drop_event(server_t *server, client_t *client,
     game_event_t **event_out)
 {
     int type = -1;
-    player_t *player = client ? client->player : NULL;
     game_event_t *event;
 
     if (!validate_and_get_drop_type(server, client, &type))
@@ -80,9 +79,8 @@ static bool prepare_drop_event(server_t *server, client_t *client,
     event = calloc(1, sizeof(game_event_t));
     if (!event)
         return false;
-    event->type = GAME_EVENT_PLAYER_DROP_ITEM;
-    event->data.player_item.client_fd = client->fd;
-    event->data.player_item.player_id = player->id;
+    event->type = EVENT_PLAYER_DROP_ITEM;
+    event->data.player_item.player = client->player;
     event->data.player_item.type_item = type;
     event->data.player_item.success = false;
     *event_out = event;

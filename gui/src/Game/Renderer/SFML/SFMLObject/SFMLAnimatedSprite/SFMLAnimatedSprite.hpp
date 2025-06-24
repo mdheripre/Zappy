@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Tools/Vector/Vector.hpp"
+#include "Tools/AssetDefinition/AssetDefinition.hpp"
 #include "Tools/Error/Error.hpp"
 
 namespace sfml
@@ -23,11 +24,11 @@ namespace sfml
                 int frameWidth,
                 int frameHeight,
                 float scale,
-                std::unordered_map<int, int> _animationMap,
-                float fps = 10,
-                int defaultAnimation = 0);
+                std::unordered_map<int, tools::AssetDefinition::AnimationInfo> _animationMap,
+                float fps = 10);
             ~SFMLAnimatedSprite() = default;
-            void playAnimation(int clipIndex, bool loop);
+            void playAnimation(int keyAnim, bool loop);
+            void playAnimation(tools::AssetDefinition::AnimationInfo AnimInfo, bool loop);
             bool updateObject(float dt);
             tools::Vector2<float> getPosition() const;
             tools::Vector2<float> getSize() const;
@@ -37,17 +38,19 @@ namespace sfml
             std::unique_ptr<IAnimatedSprite> clone() const;
             bool contains(tools::Vector2<float> position);
             void setColor(const tools::Color &color);
+            void updateSpriteDirection();
         private:
-            std::unordered_map<int, int> _animationMap;
+            std::unordered_map<int, tools::AssetDefinition::AnimationInfo> _animationMap;
             sf::Sprite sprite;
             int _rows;
             int _columns;
             std::shared_ptr<sf::RenderWindow> _ctx;
             bool _loop = true;
             sf::FloatRect _rect;
-            int _currentAnimation;
-            int _defaultAnimation;
+            tools::AssetDefinition::AnimationInfo _currentAnimation;
+            tools::AssetDefinition::AnimationInfo _defaultAnimation;
             float _currentAnimRow;
+            bool _reversed;
             float _frameWidth;
             float _frameHeight;
             float _currentFrame;

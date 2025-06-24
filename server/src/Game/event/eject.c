@@ -95,9 +95,8 @@ static void send_ejected_msg(game_t *game, player_t *src, player_t *tgt)
     ev = calloc(1, sizeof(game_event_t));
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_PLAYER_EJECTED;
-    ev->data.generic_response.client_fd = -1;
-    ev->data.generic_response.player_id = tgt->id;
+    ev->type = EVENT_RESP_PLAYER_EJECTED;
+    ev->data.generic_response.client = tgt->client;
     ev->data.generic_response.response = strdup(msg);
     if (!ev->data.generic_response.response)
         return free(ev);
@@ -110,7 +109,7 @@ static void send_egg_death(game_t *game, egg_t *egg, list_node_t *node)
 
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_EGG_DIE;
+    ev->type = EVENT_RESP_EGG_DIE;
     ev->data.egg.egg_id = egg->id;
     ev->data.egg.x = egg->x;
     ev->data.egg.y = egg->y;
@@ -134,16 +133,15 @@ static void destroy_eggs_at_pos(game_t *game, player_t *p)
     }
 }
 
-static void send_eject_response(game_t *game, int client_fd,
+static void send_eject_response(game_t *game,
     player_t *src, list_t *ejected)
 {
     game_event_t *ev = calloc(1, sizeof(game_event_t));
 
     if (!ev)
         return;
-    ev->type = GAME_EVENT_RESPONSE_PLAYER_OWNER_EJECTED;
-    ev->data.generic_response.client_fd = client_fd;
-    ev->data.generic_response.player_id = src->id;
+    ev->type = EVENT_RESP_PLAYER_OWNER_EJECTED;
+    ev->data.generic_response.client = src->client;
     ev->data.generic_response.response = strdup(
         ejected->size > 0 ? "ok\n" : "ko\n");
     game->server_event_queue->methods->push_back(game->server_event_queue, ev);
@@ -155,14 +153,12 @@ void on_eject(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    int client_fd = event->data.generic_response.client_fd;
-    player_t *player = find_player_by_id(game,
-        event->data.generic_response.player_id);
+    player_t *player = event->data.generic_response.client->player;
     list_t *ejected = NEW(list, NULL);
 
     if (!game || !event || !player || !ejected)
         return;
     eject_players(game, player, ejected);
     destroy_eggs_at_pos(game, player);
-    send_eject_response(game, client_fd, player, ejected);
+    send_eject_response(game, player, ejected);
 }

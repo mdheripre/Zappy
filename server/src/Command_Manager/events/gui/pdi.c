@@ -20,7 +20,7 @@ void handle_gui_pdi(void *ctx, void *data)
 {
     server_t *server = ctx;
     player_t *player = data;
-    client_t *gui = server->vtable->get_gui(server);
+    client_t *gui = server->gui;
 
     if (!server || !player || !gui)
         return;

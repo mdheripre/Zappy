@@ -66,7 +66,7 @@ static int accept_fd(server_t *self)
  */
 static bool is_server_full(server_t *self)
 {
-    if (self->client_count >= MAX_CLIENTS) {
+    if (self->client_count >= self->game->max_players) {
         console_log(LOG_WARNING, "Too many clients. Connection refused.");
         return true;
     }
@@ -85,11 +85,10 @@ static bool is_server_full(server_t *self)
  */
 static client_t *init_client(server_t *self, int fd)
 {
-    client_t *client = NULL;
+    client_t *client = calloc(1, sizeof(client_t));
 
-    if (!self)
+    if (!client)
         return NULL;
-    client = &self->clients[self->client_count];
     client->fd = fd;
     client->type = CLIENT_UNDEFINED;
     client->connected = true;
@@ -97,9 +96,11 @@ static client_t *init_client(server_t *self, int fd)
     client->commands = NEW(list, free);
     if (!client->commands) {
         console_log(LOG_ERROR, "Failed to create command list for client.");
-        close(client->fd);
+        close(fd);
+        free(client);
         return NULL;
     }
+    self->clients->methods->push_back(self->clients, client);
     return client;
 }
 
@@ -131,5 +132,5 @@ void accept_client(server_t *self)
     if (!client)
         return;
     self->client_count++;
-    EMIT(self->dispatcher, "client_connected", client);
+    EMIT(self->dispatcher, EVENT_CLIENT_CONNECTED, client);
 }

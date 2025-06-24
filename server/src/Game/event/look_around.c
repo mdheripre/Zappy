@@ -201,8 +201,7 @@ static void build_look_response(game_t *g, player_t *p, char *buf)
  * @param client_fd File descriptor of the client.
  * @return Pointer to the created game event, or NULL on error.
  */
-static game_event_t *create_look_response(game_t *game, player_t *p,
-    int client_fd)
+static game_event_t *create_look_response(game_t *game, player_t *p)
 {
     game_event_t *resp = malloc(sizeof(game_event_t));
     char *buffer = calloc(BUFSIZ, sizeof(char));
@@ -210,8 +209,8 @@ static game_event_t *create_look_response(game_t *game, player_t *p,
     if (!resp || !buffer)
         return NULL;
     build_look_response(game, p, buffer);
-    resp->type = GAME_EVENT_RESPONSE_LOOK;
-    resp->data.generic_response.client_fd = client_fd;
+    resp->type = EVENT_RESP_LOOK;
+    resp->data.generic_response.client = p->client;
     resp->data.generic_response.response = buffer;
     return resp;
 }
@@ -226,14 +225,12 @@ void on_look(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    player_t *p = find_player_by_id(game,
-        event->data.generic_response.player_id);
+    player_t *p = event->data.generic_response.client->player;
     game_event_t *resp = NULL;
 
     if (!game || !event || !p)
         return;
-    resp = create_look_response(game, p,
-        event->data.generic_response.client_fd);
+    resp = create_look_response(game, p);
     if (!resp)
         return;
     game->server_event_queue->methods->push_back(game->server_event_queue,
