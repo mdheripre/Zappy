@@ -33,7 +33,6 @@ void handle_command_incantation(void *ctx, void *data)
 
     if (!server || !client || !player)
         return;
-    printf("%d\n", player->id);
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
