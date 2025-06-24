@@ -80,7 +80,7 @@ static game_event_t *create_incantation_response(incantation_t *inc,
 
     if (!response)
         return NULL;
-    response->type = GAME_EVENT_RESPONSE_END_INCANTATION;
+    response->type = EVENT_RESP_END_INCANTATION;
     response->data.incantation.x = inc->x;
     response->data.incantation.y = inc->y;
     response->data.incantation.success = success;

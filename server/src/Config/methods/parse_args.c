@@ -100,6 +100,45 @@ static bool init_parser(config_t *config, parser_t *parser, int argc,
     return true;
 }
 
+static bool parse_args_loop(int argc, char **argv,
+    config_t *config, parser_t *parser)
+{
+    event_type_t type;
+
+    for (; parser->index < argc; parser->index++) {
+        type = event_type_from_string(argv[parser->index], EVENT_CLI_MAP,
+            sizeof(EVENT_CLI_MAP) / sizeof(EVENT_CLI_MAP[0]));
+        EMIT(config->dispatcher, type, parser);
+        if (config->exit)
+            return true;
+        if (parser->error)
+            console_log(LOG_ERROR, "Parse error: %s", parser->error_msg);
+        if (parser->free)
+            free(parser->error_msg);
+        if (parser->error)
+            return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Sets the debug state based on the config.
+ *
+ * If debug is enabled in the config, it sets the debug state to DEBUG_ON,
+ * otherwise it sets it to DEBUG_OFF.
+ *
+ * @param config The configuration object containing the debug flag.
+ * @return false to indicate no error occurred (as per original design).
+ */
+static bool set_debug(config_t *config)
+{
+    if (config->debug)
+        debug_state(DEBUG_ON);
+    else
+        debug_state(DEBUG_OFF);
+    return false;
+}
+
 /**
  * @brief Main entry point for command-line parsing.
  *
@@ -117,17 +156,8 @@ bool parse_args(int argc, char **argv, config_t *config)
 
     if (!init_parser(config, &parser, argc, argv))
         return false;
-    for (; parser.index < argc; parser.index++) {
-        EMIT(config->dispatcher, argv[parser.index], &parser);
-        if (config->exit)
-            return true;
-        if (parser.error)
-            console_log(LOG_ERROR, "Parse error: %s", parser.error_msg);
-        if (parser.free)
-            free(parser.error_msg);
-        if (parser.error)
-            return false;
-    }
+    if (!parse_args_loop(argc, argv, config, &parser))
+        return false;
     if (!check_unset_values(config, &parser)) {
         console_log(LOG_ERROR, "Parse error: %s, see -h", parser.error_msg);
         return false;

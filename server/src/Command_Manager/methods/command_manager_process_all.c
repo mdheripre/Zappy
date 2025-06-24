@@ -73,25 +73,18 @@ static void update_next_command_tick(client_t *client, int current_tick)
         next->last_tick_checked = current_tick + 1;
 }
 
-/**
- * @brief Execute a command that is ready to run and dequeue it.
- *
- * Emits the command event and prepares the next command if available.
- *
- * @param mgr Pointer to the command manager.
- * @param client Pointer to the client.
- * @param cmd Pointer to the command to execute.
- * @param current_tick Current game tick.
- */
 static void execute_ready_command(command_manager_t *mgr,
     client_t *client, queued_command_t *cmd, int current_tick)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
     char cmd_name[BUFFER_SIZE] = {0};
+    event_type_t id;
 
     extract_command_name(cmd->content, cmd_name, sizeof(cmd_name));
     build_full_command(built, sizeof(built), client->type, cmd_name);
-    EMIT(mgr->dispatcher, built, client);
+    id = event_type_from_string(built, EVENT_CMD_NAME,
+        sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
+    EMIT(mgr->dispatcher, id, client);
     client_dequeue_command(client, NULL);
     update_next_command_tick(client, current_tick);
 }
@@ -136,14 +129,14 @@ static void handle_client_command(command_manager_t *mgr,
  */
 void process_all(command_manager_t *mgr, server_t *server, int current_tick)
 {
+    list_node_t *node = NULL;
     client_t *client = NULL;
     queued_command_t *cmd = NULL;
 
-    if (!mgr || !server)
+    if (!mgr || !server || !server->clients)
         return;
-    for (int i = 0; i < server->client_count; i++) {
-        client = &server->clients[i];
-        cmd = NULL;
+    for (node = server->clients->head; node; node = node->next) {
+        client = node->data;
         if (!client || !client->connected || client->stuck)
             continue;
         cmd = client_peek_command(client);

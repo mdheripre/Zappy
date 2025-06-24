@@ -14,30 +14,21 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Emits an event to all registered handlers matching the event name.
- *
- * Calls the callback functions of handlers whose event name matches the given
- * event. If no handler is found and an on_not_found callback is set,
- * it is called instead.
- *
- * @param self Pointer to the dispatcher instance.
- * @param event Name of the event to emit.
- * @param data Pointer to data to pass to the handler callbacks.
- */
-void dispatcher_emit(dispatcher_t *self, const char *event, void *data)
+void dispatcher_emit(dispatcher_t *self, int index, void *data)
 {
-    bool found = false;
+    event_handler_t *handler = NULL;
+    char *name = NULL;
 
-    if (!self || !event)
+    if (!self)
         return;
-    for (int i = 0; i < self->count; i++) {
-        if (strcmp(self->handlers[i].event_name, event) == 0) {
-            self->handlers[i].callback(
-                self->handlers[i].ctx, data);
-            found = true;
+    if (index < 0 || index >= MAX_EVENT_HANDLERS ||
+        !self->handlers[index].callback) {
+        if (self->on_not_found && self->map) {
+            name = (char *)event_type_name(index, self->map, self->map_size);
+            self->on_not_found(self, name, data);
         }
+        return;
     }
-    if (!found && self->on_not_found)
-        self->on_not_found(self, event, data);
+    handler = &self->handlers[index];
+    handler->callback(handler->ctx, data);
 }

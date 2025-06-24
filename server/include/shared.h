@@ -18,6 +18,7 @@
     #define EMIT(d, n, data) (d)->vtable->emit(d, n, data)
 
 
+
 typedef void (*destructor_fn_t)(void *);
 typedef struct gc_entry_s gc_entry_t;
 typedef struct gc_state_s gc_state_t;

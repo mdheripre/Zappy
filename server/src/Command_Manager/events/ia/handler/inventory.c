@@ -35,9 +35,8 @@ void handle_command_inventory(void *ctx, void *data)
     event = calloc(1, sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_CHECK_INVENTORY;
-    event->data.generic_response.player_id = client->player->id;
-    event->data.generic_response.client_fd = client->fd;
+    event->type = EVENT_CHECK_INVENTORY;
+    event->data.generic_response.client = client;
     server->game->event_queue->methods->push_back(server->game->event_queue,
         event);
 }

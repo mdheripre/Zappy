@@ -62,9 +62,15 @@ static int get_min_command_ticks(server_t *self)
 {
     int min = INT_MAX;
     int remain = 0;
+    client_t *client = NULL;
 
-    for (int i = 0; i < self->client_count; i++) {
-        remain = get_ticks_remaining_command(self, &self->clients[i]);
+    if (!self || !self->clients)
+        return min;
+    for (list_node_t *n = self->clients->head; n; n = n->next) {
+        client = n->data;
+        if (!client || !client->connected)
+            continue;
+        remain = get_ticks_remaining_command(self, client);
         if (remain < min)
             min = remain;
     }

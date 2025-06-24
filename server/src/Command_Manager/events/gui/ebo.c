@@ -41,21 +41,13 @@ void handle_gui_ebo(void *ctx, void *data)
 {
     server_t *server = ctx;
     egg_t *egg = data;
-    client_t *client = NULL;
-    response_payload_t *payload = NULL;
     char *message = NULL;
 
-    if (!server || !egg)
-        return;
-    client = server->vtable->get_gui(server);
-    if (!client)
+    if (!server || !egg || !server->gui)
         return;
     message = build_ebo_message(egg);
-    payload = malloc(sizeof(response_payload_t));
-    if (!payload || !message) {
+    if (!message)
         return;
-    }
-    payload->client = client;
-    payload->message = message;
-    EMIT(server->dispatcher, "send_response", payload);
+    dprintf(server->gui->fd, "%s", message);
+    free(message);
 }

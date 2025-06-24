@@ -20,7 +20,7 @@
  * Contains function pointers for registering events and emitting events.
  */
 static const dispatcher_methods_t DISPATCHER_VTABLE = {
-    .register_event = dispatcher_register,
+    .register_event = dispatcher_register_event,
     .emit = dispatcher_emit
 };
 
@@ -42,14 +42,17 @@ static const dispatcher_methods_t DISPATCHER_VTABLE = {
  * @return Pointer to the newly created dispatcher_t, or NULL on allocation
  * failure.
  */
-dispatcher_t *dispatcher_create(event_not_found_t default_not_found)
+dispatcher_t *dispatcher_create(event_not_found_t default_not_found,
+    const event_type_map_entry_t *map, size_t map_size)
 {
-    dispatcher_t *dispatcher = malloc(sizeof(dispatcher_t));
+    dispatcher_t *self = malloc(sizeof(dispatcher_t));
 
-    if (!dispatcher)
+    if (!self)
         return NULL;
-    memset(dispatcher, 0, sizeof(dispatcher_t));
-    dispatcher->vtable = &DISPATCHER_VTABLE;
-    dispatcher->on_not_found = default_not_found;
-    return dispatcher;
+    memset(self->handlers, 0, sizeof(self->handlers));
+    self->on_not_found = default_not_found;
+    self->map = map;
+    self->map_size = map_size;
+    self->vtable = &DISPATCHER_VTABLE;
+    return self;
 }

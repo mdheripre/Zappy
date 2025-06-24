@@ -27,16 +27,14 @@
 void process_responses(command_manager_t *self, game_t *game)
 {
     game_event_t *event = NULL;
-    const char *event_name = NULL;
 
     if (!self || !self->dispatcher || !game || !game->server_event_queue)
         return;
     for (event = game->server_event_queue->methods->
-        pop_front(game->server_event_queue); event != NULL; event =
-        game->server_event_queue->methods
-        ->pop_front(game->server_event_queue)) {
-        event_name = event_type_name(event->type);
-        EMIT(self->dispatcher, event_name, event);
+        pop_front(game->server_event_queue); event != NULL;
+        event = game->server_event_queue->methods->
+        pop_front(game->server_event_queue)) {
+        EMIT(self->dispatcher, event->type, event);
         free(event);
     }
 }

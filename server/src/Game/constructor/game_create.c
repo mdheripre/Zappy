@@ -42,18 +42,18 @@ static const game_methods_t GAME_METHODS = {
  */
 static void register_event_game(dispatcher_t *dispatcher, game_t *game)
 {
-    REGISTER(dispatcher, "PLAYER_MOVED", on_player_moved, game);
-    REGISTER(dispatcher, "PLAYER_DIED", on_player_died, game);
-    REGISTER(dispatcher, "CONNECT_NBR", on_connect_nbr, game);
-    REGISTER(dispatcher, "LOOK_AROUND", on_look, game);
-    REGISTER(dispatcher, "CHECK_INVENTORY", on_inventory, game);
-    REGISTER(dispatcher, "PLAYER_EJECT", on_eject, game);
-    REGISTER(dispatcher, "EGG_LAID", on_egg_laid, game);
-    REGISTER(dispatcher, "START_INCANTATION", on_start_incantation, game);
-    REGISTER(dispatcher, "END_INCANTATION", on_end_incantation, game);
-    REGISTER(dispatcher, "BROADCAST_MESSAGE", on_broadcast, game);
-    REGISTER(dispatcher, "PLAYER_DROP_ITEM", on_drop, game);
-    REGISTER(dispatcher, "PLAYER_TAKE_ITEM", on_take, game);
+    REGISTER(dispatcher, EVENT_PLAYER_MOVED, on_player_moved, game);
+    REGISTER(dispatcher, EVENT_PLAYER_DIED, on_player_died, game);
+    REGISTER(dispatcher, EVENT_CONNECT_NBR, on_connect_nbr, game);
+    REGISTER(dispatcher, EVENT_LOOK_AROUND, on_look, game);
+    REGISTER(dispatcher, EVENT_CHECK_INVENTORY, on_inventory, game);
+    REGISTER(dispatcher, EVENT_PLAYER_EJECT, on_eject, game);
+    REGISTER(dispatcher, EVENT_EGG_LAID, on_egg_laid, game);
+    REGISTER(dispatcher, EVENT_START_INCANTATION, on_start_incantation, game);
+    REGISTER(dispatcher, EVENT_END_INCANTATION, on_end_incantation, game);
+    REGISTER(dispatcher, EVENT_BROADCAST_MESSAGE, on_broadcast, game);
+    REGISTER(dispatcher, EVENT_PLAYER_DROP_ITEM, on_drop, game);
+    REGISTER(dispatcher, EVENT_PLAYER_TAKE_ITEM, on_take, game);
 }
 
 /****************************************************************************/
@@ -131,15 +131,15 @@ static bool game_init_teams(game_t *game, config_game_t *config)
  * @param egg_id Pointer to the egg ID counter (auto-incremented).
  * @param game Pointer to the game instance.
  */
-static void init_egg(const char *team_name, int *egg_id, game_t *game)
+static void init_egg(const char *team_name, game_t *game)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 
     if (!egg)
         return;
-    egg->id = *egg_id;
-    *egg_id += 1;
-    egg->player_id = -1;
+    egg->id = game->egg_id_current;
+    game->egg_id_current += 1;
+    egg->player = NULL;
     egg->team_name = team_name;
     egg->x = rand() % game->width;
     egg->y = rand() % game->height;
@@ -158,18 +158,18 @@ static void init_egg(const char *team_name, int *egg_id, game_t *game)
  */
 static void game_init_eggs(game_t *game)
 {
-    int egg_id = 1;
     list_node_t *node = NULL;
     team_info_t *team = NULL;
 
     if (!game || !game->teams)
         return;
+    game->egg_id_current = 1;
     for (node = game->teams->head; node; node = node->next) {
         team = node->data;
         if (!team)
             continue;
         for (int i = 0; i < team->team_size; i++) {
-            init_egg(team->team_name, &egg_id, game);
+            init_egg(team->team_name, game);
         }
     }
 }
@@ -203,17 +203,11 @@ static bool game_init_map(game_t *game)
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Initializes the internal lists used in the game.
- *
- * Creates and assigns the player list, egg list, incantation list,
- * and event queue. Each list uses a dedicated free function if needed.
- *
- * @param game Pointer to the game instance.
- * @return true if all lists were successfully created, false otherwise.
- */
-static bool game_init_lists(game_t *game)
+static bool game_init_lists(game_t *game, config_game_t *config)
 {
+    int team_count = config->team_name ? config->team_name->size : 0;
+
+    game->max_players = (config->team_size + 5) * team_count;
     game->players = NEW(list, NULL);
     game->eggs = NEW(list, free);
     game->incantations = NEW(list, free);
@@ -253,11 +247,11 @@ game_t *game_create(config_game_t *config)
     game->last_tick_time = 0;
     game->tick_counter = 0;
     game->methods = &GAME_METHODS;
-    game->dispatcher = NEW(dispatcher, NULL);
+    game->dispatcher = NEW(dispatcher, NULL, NULL, 0);
     register_event_game(game->dispatcher, game);
     if (!game->dispatcher)
         return NULL;
-    if (!game_init_lists(game) || !game_init_map(game))
+    if (!game_init_lists(game, config) || !game_init_map(game))
         return NULL;
     return game;
 }

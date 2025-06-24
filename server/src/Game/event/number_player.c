@@ -24,7 +24,7 @@
  * @return game_event_t* The prepared response event, or NULL on failure.
  */
 static game_event_t *prepare_connect_nbr_response(player_t *player,
-    game_event_t *event, int available)
+    int available)
 {
     char buffer[BUFFER_SIZE];
     game_event_t *response = malloc(sizeof(game_event_t));
@@ -32,10 +32,8 @@ static game_event_t *prepare_connect_nbr_response(player_t *player,
     if (!response)
         return NULL;
     snprintf(buffer, sizeof(buffer), "%d\n", available);
-    response->type = GAME_EVENT_RESPONSE_CONNECT_NBR;
-    response->data.generic_response.client_fd = event->
-    data.generic_response.client_fd;
-    response->data.generic_response.player_id = player->id;
+    response->type = EVENT_RESP_CONNECT_NBR;
+    response->data.generic_response.client = player->client;
     response->data.generic_response.response = strdup(buffer);
     if (!response->data.generic_response.response) {
         free(response);
@@ -62,8 +60,7 @@ static int get_team_available_slots(game_t *game, player_t *player)
         return -1;
     for (list_node_t *node = game->eggs->head; node; node = node->next) {
         egg = node->data;
-        if (egg && strcmp(egg->team_name, player->team_name) == 0
-            && egg->player_id == -1)
+        if (egg && strcmp(egg->team_name, player->team_name) == 0)
             count++;
     }
     return count;
@@ -86,11 +83,11 @@ void on_connect_nbr(void *ctx, void *data)
 
     if (!game || !event)
         return;
-    player = find_player_by_id(game, event->data.generic_response.player_id);
+    player = event->data.generic_response.client->player;
     available = get_team_available_slots(game, player);
     if (available < 0)
         return;
-    response = prepare_connect_nbr_response(player, event, available);
+    response = prepare_connect_nbr_response(player, available);
     if (!response)
         return;
     game->server_event_queue->methods->push_back(game->server_event_queue,

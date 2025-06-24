@@ -48,15 +48,15 @@ static const config_methods_t CONFIG_METHODS = {
  */
 static void register_core_args(config_t *config)
 {
-    REGISTER(config->dispatcher, "-p", port_arg, config);
-    REGISTER(config->dispatcher, "-x", width_arg, config);
-    REGISTER(config->dispatcher, "-y", height_arg, config);
-    REGISTER(config->dispatcher, "-n", team_name_arg, config);
-    REGISTER(config->dispatcher, "-c", team_size_arg, config);
-    REGISTER(config->dispatcher, "-f", frequency_arg, config);
-    REGISTER(config->dispatcher, "-h", help_arg, config);
-    REGISTER(config->dispatcher, "--help", help_arg, config);
-    REGISTER(config->dispatcher, "-help", help_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_PORT, port_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_WIDTH, width_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_HEIGHT, height_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_TEAM_NAME, team_name_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_TEAM_SIZE, team_size_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_FREQUENCY, frequency_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_HELP_SHORT, help_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_HELP_LONG, help_arg, config);
+    REGISTER(config->dispatcher, EVENT_ARG_HELP_ALT, help_arg, config);
 }
 
 /****************************************************************************/
@@ -77,7 +77,8 @@ static void register_core_args(config_t *config)
  */
 static bool init_config(config_t *config)
 {
-    config->dispatcher = NEW(dispatcher, invalid_arg);
+    config->dispatcher = NEW(dispatcher, invalid_arg,
+        EVENT_CLI_MAP, sizeof(EVENT_CLI_MAP) / sizeof(EVENT_CLI_MAP[0]));
     if (!config->dispatcher) {
         console_log(LOG_ERROR, "Failed to create dispatcher");
         return false;
@@ -93,6 +94,7 @@ static bool init_config(config_t *config)
     config->port = -1;
     config->frequency = -1.0f;
     config->exit = false;
+    config->debug = false;
     register_core_args(config);
     return true;
 }

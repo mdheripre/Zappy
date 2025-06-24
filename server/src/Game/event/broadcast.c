@@ -113,14 +113,7 @@ int compute_broadcast_direction(game_t *game, player_t *sender,
     return angle_to_sector(angle);
 }
 
-/**
- * @brief Create a broadcast game event with a message.
- *
- * @param player_id ID of the target player.
- * @param msg Message to send.
- * @return Pointer to the created event, or NULL on failure.
- */
-static game_event_t *create_broadcast_event(int player_id,
+static game_event_t *create_broadcast_event(player_t *player,
     const char *msg, bool to_gui)
 {
     game_event_t *event = malloc(sizeof(game_event_t));
@@ -128,10 +121,9 @@ static game_event_t *create_broadcast_event(int player_id,
     if (!event)
         return NULL;
     memset(event, 0, sizeof(game_event_t));
-    event->type = to_gui ? GAME_EVENT_RESPONSE_BROADCAST_TO_GUI :
-        GAME_EVENT_RESPONSE_BROADCAST;
-    event->data.generic_response.player_id = player_id;
-    event->data.generic_response.client_fd = -1;
+    event->type = to_gui ? EVENT_RESP_BROADCAST_TO_GUI :
+        EVENT_RESP_BROADCAST;
+    event->data.generic_response.client = player->client;
     event->data.generic_response.response = strdup(msg);
     return event;
 }
@@ -160,12 +152,12 @@ static void broadcast_to_players(game_t *game, player_t *sender,
             continue;
         dir = compute_broadcast_direction(game, sender, target);
         snprintf(buf, sizeof(buf), "message %d, %s\n", dir, msg);
-        event = create_broadcast_event(target->id, buf, false);
+        event = create_broadcast_event(target, buf, false);
         if (event)
             game->server_event_queue->methods->push_back(
                 game->server_event_queue, event);
     }
-    event = create_broadcast_event(sender->id, msg, true);
+    event = create_broadcast_event(sender, msg, true);
     game->server_event_queue->methods->push_back(
         game->server_event_queue, event);
 }
@@ -182,15 +174,14 @@ void on_broadcast(void *ctx, void *data)
 {
     game_t *game = ctx;
     game_event_t *event = data;
-    player_t *sender = find_player_by_id(game,
-        event->data.generic_response.player_id);
+    player_t *sender = event->data.generic_response.client->player;
     const char *msg = event->data.generic_response.response;
     game_event_t *ok = NULL;
 
     if (!game || !event || !sender || !msg)
         return;
     broadcast_to_players(game, sender, msg);
-    ok = create_broadcast_event(sender->id, "ok\n", false);
+    ok = create_broadcast_event(sender, "ok\n", false);
     if (ok)
         game->server_event_queue->methods->push_back(game->server_event_queue,
             ok);

@@ -16,24 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Create a new egg based on a player's current state.
- *
- * The egg inherits the player's position, team, and ID.
- *
- * @param player Pointer to the player laying the egg.
- * @return Pointer to the created egg, or NULL on failure.
- */
-static egg_t *create_egg_from_player(player_t *player)
+static egg_t *create_egg_from_player(player_t *player, game_t *game)
 {
-    static int egg_id = 1;
     egg_t *egg = malloc(sizeof(egg_t));
 
     if (!egg)
         return NULL;
-    egg->id = egg_id;
-    egg_id++;
-    egg->player_id = player->id;
+    egg->id = game->egg_id_current;
+    game->egg_id_current++;
+    egg->player = player;
     egg->team_name = player->team_name;
     egg->x = player->x;
     egg->y = player->y;
@@ -51,7 +42,7 @@ static egg_t *create_egg_from_player(player_t *player)
  */
 static egg_t *add_egg_to_game(game_t *game, player_t *player)
 {
-    egg_t *egg = create_egg_from_player(player);
+    egg_t *egg = create_egg_from_player(player, game);
     team_info_t *team = find_team(game, player->team_name);
 
     if (!egg)
@@ -74,8 +65,8 @@ static game_event_t *create_egg_event(const egg_t *egg)
 
     if (!event)
         return NULL;
-    event->type = GAME_EVENT_RESPONSE_EGG_LAID;
-    event->data.egg.player_id = egg->player_id;
+    event->type = EVENT_RESP_EGG_LAID;
+    event->data.egg.player = egg->player;
     event->data.egg.team_name = egg->team_name;
     event->data.egg.x = egg->x;
     event->data.egg.y = egg->y;
@@ -116,7 +107,7 @@ void on_egg_laid(void *ctx, void *data)
 
     if (!game || !event)
         return;
-    player = find_player_by_id(game, event->data.egg.player_id);
+    player = event->data.egg.player;
     if (!player)
         return;
     egg = add_egg_to_game(game, player);

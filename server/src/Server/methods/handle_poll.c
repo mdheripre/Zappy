@@ -15,34 +15,49 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Process a raw command line from a client.
- *
- * Cleans the line, determines its delay, and enqueues it if possible.
- * Logs a warning if the client's command queue is full.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client sending the command.
- * @param line Raw command line string.
- */
-void process_command_line(server_t *server, client_t *client,
-    const char *line)
-{
-    char clean[BUFFER_COMMAND_SIZE] = {0};
-    char cmd_name[BUFFER_COMMAND_SIZE] = {0};
-    int ticks = 0;
 
-    if (!server || !client || !line)
-        return;
-    strncpy(clean, line, BUFFER_COMMAND_SIZE - 1);
-    clean[BUFFER_COMMAND_SIZE - 1] = '\0';
-    strip_linefeed(clean);
-    extract_command_name(clean, cmd_name, sizeof(cmd_name));
-    ticks = server->vtable->get_command_delay(server, clean);
+static const gui_command_event_t GUI_COMMAND_EVENTS[] = {
+    {"Fork", EVENT_GUI_PFK},
+    {"Forward", EVENT_GUI_PMV},
+    {"Eject", EVENT_GUI_PEJ},
+    {NULL, 0}
+};
+
+static void handle_gui_command(server_t *server, client_t *client,
+    const char *cmd_name, const char *clean)
+{
+    char built[BUFFER_COMMAND_SIZE] = {0};
+    event_type_t type;
+
+    snprintf(built, sizeof(built), "command_gui_%s", cmd_name);
+    console_log(LOG_INFO, "Executing GUI command immediately: %s", built);
+    type = event_type_from_string(built,
+        EVENT_CMD_NAME, sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
+    client_enqueue_command(client, clean, 0, server->game);
+    EMIT(server->command_manager->dispatcher, type, client);
+    client_dequeue_command(client, NULL);
+}
+
+static void maybe_emit_gui_command_event(server_t *server,
+    client_t *client, const char *cmd_name)
+{
+    for (int i = 0; GUI_COMMAND_EVENTS[i].name; i++) {
+        if (strcmp(cmd_name, GUI_COMMAND_EVENTS[i].name) == 0) {
+            EMIT(server->command_manager->dispatcher,
+            GUI_COMMAND_EVENTS[i].event, client->player);
+            return;
+        }
+    }
+}
+
+static void handle_command_enqueue(server_t *server, client_t *client,
+    const char *clean, const char *cmd_name)
+{
+    int ticks = server->vtable->get_command_delay(server, clean);
+
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
-    if (strcmp(cmd_name, "Fork") == 0 && client->player)
-        EMIT(server->command_manager->dispatcher, "gui_pfk", client->player);
+    maybe_emit_gui_command_event(server, client, cmd_name);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",
@@ -50,38 +65,44 @@ void process_command_line(server_t *server, client_t *client,
     }
 }
 
-/**
- * @brief Extracts commands from the client's read buffer and processes them.
- *
- * This function searches for newline characters in the client's read buffer,
- * extracts complete command lines, and processes each command line.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client instance.
- */
+void process_command_line(server_t *server, client_t *client, const char *line)
+{
+    char *space = NULL;
+    char *newline = NULL;
+
+    if (!server || !client || !line)
+        return;
+    newline = strchr(line, '\n');
+    if (newline)
+        *newline = '\0';
+    space = strchr(line, ' ');
+    if (space)
+        *space = '\0';
+    if (client->type == CLIENT_GUI)
+        handle_gui_command(server, client, line, line);
+    else
+        handle_command_enqueue(server, client, line, line);
+}
+
 static void extract_commands_from_buffer(server_t *server,
     client_t *client)
 {
-    char *newline = NULL;
-    size_t line_len = 0;
-    size_t remaining = 0;
-    char line[BUFFER_COMMAND_SIZE] = {0};
+    char *p = client->read_buffer;
+    char *end = p + client->buffer_len;
+    char *line_start = p;
+    size_t remaining;
 
-    newline = memchr(client->read_buffer, '\n', client->buffer_len);
-    while (newline != NULL) {
-        line_len = newline - client->read_buffer + 1;
-        line_len = (line_len >= BUFFER_COMMAND_SIZE)
-            ? BUFFER_COMMAND_SIZE - 1 : line_len;
-        memset(line, 0, sizeof(line));
-        memcpy(line, client->read_buffer, line_len);
-        line[line_len] = '\0';
-        process_command_line(server, client, line);
-        remaining = client->buffer_len - line_len;
-        memmove(client->read_buffer,
-            client->read_buffer + line_len, remaining);
-        client->buffer_len = remaining;
-        newline = memchr(client->read_buffer, '\n', client->buffer_len);
+    while (p < end) {
+        if (*p == '\n') {
+            *p = '\0';
+            process_command_line(server, client, line_start);
+            line_start = p + 1;
+        }
+        ++p;
     }
+    remaining = end - line_start;
+    memmove(client->read_buffer, line_start, remaining);
+    client->buffer_len = remaining;
 }
 
 /**
@@ -102,90 +123,67 @@ static void append_to_read_buffer(client_t *client,
     client->read_buffer[client->buffer_len] = '\0';
 }
 
-/**
- * @brief Handles errors or disconnections when reading from a client.
- *
- * @param server Pointer to the server instance.
- * @param client Pointer to the client.
- * @param index Index of the client in the server's client array.
- * @param bytes Number of bytes read from the client.
- * @return 1 if the client was removed, 0 otherwise.
- */
 static int handle_client_read_error(server_t *server, client_t *client,
-    int index, ssize_t bytes)
+    ssize_t bytes)
 {
     if (bytes < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return 1;
         console_log(LOG_WARNING,
             "Client (fd=%d) read error: %s", client->fd, strerror(errno));
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
+        server->vtable->remove_client(server, client);
         return 1;
     }
     if (bytes == 0) {
-        console_log(LOG_INFO,
-            "Client (fd=%d) disconnected", client->fd);
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
+        server->vtable->remove_client(server, client);
         return 1;
     }
     return 0;
 }
 
-/**
- * @brief Reads data from a client socket and processes it.
- *
- * This function reads data from the specified client socket, appends it to
- * the client's read buffer, and extracts commands from the buffer.
- * If the read operation fails or the buffer overflows, it removes the client.
- *
- * @param server Pointer to the server instance.
- * @param index Index of the client in the server's client array.
- */
-void read_from_client(server_t *server, int index)
+void read_from_client(server_t *server, client_t *client)
 {
-    client_t *client = &server->clients[index];
     char buf[BUFFER_COMMAND_SIZE] = {0};
     ssize_t bytes = 0;
 
+    if (!server || !client)
+        return;
     bytes = read(client->fd, buf, sizeof(buf));
-    if (handle_client_read_error(server, client, index, bytes))
+    if (handle_client_read_error(server, client, bytes))
         return;
     if (client->buffer_len + bytes >= CLIENT_BUFFER_SIZE) {
         console_log(LOG_WARNING,
             "Buffer overflow for client %d", client->fd);
         dprintf(client->fd, "ko\n");
-        EMIT(server->command_manager->dispatcher, "gui_pdi", client->player);
-        server->vtable->remove_client(server, index);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI,
+            client->player);
+        server->vtable->remove_client(server, client);
         return;
     }
     append_to_read_buffer(client, buf, bytes);
     extract_commands_from_buffer(server, client);
 }
 
-/**
- * @brief Sets up the poll file descriptors for the server and its clients.
- *
- * This function initializes the poll file descriptors for the server socket
- * and all connected clients, preparing them for polling events.
- *
- * @param self Pointer to the server instance.
- * @param fds Array of poll file descriptors to populate.
- * @param nfds Pointer to the number of file descriptors in the array.
- */
 void handle_server_poll(server_t *self, struct pollfd *fds)
 {
-    int client_index = 0;
-    int i = 0;
+    list_node_t *node = NULL;
+    list_node_t *next = NULL;
+    client_t *client = NULL;
+    int poll_index = 1;
 
     if (fds[0].revents & POLLIN)
         self->vtable->accept_client(self);
-    for (i = 1; i <= self->client_count; i++) {
-        if (fds[i].revents & (POLLIN | POLLHUP)) {
-            read_from_client(self, client_index);
+    for (node = self->clients->head; node; poll_index++) {
+        next = node->next;
+        client = node->data;
+        if (!client)
             continue;
-        }
-        client_index++;
+        if (fds[poll_index].revents & (POLLIN | POLLHUP))
+            read_from_client(self, client);
+        node = next;
     }
 }

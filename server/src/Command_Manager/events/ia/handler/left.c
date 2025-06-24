@@ -35,9 +35,8 @@ void handle_command_left(void *ctx, void *data)
     event = malloc(sizeof(game_event_t));
     if (!event)
         return;
-    event->type = GAME_EVENT_PLAYER_MOVED;
-    event->data.player_moved.player_id = player->id;
-    event->data.player_moved.client_fd = client->fd;
+    event->type = EVENT_PLAYER_MOVED;
+    event->data.player_moved.player = player;
     event->data.player_moved.ia_success = true;
     event->data.player_moved.direction = TURN_LEFT;
     event->data.player_moved.x = player->x;
