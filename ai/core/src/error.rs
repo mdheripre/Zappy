@@ -1,9 +1,7 @@
 use std::error;
 use std::fmt;
 use std::io;
-use tokio::io::Join;
 use tokio::sync::mpsc::error::SendError;
-use tokio::task::JoinError;
 
 use crate::packet::Packet;
 use crate::server_response::ServerResponse;
@@ -41,8 +39,6 @@ pub enum CoreError {
     SendChannelErrorPacket(SendError<Packet>),
     SendChannelErrorSR(SendError<ServerResponse>),
     ConnectionClosed(String),
-    Process(String),
-    Join(JoinError),
 }
 
 impl error::Error for CoreError {}
@@ -57,8 +53,6 @@ impl fmt::Display for CoreError {
             CoreError::ConnectionClosed(e) => write!(f, "ConnectionClosed: {}", e),
             CoreError::SendChannelErrorPacket(e) => write!(f, "Send channel Error: {}", e),
             CoreError::SendChannelErrorSR(e) => write!(f, "Send channel Error: {}", e),
-            CoreError::Process(e) => write!(f, "Process Error: {}", e),
-            CoreError::Join(e) => write!(f, "Join Error: {}", e),
         }
     }
 }
@@ -90,11 +84,5 @@ impl From<SendError<Packet>> for CoreError {
 impl From<SendError<ServerResponse>> for CoreError {
     fn from(err: SendError<ServerResponse>) -> Self {
         CoreError::SendChannelErrorSR(err)
-    }
-}
-
-impl From<JoinError> for CoreError {
-    fn from(err: JoinError) -> Self {
-        CoreError::Join(err)
     }
 }

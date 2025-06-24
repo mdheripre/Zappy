@@ -1,5 +1,3 @@
-use crate::inventory::Inventory;
-use crate::{CoreError, Result};
 use regex::Regex;
 
 /// Possible responses from the server.
