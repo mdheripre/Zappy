@@ -13,6 +13,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Registers an event handler callback at the specified index.
+ *
+ * @param self Pointer to the dispatcher instance.
+ * @param index Index at which to register the event handler.
+ * @param callback Function pointer to the event callback.
+ * @param ctx Context pointer to be passed to the callback.
+ * @return true on success, false on failure (invalid parameters).
+ */
 bool dispatcher_register_event(dispatcher_t *self, int index,
     event_callback_t callback, void *ctx)
 {

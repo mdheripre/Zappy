@@ -35,6 +35,14 @@ static bool error_handling_plv(char *args_line, char *arg,
     return *client_num >= 0;
 }
 
+/**
+ * @brief Send the level of a player to the GUI client.
+ *
+ * Format: "plv #id level\n"
+ *
+ * @param client Pointer to the GUI client.
+ * @param player Pointer to the player whose level is requested.
+ */
 static void plv_send_level(client_t *client, const player_t *player)
 {
     if (!client || !player)
@@ -42,6 +50,16 @@ static void plv_send_level(client_t *client, const player_t *player)
     dprintf(client->fd, "plv #%d %d\n", player->id, player->level);
 }
 
+/**
+ * @brief Parse and validate the arguments of a "plv" command.
+ *
+ * Extracts the player ID and performs error handling.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the GUI client.
+ * @param client_num Output pointer to store the parsed player ID.
+ * @return true if parsing and validation succeeded, false otherwise.
+ */
 static bool parse_and_validate_plv_command(server_t *server, client_t *client,
     int *client_num)
 {
@@ -57,6 +75,15 @@ static bool parse_and_validate_plv_command(server_t *server, client_t *client,
     return true;
 }
 
+/**
+ * @brief Handle the "plv" command from the GUI.
+ *
+ * Parses arguments, retrieves the player, and sends the level.
+ * Emits "sbp" if the command is invalid or player is not found.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the GUI client.
+ */
 void handle_command_gui_plv(void *ctx, void *data)
 {
     server_t *server = ctx;

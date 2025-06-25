@@ -66,6 +66,17 @@ static int get_eject_message_k(player_orientation_t orientation)
     }
 }
 
+/**
+ * Moves players on the same tile as the source in the direction of ejection.
+ *
+ * Computes the direction from the source orientation and moves all other
+ * players on the same tile accordingly. Adds ejected players to the
+ * provided list.
+ *
+ * @param game Pointer to the game structure.
+ * @param src The player initiating the ejection.
+ * @param ejected List where ejected players will be stored.
+ */
 static void eject_players(game_t *game, player_t *src, list_t *ejected)
 {
     int dx;
@@ -85,6 +96,16 @@ static void eject_players(game_t *game, player_t *src, list_t *ejected)
     }
 }
 
+/**
+ * Sends an eject notification to the target player.
+ *
+ * Builds a message with the correct 'k' value depending on the direction
+ * and sends it as an event to the target's client.
+ *
+ * @param game Pointer to the game structure.
+ * @param src The player who initiated the ejection.
+ * @param tgt The target player who was ejected.
+ */
 static void send_ejected_msg(game_t *game, player_t *src, player_t *tgt)
 {
     int k = get_eject_message_k(src->orientation);
@@ -103,6 +124,16 @@ static void send_ejected_msg(game_t *game, player_t *src, player_t *tgt)
     game->server_event_queue->methods->push_back(game->server_event_queue, ev);
 }
 
+/**
+ * Emits an egg death event and removes it from the list.
+ *
+ * Notifies the GUI that an egg has died at the specified position and
+ * removes it from the game’s egg list.
+ *
+ * @param game Pointer to the game structure.
+ * @param egg Pointer to the egg being destroyed.
+ * @param node The list node corresponding to the egg.
+ */
 static void send_egg_death(game_t *game, egg_t *egg, list_node_t *node)
 {
     game_event_t *ev = calloc(1, sizeof(game_event_t));
@@ -118,6 +149,14 @@ static void send_egg_death(game_t *game, egg_t *egg, list_node_t *node)
     game->eggs->methods->remove(game->eggs, node->data);
 }
 
+/**
+ * Destroys all eggs at the same position as the player.
+ *
+ * Iterates over all eggs and removes those located on the player's tile.
+ *
+ * @param game Pointer to the game structure.
+ * @param p The player used to identify egg position.
+ */
 static void destroy_eggs_at_pos(game_t *game, player_t *p)
 {
     list_node_t *node = game->eggs->head;
@@ -133,6 +172,16 @@ static void destroy_eggs_at_pos(game_t *game, player_t *p)
     }
 }
 
+/**
+ * Sends the eject response to the source player and ejected targets.
+ *
+ * Sends a response to the source indicating success or failure, then
+ * notifies each ejected player of their new direction.
+ *
+ * @param game Pointer to the game structure.
+ * @param src The player who initiated the ejection.
+ * @param ejected List of players who were ejected.
+ */
 static void send_eject_response(game_t *game,
     player_t *src, list_t *ejected)
 {
@@ -149,6 +198,15 @@ static void send_eject_response(game_t *game,
         send_ejected_msg(game, src, n->data);
 }
 
+/**
+ * Handles the eject action triggered by a player.
+ *
+ * Processes the ejection: updates positions, removes eggs if needed, and
+ * emits appropriate responses for GUI and players.
+ *
+ * @param ctx Pointer to the game instance (game_t *).
+ * @param data Pointer to the event (game_event_t *).
+ */
 void on_eject(void *ctx, void *data)
 {
     game_t *game = ctx;

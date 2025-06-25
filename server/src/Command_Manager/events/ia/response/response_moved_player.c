@@ -16,6 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response after a player movement event.
+ *
+ * Sends "ok" to the client if the movement was successful, otherwise sends
+ * "ko". Also emits a GUI update event on successful movement.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event data.
+ */
 void on_response_player_moved(void *ctx, void *data)
 {
     server_t *server = ctx;

@@ -15,7 +15,11 @@
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Maps GUI command strings to corresponding event types.
+ *
+ * Used to trigger GUI events when matching commands are received.
+ */
 static const gui_command_event_t GUI_COMMAND_EVENTS[] = {
     {"Fork", EVENT_GUI_PFK},
     {"Forward", EVENT_GUI_PMV},
@@ -23,6 +27,14 @@ static const gui_command_event_t GUI_COMMAND_EVENTS[] = {
     {NULL, 0}
 };
 
+/**
+ * @brief Immediately emits a GUI event based on command name.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client sending the command.
+ * @param cmd_name Command name (e.g., "Fork").
+ * @param clean Full command line with arguments.
+ */
 static void handle_gui_command(server_t *server, client_t *client,
     const char *cmd_name, const char *clean)
 {
@@ -38,6 +50,13 @@ static void handle_gui_command(server_t *server, client_t *client,
     client_dequeue_command(client, NULL);
 }
 
+/**
+ * @brief Emits a GUI event if the command matches a known GUI command.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client sending the command.
+ * @param cmd_name Name of the command to check.
+ */
 static void maybe_emit_gui_command_event(server_t *server,
     client_t *client, const char *cmd_name)
 {
@@ -50,6 +69,14 @@ static void maybe_emit_gui_command_event(server_t *server,
     }
 }
 
+/**
+ * @brief Handles a command by enqueuing it and possibly triggering an event.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client sending the command.
+ * @param clean Full cleaned-up command string.
+ * @param cmd_name Parsed name of the command.
+ */
 static void handle_command_enqueue(server_t *server, client_t *client,
     const char *clean, const char *cmd_name)
 {
@@ -65,6 +92,13 @@ static void handle_command_enqueue(server_t *server, client_t *client,
     }
 }
 
+/**
+ * @brief Processes a complete command line from a client.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client sending the command.
+ * @param line Null-terminated command string.
+ */
 void process_command_line(server_t *server, client_t *client, const char *line)
 {
     char clean[BUFFER_COMMAND_SIZE] = {0};
@@ -82,6 +116,12 @@ void process_command_line(server_t *server, client_t *client, const char *line)
         handle_command_enqueue(server, client, clean, cmd_name);
 }
 
+/**
+ * @brief Extracts and processes all complete lines in a client's buffer.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client with data in its buffer.
+ */
 static void extract_commands_from_buffer(server_t *server,
     client_t *client)
 {
@@ -104,14 +144,11 @@ static void extract_commands_from_buffer(server_t *server,
 }
 
 /**
- * @brief Appends data to the client's read buffer.
- *
- * This function copies the specified number of bytes from the provided buffer
- * to the client's read buffer, updating the buffer length accordingly.
+ * @brief Appends incoming data to the client's read buffer.
  *
  * @param client Pointer to the client instance.
- * @param buf Pointer to the data buffer to append.
- * @param bytes Number of bytes to append.
+ * @param buf Pointer to the data to append.
+ * @param bytes Number of bytes to copy.
  */
 static void append_to_read_buffer(client_t *client,
     const char *buf, ssize_t bytes)
@@ -121,6 +158,14 @@ static void append_to_read_buffer(client_t *client,
     client->read_buffer[client->buffer_len] = '\0';
 }
 
+/**
+ * @brief Handles possible read errors for a client socket.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client being read.
+ * @param bytes Number of bytes returned by read().
+ * @return 1 if client should be closed or ignored, 0 otherwise.
+ */
 static int handle_client_read_error(server_t *server, client_t *client,
     ssize_t bytes)
 {
@@ -143,6 +188,12 @@ static int handle_client_read_error(server_t *server, client_t *client,
     return 0;
 }
 
+/**
+ * @brief Reads data from a client socket and processes it.
+ *
+ * @param server Pointer to the server instance.
+ * @param client Pointer to the client to read from.
+ */
 void read_from_client(server_t *server, client_t *client)
 {
     char buf[BUFFER_COMMAND_SIZE] = {0};
@@ -166,6 +217,14 @@ void read_from_client(server_t *server, client_t *client)
     extract_commands_from_buffer(server, client);
 }
 
+/**
+ * @brief Handles the result of a `poll()` on all server-related sockets.
+ *
+ * Accepts new clients and processes input from existing ones.
+ *
+ * @param self Pointer to the server instance.
+ * @param fds Array of pollfd structures used in polling.
+ */
 void handle_server_poll(server_t *self, struct pollfd *fds)
 {
     list_node_t *node = NULL;

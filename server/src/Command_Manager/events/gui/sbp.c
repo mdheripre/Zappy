@@ -15,6 +15,12 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Sends a "sbp" (syntax error) message to the GUI client.
+ *
+ * @param ctx Pointer to the server context.
+ * @param Unused parameter.
+ */
 void handle_gui_sbp(void *ctx, void *)
 {
     server_t *server = ctx;

@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the GUI "pdr" event for player item removal.
+ *
+ * Sends a "pdr" message to the GUI client when a player removes an item.
+ *
+ * @param ctx Pointer to the server context (server_t *)
+ * @param data Pointer to the game event data (game_event_t *)
+ */
 void handle_gui_pdr(void *ctx, void *data)
 {
     server_t *server = ctx;

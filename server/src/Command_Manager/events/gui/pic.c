@@ -16,7 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Build a "pic" message string describing an incantation start.
+ *
+ * Format: "pic X Y L #id1 #id2 ...\n"
+ *
+ * @param buffer Output buffer to write the message into.
+ * @param buffer_size Size of the output buffer.
+ * @param event Pointer to the incantation game event.
+ */
 static void build_pic_message(char *buffer, size_t buffer_size,
     game_event_t *event)
 {
@@ -36,6 +44,14 @@ static void build_pic_message(char *buffer, size_t buffer_size,
     snprintf(buffer + offset, buffer_size - offset, "\n");
 }
 
+/**
+ * @brief Handle the GUI response for the start of an incantation (pic).
+ *
+ * Sends a formatted "pic" message to the connected GUI client.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the incantation event.
+ */
 void handle_gui_pic(void *ctx, void *data)
 {
     server_t *server = ctx;

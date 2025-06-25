@@ -34,6 +34,15 @@ static void add_event_died(player_t *self, game_t *game)
     game->event_queue->methods->push_back(game->event_queue, event);
 }
 
+/**
+ * @brief Adds a "player eat" event to the server event queue.
+ *
+ * Allocates and initializes a game_event_t for a player eating action,
+ * then pushes it to the server's event queue.
+ *
+ * @param self Pointer to the player triggering the event.
+ * @param game Pointer to the game context.
+ */
 static void add_event_player_eat(player_t *self, game_t *game)
 {
     game_event_t *event = malloc(sizeof(game_event_t));

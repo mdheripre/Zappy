@@ -5,18 +5,26 @@
 ** pmv
 */
 
-/****************************************************************************/
-/*                                                                          */
-/*                            COMMAND GUI                                   */
-/*                                                                          */
-/****************************************************************************/
-
 #include "client.h"
 #include "command_manager.h"
 #include "server.h"
 #include "utils.h"
 #include <stdio.h>
 
+/****************************************************************************/
+/*                                                                          */
+/*                            COMMAND GUI                                   */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Handles the "pmv" event for the GUI.
+ *
+ * Sends a "smg pmv" message to the GUI client with the player's ID.
+ *
+ * @param ctx Pointer to the server context (server_t*).
+ * @param data Pointer to the player data (player_t*).
+ */
 void handle_gui_pmv(void *ctx, void *data)
 {
     server_t *server = ctx;

@@ -15,6 +15,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the GUI "seg" event, notifying the GUI client of
+ * the game winner.
+ *
+ * This function retrieves the winner of the game and sends a "seg" message
+ * to the GUI client. If there is no winner, it sends "seg NULL".
+ *
+ * @param ctx Pointer to the server context (server_t *)
+ * @param Unused parameter
+ */
 void handle_gui_seg(void *ctx, void *)
 {
     server_t *server = ctx;

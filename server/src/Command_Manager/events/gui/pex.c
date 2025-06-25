@@ -15,7 +15,15 @@
 /*                            GUI COMMANDS                                  */
 /*                                                                          */
 /****************************************************************************/
-
+/**
+ * @brief Handles the "pex" event for the GUI client.
+ *
+ * Sends a "pex" message to the GUI client indicating that a player has
+ * performed an expulsion.
+ *
+ * @param ctx Pointer to the server context (server_t).
+ * @param data Pointer to the client data (client_t).
+ */
 void handle_gui_pex(void *ctx, void *data)
 {
     server_t *server = ctx;

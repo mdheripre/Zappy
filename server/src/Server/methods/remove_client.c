@@ -14,6 +14,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Removes a client from the server and cleans up associated resources.
+ *
+ * If the client is associated with a player, the player is also
+ * removed from the game. Closes the client's file descriptor and
+ * removes the client from the server's client list.
+ *
+ * @param self Pointer to the server instance.
+ * @param client Pointer to the client to be removed.
+ */
 void remove_client(server_t *self, client_t *client)
 {
     player_t *player = NULL;

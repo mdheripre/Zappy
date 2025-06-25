@@ -6,6 +6,7 @@
 */
 
 #include "server.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -13,8 +14,16 @@
 /*                                                                          */
 /****************************************************************************/
 
-#include "utils.h"
-
+/**
+ * @brief Emit a "bct X Y" command for a single tile to the GUI.
+ *
+ * If a command is provided, it is overwritten with the "bct X Y" string.
+ *
+ * @param srv Pointer to the server instance.
+ * @param cli Pointer to the GUI client.
+ * @param cmd Pointer to the current queued command (can be NULL).
+ * @param pos Position of the tile to emit (X, Y).
+ */
 static void emit_bct_for_tile(server_t *srv, client_t *cli,
     queued_command_t *cmd, vector2i_t pos)
 {
@@ -28,6 +37,17 @@ static void emit_bct_for_tile(server_t *srv, client_t *cli,
     EMIT(srv->command_manager->dispatcher, CMD_GUI_BCT, cli);
 }
 
+/**
+ * @brief Emit "bct" commands for every tile on the map to the GUI.
+ *
+ * Iterates over the full map grid and emits each tile's state.
+ * Restores the original command content after emission.
+ *
+ * @param srv Pointer to the server instance.
+ * @param cli Pointer to the GUI client.
+ * @param cmd Pointer to the current queued command (can be NULL).
+ * @param backup Backup string of the original command content.
+ */
 static void emit_bct_for_tile_range(server_t *srv, client_t *cli,
     queued_command_t *cmd, char *backup)
 {
@@ -44,6 +64,15 @@ static void emit_bct_for_tile_range(server_t *srv, client_t *cli,
     }
 }
 
+/**
+ * @brief Handle the "mct" command from the GUI.
+ *
+ * Emits a "bct" response for every tile. If no command is queued,
+ * a temporary one is enqueued and removed after processing.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the GUI client.
+ */
 void handle_command_gui_mct(void *ctx, void *data)
 {
     server_t *srv = ctx;

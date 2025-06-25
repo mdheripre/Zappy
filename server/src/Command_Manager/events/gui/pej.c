@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the "pej" event for the GUI client.
+ *
+ * Sends a "smg pej" message with the player's ID to the GUI client.
+ *
+ * @param ctx Pointer to the server context (server_t *)
+ * @param data Pointer to the player data (player_t *)
+ */
 void handle_gui_pej(void *ctx, void *data)
 {
     server_t *server = ctx;
