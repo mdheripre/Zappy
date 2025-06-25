@@ -37,6 +37,10 @@ static bool check_other_unset_values(config_t *config, parser_t *parser)
         parser->error_msg = "Need at least two teams (-n)";
         return false;
     }
+    if (config->team_name->size > 100) {
+        parser->error_msg = "Maximum of 100 teams allowed (-n)";
+        return false;
+    }
     return true;
 }
 
