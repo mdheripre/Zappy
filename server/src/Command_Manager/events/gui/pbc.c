@@ -28,12 +28,16 @@ void handle_gui_pbc(void *ctx, void *data)
 {
     server_t *server = ctx;
     game_event_t *event = data;
-    client_t *gui = server->gui;
+    client_t *gui = server ? server->gui : NULL;
+    char *msg = event ? (char *)event->data.generic_response.response : NULL;
 
-    if (!server || !event || !gui || !event->data.generic_response.response)
+    if (!server || !event || !msg || !event->data.generic_response.client ||
+        !event->data.generic_response.client->player || !gui) {
+        free(msg);
         return;
+    }
     dprintf(gui->fd, "pbc #%d %s\n",
         event->data.generic_response.client->player->id,
-        event->data.generic_response.response);
-    free((char *)event->data.generic_response.response);
+        msg);
+    free(msg);
 }
