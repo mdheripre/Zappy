@@ -120,6 +120,11 @@ std::unique_ptr<render::IProgressBar> SFMLObjectFactory::createProgressBar() con
     return std::make_unique<SFMLProgressBar>(_rWindow);
 }
 
+std::unique_ptr<render::IObject> SFMLObjectFactory::createRoundedRectangle(int radius) const
+{
+    return std::make_unique<SFMLRoundedRectangle>(_rWindow, radius);
+}
+
 /**
  * @brief Creates an animated sprite using an asset definition.
  * 

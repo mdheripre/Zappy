@@ -12,7 +12,7 @@ gui::TeamDisplayer::TeamDisplayer(render::IObjectFactory &factory) :
         "Top 3",
         0.5f, 0.2f, 0.7f, 0.01f,
         factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
-        factory.createRectangle(),
+        factory.createRoundedRectangle(20),
         std::array<std::string, 5> {"Name", "Players", "High", "Level 8", "Eggs"}
     ) {
         setCharaterSize(30);
@@ -128,4 +128,17 @@ void gui::TeamDisplayer::draw() const
 
     _background->drawObject();
     _textDisplayer->drawObject();
+}
+
+void gui::TeamDisplayer::setPostion(const tools::Vector2<float> &pos)
+{
+    if (_background)
+        _background->setPosition(pos);
+    if (_textDisplayer)
+        _textDisplayer->setPosition(pos);
+}
+
+tools::Vector2<float> gui::TeamDisplayer::getSize()
+{
+    return _background->getSize();
 }

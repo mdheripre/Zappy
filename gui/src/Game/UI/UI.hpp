@@ -36,14 +36,19 @@ namespace gui
             void changeEventVisibility() {_eventLog->setVisible(!_eventLog->isVisible());};
             void changeBroadcastVisibility() {_broadcast->setVisible(!_broadcast->isVisible());};
             void changePlayerVisibility() {_trantInfo->setVisible(false);};
+            void drawGame() const;
+            void drawEnd() const;
+            void setEndGame(const std::string &winner);
             bool update(float dt);
             void draw() const;
         private:
+            std::unique_ptr<render::IText> _winnerText;
             std::unique_ptr<render::ICanva> _canva;
             std::unique_ptr<TimeUnitDisplayer> _TUDisplayer;
             std::unique_ptr<EventLog> _eventLog;
             std::unique_ptr<Broadcast> _broadcast;
             std::unique_ptr<TeamDisplayer> _teamDisplayer;
             std::unique_ptr<TrantorianInfoDisplayer> _trantInfo;
+            bool _endGame = false;
     };
 } // namespace gui

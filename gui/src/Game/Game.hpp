@@ -70,6 +70,8 @@ namespace game
             void smgCommand(const std::vector<std::string> &token);
             void sucCommand(const std::vector<std::string> &token);
             void sbpCommand(const std::vector<std::string> &token);
+            void pejCommand(const std::vector<std::string> &token);
+            void pmvCommand(const std::vector<std::string> &token);
             void printErrorCommand(const std::string &cm, const std::vector<std::string> &token);
             void manageCommand(const std::string &command);
             using CommandHandler = std::function<void(const std::vector<std::string>&)>;
@@ -100,6 +102,10 @@ namespace game
                 {"suc",     std::bind(&Game::sucCommand, this, std::placeholders::_1)},
                 {"sbp",     std::bind(&Game::sbpCommand, this, std::placeholders::_1)}
             };
+            const std::vector<std::pair<std::string, CommandHandler>> _specialCommands = {
+                {"pej", std::bind(&Game::pejCommand, this, std::placeholders::_1)},
+                {"pmv", std::bind(&Game::pmvCommand, this, std::placeholders::_1)}
+            };
             const std::unordered_map<tools::KeyCode, std::function<void()>> bindings = {
                 { tools::KeyCode::Right, [this]() { _renderer->setPositionView(-20, 0); }},
                 { tools::KeyCode::Left,  [this]() { _renderer->setPositionView(20, 0); }},
@@ -110,7 +116,7 @@ namespace game
                 { tools::KeyCode::R,      [this]() { _renderer->resetZoomView(); }},
                 { tools::KeyCode::P,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit + 1) + "\n");}},
                 { tools::KeyCode::M,     [this]() { _outgoing->push("sst " + std::to_string(_gm.time_unit - 1) + "\n");}},
-                { tools::KeyCode::A,     [this]() { std::cout <<"freferferf"<< std::endl;_ui->changeBroadcastVisibility();}},
+                { tools::KeyCode::A,     [this]() { _ui->changeBroadcastVisibility();}},
                 { tools::KeyCode::Z,     [this]() { _ui->changeTeamVisibility();}},
                 { tools::KeyCode::E,     [this]() { _ui->changeEventVisibility();}},
                 { tools::KeyCode::Y,     [this]() { _ui->changePlayerVisibility();}},

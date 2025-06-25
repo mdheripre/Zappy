@@ -20,6 +20,45 @@ gui::UI::UI(render::IObjectFactory &factory)
     _TUDisplayer = std::make_unique<TimeUnitDisplayer>(factory);
     _trantInfo = std::make_unique<TrantorianInfoDisplayer>(factory);
     _trantInfo->setVisible(false);
+    _winnerText = factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf");
+}
+
+void gui::UI::drawGame() const
+{
+    _teamDisplayer->draw();
+    _eventLog->draw();
+    _broadcast->draw();
+    _TUDisplayer->draw();
+    _trantInfo->draw();
+}
+
+void gui::UI::drawEnd() const
+{
+    _winnerText->drawObject();
+    _teamDisplayer->draw();
+}
+
+void gui::UI::setEndGame(const std::string &winner)
+{
+    tools::Vector2<float> textSize;
+    tools::Vector2<float> tPos;
+    tools::Vector2<float> tdPos;
+
+    if (winner != "NULL")
+        _winnerText->setText(winner + " won !!!");
+    else
+        _winnerText->setText("No Winner Today");
+
+    _winnerText->setCharacterSize(20);
+    textSize = _winnerText->getSize();
+
+    tPos = tools::Vector2<float>(WIDTH_WINDOW / 2.0f - textSize.x / 2.0f, HEIGHT_WINDOW / 2.0f);
+    _winnerText->setPosition(tPos);
+
+    tdPos = _teamDisplayer->getSize();
+    tdPos = tools::Vector2<float>(WIDTH_WINDOW / 2.0f - tdPos.x / 2.0f, HEIGHT_WINDOW / 2.0f);
+    _teamDisplayer->setPostion(tdPos);
+    _endGame = true;
 }
 
 
@@ -41,11 +80,10 @@ bool gui::UI::update(float dt)
  */
 void gui::UI::draw() const {
     _canva->beginUI();
-    _teamDisplayer->draw();
-    _eventLog->draw();
-    _broadcast->draw();
-    _TUDisplayer->draw();
-    _trantInfo->draw();
+    if (_endGame)
+        drawEnd();
+    else
+        drawGame();
     _canva->endUI();
 }
 

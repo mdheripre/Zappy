@@ -213,7 +213,8 @@ void game::Game::ppoCommand(const std::vector<std::string> &token)
         printErrorCommand("Invalid orientation id in ppo for trantorian", token);
         return;
     }
-
+    
+    it->second->setForward(false);
     it->second->setOrientation(static_cast<gui::Trantorian::Orientation>(orientation));
     it->second->setPosition(pos);
 
@@ -892,7 +893,8 @@ void game::Game::segCommand(const std::vector<std::string> &token)
     }
 
     _gm.state = state::GameState::State::END;
-
+    _renderer->clear();
+    _ui->setEndGame(tokens);
     std::cout << "[SEG] --- Game ended ---" << std::endl;
     std::cout << "    New state : END" << std::endl;
     std::cout << "    Winner : " << tokens << std::endl;
@@ -912,6 +914,7 @@ void game::Game::smgCommand(const std::vector<std::string> &token)
     for (const auto& word : token) {
         message += " " + word;
     }
+    _cm.handleCommand(token);
 
     std::cout << "[SMG] --- Server message ---" << std::endl;
     std::cout << "    Content : " << message << std::endl;
@@ -936,7 +939,6 @@ void game::Game::sbpCommand(const std::vector<std::string> &token)
     std::cout << "[SBP] --- Invalid parameters ---" << std::endl;
     std::cout << "    The server rejected the parameters of the last command." << std::endl;
 }
-
 
 /**
  * @brief Utility to print and throw command error.

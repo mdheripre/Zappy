@@ -83,7 +83,7 @@ std::string gui::Logger::computeLine(const std::string &event,
 void gui::Logger::updateDisplayFromWrappedLines(const std::vector<std::string>& lines) const
 {
     std::ostringstream oss;
-    oss << _title << "\n\n";
+    oss << "  " << _title << "\n\n";
     for (const auto& line : lines)
         oss << line << '\n';
 

@@ -35,6 +35,7 @@ namespace sfml
         void resetZoomView();
         void updateUI(float dt);
         void poll();
+        void clear();
         void manageKeyCode(const sf::Event &event);
         const std::unordered_map<sf::Keyboard::Key, tools::KeyCode> _keyMap = {
             { sf::Keyboard::Right, tools::KeyCode::Right },

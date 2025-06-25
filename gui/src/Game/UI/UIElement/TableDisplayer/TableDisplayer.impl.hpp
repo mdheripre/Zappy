@@ -44,8 +44,9 @@ namespace gui {
         _builder.addRow(std::vector<std::string>(row.begin(), row.end()));
 
         std::ostringstream oss;
-        oss << _title << "\n\n" << _builder.build();
+        oss << "  " <<_title << "\n\n" << _builder.build();
         _textDisplayer->setText(oss.str());
+        _background->setSize(_textDisplayer->getSize());
     }
 
     template <int col>
