@@ -34,7 +34,7 @@ void on_response_eject(void *ctx, void *data)
 
     if (!server || !event || !client || !msg)
         return;
-    dprintf(client->fd, "%s\n", msg);
+    dprintf(client->fd, "%s", msg);
     if (event->type == EVENT_RESP_PLAYER_OWNER_EJECTED &&
         strcmp(msg, "ok\n") == 0) {
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PEX, client);
