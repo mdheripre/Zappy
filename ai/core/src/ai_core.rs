@@ -326,6 +326,9 @@ impl AiCore {
                     eprintln!("Error in message received: {}", e);
                 }
             }
+            ServerResponse::Dead => {
+                state.set_running(false);
+            }
             _ => {}
         }
         self.resp_queue
