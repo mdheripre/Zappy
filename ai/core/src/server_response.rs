@@ -73,7 +73,8 @@ impl ServerResponse {
                     ServerResponse::Message(s.to_string())
                 }
             }
-            _ => ServerResponse::Message(response.to_string()),
+            s  if s.starts_with("message") => ServerResponse::Message(response.to_string()),
+            _ => ServerResponse::Message("Unknown response".to_string()),
         }
     }
 }

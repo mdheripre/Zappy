@@ -113,14 +113,14 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         return None;
     }
     if state.time() == 0 {
-        let msg = Message::new(0, 0, MessageType::Hello, None);
+        if !state.broadcast().get_received_messages().is_empty() {
+            state.broadcast().clear();
+        }
+        let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Hello, None);
         state.inc_time();
         *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
         state.broadcast().send_message(msg.clone());
         return Some(AiCommand::Broadcast(msg.to_string()));
-    }
-    if state.time() >= 10 && !*state.welcomed() && *state.id_getter_queue() == 0 {
-        *state.alpha() = true;
     }
     while !state.broadcast().get_received_messages().is_empty() {
         if let Some(msg) = state.broadcast().pop_received() {
@@ -132,14 +132,18 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
                         str.push(':');
                         str.push_str(state.team_inventory().as_broadcast().as_str());
                         let output_msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(str));
-                        *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
-                        return Some(AiCommand::Broadcast(msg.to_string()));
+                        *state.last_command() = Some(AiCommand::Broadcast(output_msg.to_string()));
+                        return Some(AiCommand::Broadcast(output_msg.to_string()));
                     } else {
                         *state.id_getter_queue() += 1;
                     }
                 }
                 MessageType::Welcome => {
                     if !*state.welcomed() && *state.id_getter_queue() == 0 {
+                        if *state.alpha() && state.time() <= 10 {
+                            println!("Now a beta");
+                            *state.alpha() = false;
+                        }
                         if let Some(content) = msg.content() {
                             let parts: Vec<u32> = content.split(':').map(|x| x.parse().unwrap()).collect();
                             *state.client_num() = parts[0] as i32;

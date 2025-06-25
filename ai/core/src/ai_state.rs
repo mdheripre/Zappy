@@ -74,7 +74,7 @@ impl AiState {
             team_inventory: Inventory::new(),
             world_map: vec![],
             is_running: true,
-            is_alpha: false,
+            is_alpha: true,
             time: 0,
             direction: Direction::North,
             last_command: None,
