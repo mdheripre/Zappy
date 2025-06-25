@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Send response for a 'Take' command (ok/ko).
+ *
+ * @param game Pointer to the game instance.
+ * @param player Pointer to the player.
+ * @param event Original event with item info.
+ * @param success True if take succeeded, false otherwise.
+ */
 void send_take_response(game_t *game, player_t *player,
     game_event_t *event, bool success)
 {
@@ -31,6 +39,12 @@ void send_take_response(game_t *game, player_t *player,
         game->server_event_queue, response);
 }
 
+/**
+ * @brief Handle a player 'Take' command on a tile.
+ *
+ * @param ctx Pointer to the game instance.
+ * @param data Pointer to the game_event_t with player and item type.
+ */
 void on_take(void *ctx, void *data)
 {
     game_t *game = ctx;

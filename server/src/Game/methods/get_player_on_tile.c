@@ -16,6 +16,18 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Retrieves a list of players on a specific tile and level.
+ *
+ * Iterates through all players in the game and collects those who are alive,
+ * located at the specified (x, y) coordinates, and at the given level.
+ *
+ * @param game Pointer to the game structure.
+ * @param x X-coordinate of the tile.
+ * @param y Y-coordinate of the tile.
+ * @param level Level to match.
+ * @return list_t* List of matching players, or NULL on error.
+ */
 list_t *get_players_on_tile(game_t *game, int x, int y, int level)
 {
     list_t *participants = NEW(list, NULL);

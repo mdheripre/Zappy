@@ -15,6 +15,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Extract the item name from a "Take" command.
+ *
+ * @param client Pointer to the client issuing the command.
+ * @param item Output buffer to store the extracted item name.
+ * @param item_size Size of the output buffer.
+ * @return true on success, false on failure.
+ */
 static bool extract_take_item_name(client_t *client, char *item,
     size_t item_size)
 {
@@ -24,6 +32,14 @@ static bool extract_take_item_name(client_t *client, char *item,
         client->commands->methods->front(client->commands), item, item_size);
 }
 
+/**
+ * @brief Get the resource type index for the item to take.
+ *
+ * Sends "ko" to the client if the item is invalid.
+ *
+ * @param client Pointer to the client.
+ * @return Resource index on success, -1 on failure.
+ */
 static int get_take_item_type(client_t *client)
 {
     char item[BUFFER_SIZE] = {0};
@@ -41,6 +57,16 @@ static int get_take_item_type(client_t *client)
     return type;
 }
 
+/**
+ * @brief Prepare a take item event for a given client.
+ *
+ * Validates the item and fills the event with necessary data.
+ *
+ * @param server Pointer to the server.
+ * @param client Pointer to the client.
+ * @param event_out Output pointer to the created event.
+ * @return true on success, false otherwise.
+ */
 static bool prepare_take_event(server_t *server, client_t *client,
     game_event_t **event_out)
 {
@@ -64,6 +90,14 @@ static bool prepare_take_event(server_t *server, client_t *client,
     return true;
 }
 
+/**
+ * @brief Handle the "Take" command from a client.
+ *
+ * Prepares and queues a take event for processing.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the client.
+ */
 void handle_command_take(void *ctx, void *data)
 {
     server_t *server = ctx;

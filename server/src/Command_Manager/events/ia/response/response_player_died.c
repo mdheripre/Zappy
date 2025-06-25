@@ -17,6 +17,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Notify the player and GUI of the player's death.
+ *
+ * Sends "dead" to the client and emits a GUI PDI (Player Death) event.
+ *
+ * @param server Pointer to the server instance.
+ * @param player Pointer to the player who died.
+ */
 static void notify_player_death(server_t *server, player_t *player)
 {
     client_t *client = player ? player->client : NULL;
@@ -26,6 +34,15 @@ static void notify_player_death(server_t *server, player_t *player)
     EMIT(server->command_manager->dispatcher, EVENT_GUI_PDI, player);
 }
 
+/**
+ * @brief Handle the death of a player and clean up.
+ *
+ * Notifies the player and GUI, removes the player from the game,
+ * and disconnects the client if present.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the death event.
+ */
 void on_response_player_died(void *ctx, void *data)
 {
     server_t *server = ctx;

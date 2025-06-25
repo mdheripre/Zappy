@@ -102,6 +102,19 @@ static bool init_parser(config_t *config, parser_t *parser, int argc,
     return true;
 }
 
+/**
+ * @brief Parse CLI arguments and dispatch associated events.
+ *
+ * Iterates through arguments starting from parser->index, emits an event
+ * for each recognized option, and handles parse errors or early exit.
+ *
+ * @param argc Argument count.
+ * @param argv Argument vector.
+ * @param config Pointer to the configuration structure.
+ * @param parser Pointer to the argument parser context.
+ * @return true if parsing completed successfully or early exit was requested,
+ *         false if a parsing error occurred.
+ */
 static bool parse_args_loop(int argc, char **argv,
     config_t *config, parser_t *parser)
 {

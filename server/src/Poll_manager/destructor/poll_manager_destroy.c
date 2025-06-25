@@ -7,6 +7,20 @@
 
 #include "poll_manager.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              DESTRUCTOR                                  */
+/*                                                                          */
+/****************************************************************************/
+
+/**
+ * @brief Destroys a poll_manager_t instance.
+ *
+ * Safely frees resources associated with the given poll manager.
+ * Does nothing if the pointer is NULL.
+ *
+ * @param self Pointer to the poll_manager_t instance to destroy.
+ */
 void poll_manager_destroy(poll_manager_t *self)
 {
     if (!self)

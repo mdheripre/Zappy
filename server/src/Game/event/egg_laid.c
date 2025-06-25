@@ -16,6 +16,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Creates a new egg entity based on the given player.
+ *
+ * Allocates and initializes an egg_t structure using the player's
+ * current position and team information. Increments the game's egg ID counter.
+ *
+ * @param player Pointer to the player_t structure to base the egg on.
+ * @param game Pointer to the game_t structure containing game state.
+ * @return Pointer to the newly created egg_t, or NULL on allocation failure.
+ */
 static egg_t *create_egg_from_player(player_t *player, game_t *game)
 {
     egg_t *egg = malloc(sizeof(egg_t));

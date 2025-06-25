@@ -14,6 +14,17 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Emits an event by invoking the corresponding event handler.
+ *
+ * If the handler for the given index exists, its callback is called with
+ * the provided data. If the handler does not exist and an on_not_found
+ * callback is set, it is called instead.
+ *
+ * @param self Pointer to the dispatcher instance.
+ * @param index Index of the event handler to invoke.
+ * @param data Pointer to data to pass to the event handler.
+ */
 void dispatcher_emit(dispatcher_t *self, int index, void *data)
 {
     event_handler_t *handler = NULL;

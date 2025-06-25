@@ -15,6 +15,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response when an egg is laid by a player.
+ *
+ * Sends an "ok" message to the player's client, increments the maximum number
+ * of players in the game, and emits an event for GUI notification.
+ *
+ * @param ctx Pointer to the server context (server_t).
+ * @param data Pointer to the event data (game_event_t).
+ */
 void on_response_egg_laid(void *ctx, void *data)
 {
     server_t *server = ctx;

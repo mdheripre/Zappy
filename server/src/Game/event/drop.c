@@ -16,6 +16,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * Emits a tile update event into the server event queue.
+ *
+ * Creates a EVENT_RESP_TILE_UPDATED event and pushes it into the
+ * server-side queue to signal that a tile's content has changed.
+ *
+ * @param game Pointer to the game instance.
+ * @param x X coordinate of the tile to update.
+ * @param y Y coordinate of the tile to update.
+ */
 void emit_tile_update(game_t *game, int x, int y)
 {
     game_event_t *evt = calloc(1, sizeof(game_event_t));
@@ -29,6 +39,17 @@ void emit_tile_update(game_t *game, int x, int y)
         evt);
 }
 
+/**
+ * Sends a drop result event to the server event queue.
+ *
+ * Generates a EVENT_RESP_DROP event with the result of a drop
+ * action and pushes it to the server queue for processing.
+ *
+ * @param game Pointer to the game instance.
+ * @param player The player who attempted the drop.
+ * @param event The original drop event with item info.
+ * @param success Whether the drop action succeeded.
+ */
 void send_drop_response(game_t *game, player_t *player,
     game_event_t *event, bool success)
 {
@@ -44,6 +65,15 @@ void send_drop_response(game_t *game, player_t *player,
         game->server_event_queue, response);
 }
 
+/**
+ * Handles the drop action for a player.
+ *
+ * Verifies inventory and tile state, updates the map and inventory,
+ * and emits appropriate response and tile update events.
+ *
+ * @param ctx Pointer to the game instance (game_t *).
+ * @param data Pointer to the drop event (game_event_t *).
+ */
 void on_drop(void *ctx, void *data)
 {
     game_t *game = ctx;

@@ -15,6 +15,16 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response to an eject command for a player.
+ *
+ * Sends the appropriate response message to the client and emits GUI events
+ * based on the type of eject event received.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the event data containing the response and client
+ * info.
+ */
 void on_response_eject(void *ctx, void *data)
 {
     server_t *server = ctx;

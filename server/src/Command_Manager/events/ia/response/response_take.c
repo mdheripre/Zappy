@@ -16,6 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response for a "take" action by a player.
+ *
+ * Sends a success ("ok") or failure ("ko") message to the client based
+ * on the action result. Emits GUI events if the action was successful.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event data.
+ */
 void on_response_take(void *ctx, void *data)
 {
     server_t *server = ctx;

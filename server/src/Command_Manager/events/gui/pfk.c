@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Notifies the GUI that a player has laid an egg.
+ *
+ * Sends a "pfk" event to the GUI client with the player's ID.
+ *
+ * @param ctx Pointer to the server context (server_t *)
+ * @param data Pointer to the player (player_t *)
+ */
 void handle_gui_pfk(void *ctx, void *data)
 {
     server_t *server = ctx;

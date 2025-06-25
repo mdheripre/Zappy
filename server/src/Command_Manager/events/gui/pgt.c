@@ -18,6 +18,14 @@
 /****************************************************************************/
 
 
+/**
+ * @brief Handles the "pgt" event for the GUI.
+ *
+ * Sends a message to the GUI client when a player takes an item.
+ *
+ * @param ctx Pointer to the server context (server_t *)
+ * @param data Pointer to the event data (game_event_t *)
+ */
 void handle_gui_pgt(void *ctx, void *data)
 {
     server_t *server = ctx;

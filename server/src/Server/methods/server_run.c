@@ -169,7 +169,16 @@ static void handle_after_poll(server_t *self, struct pollfd *fds)
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Runs a single server iteration (polling + tick updates).
+ *
+ * Handles socket polling, game time updates, and event processing.
+ *
+ * @param self Pointer to the server instance.
+ * @param poll_mgr Pointer to the poll manager.
+ * @param fds Pointer to the array of pollfd (updated inside).
+ * @return true if the iteration succeeds, false if an error occurs.
+ */
 static bool run_server_iteration(server_t *self, poll_manager_t *poll_mgr,
     struct pollfd *fds)
 {
@@ -193,6 +202,13 @@ static bool run_server_iteration(server_t *self, poll_manager_t *poll_mgr,
     return true;
 }
 
+/**
+ * @brief Main server loop that repeatedly runs iterations.
+ *
+ * Initializes time tracking and continues until an iteration fails.
+ *
+ * @param self Pointer to the server instance.
+ */
 void run_server(server_t *self)
 {
     poll_manager_t *poll_mgr = NEW(poll_manager, self->game->max_players + 1);

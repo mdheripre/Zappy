@@ -69,7 +69,8 @@ static void emit_gui_players(server_t *server)
         player = node->data;
         if (!player || !player->client)
             continue;
-        EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW, player->client);
+        EMIT(server->command_manager->dispatcher, EVENT_GUI_PNW,
+            player->client);
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PIN, player);
     }
 }

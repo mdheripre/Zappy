@@ -14,6 +14,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Adds the server socket to the pollfd array.
+ *
+ * Sets up the poll structure to monitor the server's listening socket.
+ *
+ * @param self Pointer to the server instance.
+ * @param fds Array of pollfd structures.
+ * @param nfds Pointer to the number of file descriptors used.
+ */
 static void setup_server_socket_poll(server_t *self, struct pollfd *fds,
     nfds_t *nfds)
 {
@@ -26,6 +35,15 @@ static void setup_server_socket_poll(server_t *self, struct pollfd *fds,
     (*nfds)++;
 }
 
+/**
+ * @brief Adds all connected clients to the pollfd array.
+ *
+ * Iterates over connected clients and sets their socket for polling.
+ *
+ * @param self Pointer to the server instance.
+ * @param fds Array of pollfd structures.
+ * @param nfds Pointer to the number of file descriptors used.
+ */
 static void setup_clients_poll(server_t *self, struct pollfd *fds,
     nfds_t *nfds)
 {
@@ -45,6 +63,15 @@ static void setup_clients_poll(server_t *self, struct pollfd *fds,
     }
 }
 
+/**
+ * @brief Sets up polling for both server socket and all clients.
+ *
+ * Combines server socket and clients into a single pollfd array.
+ *
+ * @param self Pointer to the server instance.
+ * @param fds Array of pollfd structures.
+ * @param nfds Pointer to the number of file descriptors used.
+ */
 void setup_server_poll(server_t *self, struct pollfd *fds,
     nfds_t *nfds)
 {

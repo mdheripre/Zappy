@@ -68,9 +68,9 @@ static float orientation_offset(player_orientation_t orientation)
  * @param vector The input vector.
  * @return Angle in degrees between 0 and 360.
  */
-static float vector_to_angle(vector2i_t vector)
+static float vector_to_angle(vector2i_t *vector)
 {
-    float angle = atan2f(-vector.y, vector.x) * 180.0f / (float)M_PI;
+    float angle = atan2f(-vector->y, vector->x) * 180.0f / (float)M_PI;
 
     while (angle < 0.0f)
         angle += 360.0f;
@@ -106,7 +106,7 @@ int compute_broadcast_direction(game_t *game, player_t *sender,
     player_t *r)
 {
     vector2i_t dir = compute_direction(game, sender, r);
-    float angle = vector_to_angle(dir);
+    float angle = vector_to_angle(&dir);
 
     angle += orientation_offset(r->orientation);
     angle = fmodf(angle, 360.0f);
