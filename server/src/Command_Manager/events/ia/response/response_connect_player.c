@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response for the "connect_nbr" command.
+ *
+ * Sends the response message to the client and frees the response memory.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event containing the response and client.
+ */
 void on_response_connect_nbr(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -26,6 +34,6 @@ void on_response_connect_nbr(void *ctx, void *data)
         || !event->data.generic_response.client)
         return;
     client = event->data.generic_response.client;
-    dprintf(client->fd, "%s\n", event->data.generic_response.response);
+    dprintf(client->fd, "%s", event->data.generic_response.response);
     free((char *)event->data.generic_response.response);
 }

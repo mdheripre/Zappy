@@ -16,6 +16,11 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Send a "ko" message to the first participant of a failed incantation.
+ *
+ * @param participants List of incantation participants.
+ */
 static void send_ko_to_first_participant(list_t *participants)
 {
     player_t *player = NULL;
@@ -29,6 +34,13 @@ static void send_ko_to_first_participant(list_t *participants)
         dprintf(client->fd, "ko\n");
 }
 
+/**
+ * @brief Notify all incantation participants that the ritual is starting.
+ *
+ * Sends "elevation underway" and marks them as stuck.
+ *
+ * @param participants List of players participating in the incantation.
+ */
 static void notify_participants_elevation(list_t *participants)
 {
     player_t *player = NULL;
@@ -44,6 +56,15 @@ static void notify_participants_elevation(list_t *participants)
     }
 }
 
+/**
+ * @brief Handle the start of an incantation and notify participants.
+ *
+ * Sends "ko" if the incantation failed, otherwise notifies participants
+ * and emits a GUI PIC event.
+ *
+ * @param ctx Pointer to the server instance.
+ * @param data Pointer to the incantation start event.
+ */
 void on_response_start_incantation(void *ctx, void *data)
 {
     server_t *server = ctx;

@@ -15,6 +15,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response to a broadcast command for an AI client.
+ *
+ * Sends the broadcast response to the specified client and frees
+ * the response memory.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event containing the response and client.
+ */
 void on_response_broadcast(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -25,6 +34,6 @@ void on_response_broadcast(void *ctx, void *data)
         || !event->data.generic_response.response)
         return;
     client = event->data.generic_response.client;
-    dprintf(client->fd, "%s\n", event->data.generic_response.response);
+    dprintf(client->fd, "%s", event->data.generic_response.response);
     free((char *)event->data.generic_response.response);
 }

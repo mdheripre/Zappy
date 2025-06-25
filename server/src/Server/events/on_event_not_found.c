@@ -17,9 +17,9 @@
 /**
  * Handles unknown or unrecognized global events.
  *
- * @param self   Pointer to the dispatcher instance (unused).
- * @param event  Name of the unknown event.
- * @param        Unused parameter.
+ * @param self Pointer to the dispatcher instance (unused).
+ * @param event Name of the unknown event.
+ * @param Unused parameter.
  */
 void on_event_not_found(dispatcher_t *self, const char *event, void *)
 {

@@ -13,6 +13,7 @@
 #include "Game/Renderer/SFML/SFMLObject/SFMLText/SFMLText.hpp"
 #include "Game/Renderer/SFML/SFMLObject/SFMLCanva/SFMLCanva.hpp"
 #include "Game/Renderer/SFML/SFMLObject/SFMLRectangle/SFMLRectangle.hpp"
+#include "Game/Renderer/SFML/SFMLObject/SFMLRoundedRectangle/SFMLRoundedRectangle.hpp"
 #include "Game/Renderer/SFML/SFMLObject/SFMLProgressBar/SFMLProgressBar.hpp"
 #include <memory>
 #include <unordered_map>
@@ -32,6 +33,7 @@ namespace sfml
             std::unique_ptr<render::IText> createText(std::string fontPath);
             std::unique_ptr<render::IObject> createRectangle() const;
             std::unique_ptr<render::IProgressBar> createProgressBar() const;
+            std::unique_ptr<render::IObject> createRoundedRectangle(int radius) const;
         private:
             std::unordered_map<std::string, sf::Texture> _textureMap;
             std::unordered_map<std::string, sf::Font> _fontMap;

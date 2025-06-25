@@ -12,9 +12,9 @@
  * @param factory Object factory to build text and UI components.
  */
 gui::TimeUnitDisplayer::TimeUnitDisplayer(render::IObjectFactory &factory)
-    : UIBox("Time Unit", 0.4f, 0.1f, 0.05f, 0.3f,
+    : UIBox("", 0.4f, 0.1f, 0.05f, 0.3f,
             factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
-            factory.createRectangle()),
+            factory.createRoundedRectangle(20)),
       _timeUnit(1.0f),
       _elapsed(0.0f),
       _valueText(factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf")),

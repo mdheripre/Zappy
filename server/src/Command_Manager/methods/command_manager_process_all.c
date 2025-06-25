@@ -73,6 +73,17 @@ static void update_next_command_tick(client_t *client, int current_tick)
         next->last_tick_checked = current_tick + 1;
 }
 
+/**
+ * @brief Execute a command that is ready (ticks_remaining == 0).
+ *
+ * Resolves the command name, emits the corresponding event,
+ * dequeues the command, and updates tick tracking for the next one.
+ *
+ * @param mgr Pointer to the command manager.
+ * @param client Pointer to the client executing the command.
+ * @param cmd Pointer to the command being executed.
+ * @param current_tick Current tick count of the game.
+ */
 static void execute_ready_command(command_manager_t *mgr,
     client_t *client, queued_command_t *cmd, int current_tick)
 {

@@ -187,6 +187,15 @@ bool server_init(server_t *server, config_t *config)
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Initializes a server instance with configuration values.
+ *
+ * Sets up the game, client list, command manager, and listening socket.
+ *
+ * @param server Pointer to the server instance to initialize.
+ * @param config Pointer to configuration structure.
+ * @return true if initialization succeeds, false otherwise.
+ */
 static bool server_create_init(server_t *server, config_t *config)
 {
     config_game_t game_cfg = { .width = config->width,
@@ -208,6 +217,12 @@ static bool server_create_init(server_t *server, config_t *config)
     return true;
 }
 
+/**
+ * @brief Allocates and fully initializes a new server instance.
+ *
+ * @param config Pointer to configuration structure.
+ * @return Pointer to the created server, or NULL on failure.
+ */
 server_t *server_create(config_t *config)
 {
     server_t *server = malloc(sizeof(server_t));

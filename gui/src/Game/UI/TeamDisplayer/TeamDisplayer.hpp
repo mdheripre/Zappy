@@ -21,6 +21,8 @@ namespace gui
             void updateInfo(const state::GameState &gm);
             bool update(float dt);
             void draw() const;
+            void setPostion(const tools::Vector2<float> &pos);
+            tools::Vector2<float> getSize();
         private:
             void sortTeamRow(std::vector<std::array<std::string, 5>> &rows, std::size_t maxCount);
             std::array<std::string, 5> buildTeamRow(const std::string &teamName, const state::GameState &gm);

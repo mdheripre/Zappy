@@ -17,7 +17,7 @@ namespace gui {
     : UIBox("Trantorian Info",
         0.2f, 0.6f, 0.02f, 0.75f,
         factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf"),
-        factory.createRectangle())
+        factory.createRoundedRectangle(20))
 {
     const float padding = 0.005f;
     const float titleHeight = 0.03f;

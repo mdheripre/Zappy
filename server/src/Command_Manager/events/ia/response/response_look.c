@@ -16,6 +16,15 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response for the "look" command from an AI client.
+ *
+ * Sends the generated response to the client and frees the response memory.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event containing the response and client
+ * info.
+ */
 void on_response_look(void *ctx, void *data)
 {
     server_t *server = ctx;

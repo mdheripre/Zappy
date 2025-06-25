@@ -12,7 +12,14 @@
 /*                            COMMAND GUI                                   */
 /*                                                                          */
 /****************************************************************************/
-
+/**
+ * @brief Handles the "edi" event for the GUI client.
+ *
+ * Sends an egg destruction notification to the GUI client.
+ *
+ * @param ctx Pointer to the server context (server_t).
+ * @param data Pointer to the event data (game_event_t).
+ */
 void handle_gui_edi(void *ctx, void *data)
 {
     server_t *server = ctx;

@@ -15,6 +15,13 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Checks if there is a second GUI client connected to the server.
+ *
+ * @param server Pointer to the server structure.
+ * @param client Pointer to the current client.
+ * @return true if another GUI client is connected, false otherwise.
+ */
 static bool check_second_gui(server_t *server, client_t *client)
 {
     return server->gui && server->gui != client;
@@ -52,6 +59,17 @@ static void emit_identify_event(server_t *server,
     free(payload);
 }
 
+/**
+ * @brief Handles the identification process for a connecting client.
+ *
+ * This function checks if the client is undefined and processes its
+ * first command to determine its type (e.g., GUI or player).
+ * It rejects duplicate GUI connections and emits an identification event
+ * for valid clients.
+ *
+ * @param ctx Pointer to the server context (server_t).
+ * @param data Pointer to the client data (client_t).
+ */
 void on_client_identify(void *ctx, void *data)
 {
     server_t *server = ctx;

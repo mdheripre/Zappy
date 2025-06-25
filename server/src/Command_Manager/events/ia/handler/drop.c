@@ -15,7 +15,9 @@
 /*                                                                          */
 /****************************************************************************/
 
-
+/**
+ * @brief Array of resource names indexed by resource enum.
+ */
 static const char *RESOURCE_NAMES[] = {
     "food",
     "linemate",
@@ -26,6 +28,12 @@ static const char *RESOURCE_NAMES[] = {
     "thystame"
 };
 
+/**
+ * @brief Get the resource index from its name.
+ *
+ * @param name Resource name (e.g., "food", "sibur").
+ * @return Resource index, or -1 if not found.
+ */
 int resource_from_string(const char *name)
 {
     if (!name)
@@ -37,6 +45,14 @@ int resource_from_string(const char *name)
     return -1;
 }
 
+/**
+ * @brief Extract the item name from the drop command.
+ *
+ * @param client Pointer to the client.
+ * @param item Output buffer for the extracted item name.
+ * @param item_size Size of the output buffer.
+ * @return true on success, false on failure.
+ */
 static bool extract_drop_item_name(client_t *client, char *item,
     size_t item_size)
 {
@@ -46,6 +62,16 @@ static bool extract_drop_item_name(client_t *client, char *item,
         client->commands->methods->front(client->commands), item, item_size);
 }
 
+/**
+ * @brief Validate the item to be dropped and retrieve its type index.
+ *
+ * Sends "ko" to the client if validation fails.
+ *
+ * @param server Pointer to the server.
+ * @param client Pointer to the client.
+ * @param type_out Output pointer for the resource type index.
+ * @return true if the item is valid, false otherwise.
+ */
 static bool validate_and_get_drop_type(server_t *server, client_t *client,
     int *type_out)
 {
@@ -68,6 +94,16 @@ static bool validate_and_get_drop_type(server_t *server, client_t *client,
     return true;
 }
 
+/**
+ * @brief Prepare a drop event for the current command.
+ *
+ * Allocates and fills a game_event_t structure.
+ *
+ * @param server Pointer to the server.
+ * @param client Pointer to the client.
+ * @param event_out Output pointer for the event.
+ * @return true on success, false on failure.
+ */
 static bool prepare_drop_event(server_t *server, client_t *client,
     game_event_t **event_out)
 {
@@ -87,6 +123,14 @@ static bool prepare_drop_event(server_t *server, client_t *client,
     return true;
 }
 
+/**
+ * @brief Handle the "Drop" command from a client.
+ *
+ * Validates and queues a drop event in the game event queue.
+ *
+ * @param ctx Pointer to the server.
+ * @param data Pointer to the client.
+ */
 void handle_command_drop(void *ctx, void *data)
 {
     server_t *server = (server_t *)ctx;

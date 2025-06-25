@@ -14,6 +14,11 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Table of function pointers for player behaviors.
+ *
+ * Contains method bindings for player actions like move, die, update, etc.
+ */
 static const player_methods_t PLAYER_METHODS = {
     .move = player_move,
     .die = player_die,
@@ -22,6 +27,12 @@ static const player_methods_t PLAYER_METHODS = {
     .update = player_update,
 };
 
+/**
+ * @brief Initializes a player object with given configuration.
+ *
+ * @param player Pointer to the player to initialize.
+ * @param config Configuration containing initial player attributes.
+ */
 static void player_init(player_t *player, player_config_t config)
 {
     player->id = config.id;
@@ -38,6 +49,12 @@ static void player_init(player_t *player, player_config_t config)
     player->inventory[RESOURCE_FOOD] = 10;
 }
 
+/**
+ * @brief Allocates and initializes a new player instance.
+ *
+ * @param config Configuration used to initialize the player.
+ * @return Pointer to the new player, or NULL on failure.
+ */
 player_t *player_create(player_config_t config)
 {
     player_t *player = malloc(sizeof(player_t));

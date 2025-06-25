@@ -83,6 +83,11 @@ void sfml::SFMLRenderer::setUI(std::shared_ptr<render::IRenderEntity> ui)
     _ui = ui;
 }
 
+void sfml::SFMLRenderer::clear()
+{
+    _entities.clear();
+}
+
 render::IObjectFactory &sfml::SFMLRenderer::getFactory()
 {
     return *_objFactory;

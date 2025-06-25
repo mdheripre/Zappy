@@ -7,7 +7,22 @@
 
 #include "poll_manager.h"
 
+/****************************************************************************/
+/*                                                                          */
+/*                              CONSTRUCTOR                                 */
+/*                                                                          */
+/****************************************************************************/
 
+/**
+ * @brief Creates and initializes a new poll manager.
+ *
+ * Allocates memory for a poll_manager_t structure and its internal
+ * pollfd array,
+ * sets up initial capacity and function pointers.
+ *
+ * @param initial_size The initial number of pollfd structures to allocate.
+ * @return Pointer to the created poll_manager_t, or NULL on failure.
+ */
 poll_manager_t *poll_manager_create(size_t initial_size)
 {
     poll_manager_t *mgr = calloc(1, sizeof(poll_manager_t));

@@ -17,6 +17,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Finds the index of a team in the team name array.
+ *
+ * @param team_names Array of team names.
+ * @param team_size Number of teams in the array.
+ * @param team_name Name of the team to find.
+ * @return Index of the team, or -1 if not found.
+ */
 static int find_team_index(char *team_names[], int team_size,
     char *team_name)
 {
@@ -27,6 +35,13 @@ static int find_team_index(char *team_names[], int team_size,
     return -1;
 }
 
+/**
+ * @brief Adds a new team to the list if it doesn't already exist.
+ *
+ * @param team_names Array of team names.
+ * @param team_size Pointer to the number of current teams.
+ * @param team_name Name of the team to add.
+ */
 static void add_team_if_needed(char *team_names[], int *team_size,
     char *team_name)
 {
@@ -39,6 +54,14 @@ static void add_team_if_needed(char *team_names[], int *team_size,
     }
 }
 
+/**
+ * @brief Counts players in each team by level.
+ *
+ * @param self Pointer to the game object.
+ * @param team_names Array to fill with team names.
+ * @param team_counts 2D array to store team level counts.
+ * @param team_size Pointer to number of teams detected.
+ */
 static void count_players(game_t *self, char *team_names[],
     int team_counts[][9], int *team_size)
 {
@@ -56,6 +79,14 @@ static void count_players(game_t *self, char *team_names[],
     }
 }
 
+/**
+ * @brief Checks if a team has won directly by having 6 players at level 8.
+ *
+ * @param team_names Array of team names.
+ * @param team_counts 2D array of player counts per team and level.
+ * @param team_size Number of teams.
+ * @return Name of the winning team or NULL if none.
+ */
 static char *direct_win(char *team_names[], int team_counts[][9],
     int team_size)
 {
@@ -66,6 +97,13 @@ static char *direct_win(char *team_names[], int team_counts[][9],
     return NULL;
 }
 
+/**
+ * @brief Compares two team scores to find if one is better.
+ *
+ * @param team_score Score of the current team.
+ * @param best_score Current best score.
+ * @return true if team_score is better, false otherwise.
+ */
 static bool is_better_team(int team_score[9], int best_score[9])
 {
     int diff;
@@ -78,6 +116,13 @@ static bool is_better_team(int team_score[9], int best_score[9])
     return false;
 }
 
+/**
+ * @brief Compares two team scores for equality.
+ *
+ * @param team_score Score of the current team.
+ * @param best_score Score to compare with.
+ * @return true if scores are equal, false otherwise.
+ */
 static bool is_equal_team(int team_score[9], int best_score[9])
 {
     for (int lvl = 8; lvl >= 1; lvl--) {
@@ -87,6 +132,15 @@ static bool is_equal_team(int team_score[9], int best_score[9])
     return true;
 }
 
+/**
+ * @brief Returns the best team based on player levels, using lexicographic
+ * tie-break.
+ *
+ * @param team_names Array of team names.
+ * @param team_counts 2D array with player counts per level for each team.
+ * @param team_size Number of teams.
+ * @return Best team name, or NULL in case of a tie.
+ */
 static char *get_lexico_winner(char *team_names[],
     int team_counts[][9], int team_size)
 {
@@ -108,6 +162,12 @@ static char *get_lexico_winner(char *team_names[],
     return tied ? NULL : best_team;
 }
 
+/**
+ * @brief Determines the winning team, either by direct or lexicographic rule.
+ *
+ * @param self Pointer to the game object.
+ * @return Name of the winning team, or NULL if no winner.
+ */
 char *get_winner(game_t *self)
 {
     int max_teams = 100;

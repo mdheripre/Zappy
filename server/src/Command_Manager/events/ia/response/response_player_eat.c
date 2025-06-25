@@ -16,6 +16,14 @@
 /*                                                                          */
 /****************************************************************************/
 
+/**
+ * @brief Handles the response when a player eats.
+ *
+ * Emits an event to notify the GUI about the player's inventory update.
+ *
+ * @param ctx Pointer to the server context.
+ * @param data Pointer to the game event data.
+ */
 void on_response_player_eat(void *ctx, void *data)
 {
     server_t *server = ctx;
