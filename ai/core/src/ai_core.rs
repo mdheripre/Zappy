@@ -325,6 +325,7 @@ impl AiCore {
                 if let Err(e) = state.broadcast().receive_message(msg) {
                     eprintln!("Error in message received: {}", e);
                 }
+                return Ok(())
             }
             ServerResponse::Dead => {
                 state.set_running(false);
