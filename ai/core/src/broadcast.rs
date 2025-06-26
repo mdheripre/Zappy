@@ -8,6 +8,7 @@ pub enum MessageType {
     Need,
     Hello,
     Welcome,
+    Item,
 }
 
 impl fmt::Display for MessageType {
@@ -18,6 +19,7 @@ impl fmt::Display for MessageType {
             MessageType::Need => "NEED".to_string(),
             MessageType::Hello => "HELLO".to_string(),
             MessageType::Welcome => "WELCOME".to_string(),
+            MessageType::Item => "ITEM".to_string(),
         };
         write!(f, "{}", out)
     }

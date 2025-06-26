@@ -276,11 +276,13 @@ impl AiCore {
             ServerResponse::Ok => match last_command {
                 Some(AiCommand::Take(item)) => {
                     state.inventory().add_item(&item);
+                    state.team_inventory().add_item(&item);
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {
                     let _ = state.inventory().remove_item(&item);
                     state.add_item_to_map(&item);
+                    *state.last_item() = Some(item.clone());
                 }
                 Some(AiCommand::Forward) => {
                     state.forward();

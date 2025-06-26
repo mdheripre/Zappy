@@ -116,6 +116,10 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
         .or_else(|| {
+            state.last_item().clone()
+                .and_then(|item| broadcast_taken_item(&mut state, item))
+        })
+        .or_else(|| {
             state.destination().clone()
                 .and_then(|dest| get_command_to_destination(&mut state, dest))
         })
@@ -165,6 +169,13 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                     if *state.id_getter_queue() != 0 {
                         *state.id_getter_queue() -= 1;
+                    }
+                }
+                MessageType::Item => {
+                    if let Some(content) = msg.content() {
+                        if let Ok(item) = content.parse::<Item>() {
+                            state.team_inventory().add_item(&item);
+                        }
                     }
                 }
                 MessageType::Gather => {}
@@ -217,4 +228,10 @@ pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
         Some(AiCommand::Look) => forward_command(state, Some(AiCommand::Forward)),
         _ => forward_command(state, Some(AiCommand::Look)),
     }
+}
+
+pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
+    *state.last_item() = None;
+    let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(item.to_string()));
+    forward_command(state, Some(AiCommand::Broadcast(msg.to_string())))
 }

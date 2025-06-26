@@ -62,6 +62,7 @@ pub struct AiState {
     teammate_nb: u32,
     message_id: u32,
     team_inventory: Inventory,
+    last_item: Option<Item>,
 }
 
 impl AiState {
@@ -84,7 +85,8 @@ impl AiState {
             id_getter_queue: 0,
             welcomed: false,
             teammate_nb: 1,
-            message_id: 0
+            message_id: 0,
+            last_item: None,
         }
     }
 
@@ -123,6 +125,10 @@ impl AiState {
 
     pub fn world_map(&mut self) -> &mut Vec<Tile> {
         &mut self.world_map
+    }
+    
+    pub fn last_item(&mut self) -> &mut Option<Item> {
+        &mut self.last_item
     }
 
     pub fn alpha(&mut self) -> &mut bool {
@@ -188,8 +194,11 @@ impl AiState {
                 distance = 0.5
             }
             for item in tile.get_items() {
-                value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
-                    / (item.0.probability() * distance)
+                if *item.0 == Item::Food {
+                    value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) / (item.0.probability() * distance)
+                } else {
+                    value += (item.0.needed() as f64 - self.team_inventory.get_count(item.0) as f64) / (item.0.probability() * distance)
+                }
             }
             if value > max_value {
                 max_value = value;
@@ -208,8 +217,12 @@ impl AiState {
         let mut max_value: f64 = 0.0;
         let mut selected_item: Option<Item> = None;
         for item in items {
-            let value: f64 = (item.needed() as f64 - self.inventory.get_count(&item) as f64)
-                / item.probability();
+            let value: f64;
+            if item == Item::Food {
+                value = (item.needed() as f64 - self.inventory.get_count(&item) as f64) / item.probability();
+            } else {
+                value = (item.needed() as f64 - self.team_inventory.get_count(&item) as f64) / item.probability();
+            }
             if value > max_value {
                 max_value = value;
                 selected_item = Some(item.clone());
