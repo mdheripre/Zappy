@@ -270,8 +270,8 @@ impl AiCore {
 
         let mut state = self.state.lock().await;
         let last_command = state.last_command().clone();
-        *state.last_command() = None;
         *state.previous_command() = last_command.clone();
+
         match &response {
             ServerResponse::Ok => match last_command {
                 Some(AiCommand::Take(item)) => {
@@ -331,6 +331,7 @@ impl AiCore {
             }
             _ => {}
         }
+        *state.last_command() = None;
         self.resp_queue
             .send(response)
             .map_err(CoreError::SendChannelErrorSR)
