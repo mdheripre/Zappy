@@ -62,7 +62,7 @@ impl fmt::Display for Message {
 
 #[derive(Debug, Clone)]
 pub struct Broadcast {
-    received: Vec<Message>,
+    received: Vec<(i32, Message)>,
     sent: Vec<Message>,
     key: u32,
 }
@@ -80,11 +80,11 @@ impl Broadcast {
         self.sent.push(msg);
     }
 
-    pub fn receive_message(&mut self, msg: &String) -> Result<(), String> {
+    pub fn receive_message(&mut self, dir: i32, msg: &String) -> Result<(), String> {
         let parsed_msg = self.parse_message(&msg)?;
 
         self.is_valid_message(&parsed_msg)?;
-        self.received.push(parsed_msg);
+        self.received.push((dir, parsed_msg));
         Ok(())
     }
 
@@ -125,7 +125,7 @@ impl Broadcast {
 
     fn is_valid_message(&self, msg: &Message) -> Result<(), String> {
         let duplicate_received = self.received.iter().any(|existing| {
-            existing.program_id() == msg.program_id() && existing.msg_id() == msg.msg_id()
+            existing.1.program_id() == msg.program_id() && existing.1.msg_id() == msg.msg_id()
         });
 
         if duplicate_received {
@@ -142,7 +142,7 @@ impl Broadcast {
         &self.sent
     }
 
-    pub fn get_received_messages(&self) -> &[Message] {
+    pub fn get_received_messages(&self) -> &[(i32, Message)] {
         &self.received
     }
 }
