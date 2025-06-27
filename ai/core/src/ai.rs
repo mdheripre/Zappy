@@ -258,7 +258,7 @@ pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
 
 pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
     *state.last_item() = None;
-    let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(item.to_string()));
+    let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Item, Some(item.to_string()));
     forward_command(state, Some(AiCommand::Broadcast(msg.to_string())))
 }
 
