@@ -237,8 +237,8 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     if msg.0 != 0 {
                         let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
                         let mut tile = Tile::new(0);
-                        tile.set_position(pos);
-                        *state.destination() = Some(tile.clone());
+                        tile.position_mut(pos);
+                        *state.destination_mut() = Some(tile.clone());
                     }
                 }
                 MessageType::Dead => {}
@@ -289,7 +289,14 @@ pub fn update_destination(state: &mut MutexGuard<'_, AiState>) {
 
 pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     match state.previous_command() {
-        Some(AiCommand::Look) => forward_command(state, Some(AiCommand::Forward)),
+        Some(AiCommand::Look) => { 
+            let rand_nb: u32 = rand::random_range(0..=2);
+            match rand_nb {
+                0 => forward_command(state, Some(AiCommand::Forward)),
+                1 => forward_command(state, Some(AiCommand::Left)),
+                _ => forward_command(state, Some(AiCommand::Right)),
+            }
+        },
         _ => forward_command(state, Some(AiCommand::Look)),
     }
 }
