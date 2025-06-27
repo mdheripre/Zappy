@@ -119,6 +119,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
             state.last_item().clone()
                 .and_then(|item| broadcast_taken_item(&mut state, item))
         })
+        .or_else(|| fork_new_ai(&mut state))
         .or_else(|| {
             state.destination().clone()
                 .and_then(|dest| get_command_to_destination(&mut state, dest))
@@ -234,4 +235,11 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
     *state.last_item() = None;
     let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(item.to_string()));
     forward_command(state, Some(AiCommand::Broadcast(msg.to_string())))
+}
+
+pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if *state.teammate_nb() >= 10 && state.inventory().food >= 3 {
+        return forward_command(state, Some(AiCommand::Fork));
+    }
+    None
 }
