@@ -113,6 +113,10 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if state.last_command().is_some() {
         return None;
     }
+    if !*state.welcomed() && state.time() >= 5 {
+        *state.welcomed() = true;
+        *state.alpha() = true;
+    }
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
@@ -156,9 +160,7 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                 }
                 MessageType::Welcome => {
                     if !*state.welcomed() && *state.id_getter_queue() == 0 {
-                        if *state.alpha() && state.time() <= 10 {
-                            *state.alpha() = false;
-                        }
+                        *state.welcomed() = true;
                         if let Some(content) = msg.content() {
                             let parts: Vec<u32> = content.split(':').map(|x| x.parse().unwrap()).collect();
                             *state.client_num() = parts[0] as i32;
