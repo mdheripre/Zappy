@@ -1,3 +1,5 @@
+use std::env;
+use rand::Rng;
 use crate::ai::AiCommand;
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
@@ -71,7 +73,7 @@ impl AiState {
     pub fn new(ci: ClientInfos, is_child: bool) -> Self {
         Self {
             is_child,
-            client_num: ci.client_num,
+            client_num: rand::rng().random(),
             position: (ci.x, ci.y),
             inventory: Inventory::new(),
             team_inventory: Inventory::new(),

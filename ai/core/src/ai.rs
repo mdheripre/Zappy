@@ -124,7 +124,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if state.last_command().is_some() {
         return None;
     }
-    if !*state.welcomed() && state.time() >= 10 {
+    if !*state.welcomed() && state.time() >= 30 {
         *state.welcomed() = true;
         *state.alpha() = true;
     }
@@ -263,7 +263,7 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
 }
 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb() <= 10 && state.inventory().food >= 3 {
+    if *state.teammate_nb() <= 10 && state.inventory().food >= 3 && *state.alpha() {
         *state.need_inventory_request() = true;
         return forward_command(state, Some(AiCommand::Fork));
     }
@@ -279,7 +279,7 @@ pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if state.time() - *state.last_inventory_request() >= 4 || *state.need_inventory_request() {
+    if state.time() - *state.last_inventory_request() >= 10 || *state.need_inventory_request() {
         *state.last_inventory_request() = state.time() + 1;
         *state.need_inventory_request() = false;
         return forward_command(state, Some(AiCommand::Inventory))
