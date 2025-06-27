@@ -275,8 +275,9 @@ impl AiCore {
         match &response {
             ServerResponse::Ok => match last_command {
                 Some(AiCommand::Take(item)) => {
-                    state.inventory_mut().add_item(&item);
-                    state.team_inventory_mut().add_item(&item);
+                    state.inventory().add_item(&item);
+                    state.team_inventory().add_item(&item);
+                    *state.last_item() = Some(item.clone());
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {

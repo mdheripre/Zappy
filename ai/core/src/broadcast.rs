@@ -130,6 +130,7 @@ impl Broadcast {
             "DEAD" => Ok(MessageType::Dead),
             "HELLO" => Ok(MessageType::Hello),
             "WELCOME" => Ok(MessageType::Welcome),
+            "ITEM" => Ok(MessageType::Item),
             _ => Err(format!("Invalid msg type: {}", type_str)),
         }
     }
