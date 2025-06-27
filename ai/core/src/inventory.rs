@@ -122,7 +122,7 @@ impl Inventory {
         str.push_str(&self.thystame.to_string());
         str
     }
-    
+
     pub fn is_ready(&self) -> bool {
         if self.linemate < 9 {
             return false;

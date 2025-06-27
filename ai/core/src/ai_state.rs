@@ -1,5 +1,3 @@
-use std::env;
-use rand::Rng;
 use crate::ai::AiCommand;
 use crate::ai_direction::Direction;
 use crate::ai_role::Role;
@@ -8,6 +6,8 @@ use crate::init::ClientInfos;
 use crate::inventory::Inventory;
 use crate::item::Item;
 use crate::tile::Tile;
+use rand::Rng;
+use std::env;
 
 /// Zappy game state
 ///
@@ -122,21 +122,27 @@ impl AiState {
     pub fn set_position(&mut self, new: (i32, i32)) {
         self.position = new
     }
-    
-    pub fn last_inventory_request(&mut self) -> &mut i32 { &mut self.last_inventory_request }
-    
-    pub fn need_inventory_request(&mut self) -> &mut bool { &mut self.need_inventory_request }
+
+    pub fn last_inventory_request(&mut self) -> &mut i32 {
+        &mut self.last_inventory_request
+    }
+
+    pub fn need_inventory_request(&mut self) -> &mut bool {
+        &mut self.need_inventory_request
+    }
 
     pub fn inventory(&mut self) -> &mut Inventory {
         &mut self.inventory
     }
-    
-    pub fn team_inventory(&mut self) -> &mut Inventory { &mut self.team_inventory }
+
+    pub fn team_inventory(&mut self) -> &mut Inventory {
+        &mut self.team_inventory
+    }
 
     pub fn world_map(&mut self) -> &mut Vec<Tile> {
         &mut self.world_map
     }
-    
+
     pub fn last_item(&mut self) -> &mut Option<Item> {
         &mut self.last_item
     }
@@ -144,19 +150,27 @@ impl AiState {
     pub fn alpha(&mut self) -> &mut bool {
         &mut self.is_alpha
     }
-    
-    pub fn id_getter_queue(&mut self) -> &mut u32 { &mut self.id_getter_queue }
-    
-    pub fn welcomed(&mut self) -> &mut bool { &mut self.welcomed }
-    
-    pub fn teammate_nb(&mut self) -> &mut u32 { &mut self.teammate_nb }
-    
-    pub fn message_id(&mut self) -> &mut u32 { &mut self.message_id }
+
+    pub fn id_getter_queue(&mut self) -> &mut u32 {
+        &mut self.id_getter_queue
+    }
+
+    pub fn welcomed(&mut self) -> &mut bool {
+        &mut self.welcomed
+    }
+
+    pub fn teammate_nb(&mut self) -> &mut u32 {
+        &mut self.teammate_nb
+    }
+
+    pub fn message_id(&mut self) -> &mut u32 {
+        &mut self.message_id
+    }
 
     pub fn time(&mut self) -> i32 {
         self.time
     }
-    
+
     pub fn inc_time(&mut self) {
         self.time += 1;
     }
@@ -205,9 +219,11 @@ impl AiState {
             }
             for item in tile.get_items() {
                 if *item.0 == Item::Food {
-                    value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) / (item.0.probability() * distance)
+                    value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
+                        / (item.0.probability() * distance)
                 } else {
-                    value += (item.0.needed() as f64 - self.team_inventory.get_count(item.0) as f64) / (item.0.probability() * distance)
+                    value += (item.0.needed() as f64 - self.team_inventory.get_count(item.0) as f64)
+                        / (item.0.probability() * distance)
                 }
             }
             if value > max_value {
@@ -229,9 +245,11 @@ impl AiState {
         for item in items {
             let value: f64;
             if item == Item::Food {
-                value = (item.needed() as f64 - self.inventory.get_count(&item) as f64) / item.probability();
+                value = (item.needed() as f64 - self.inventory.get_count(&item) as f64)
+                    / item.probability();
             } else {
-                value = (item.needed() as f64 - self.team_inventory.get_count(&item) as f64) / item.probability();
+                value = (item.needed() as f64 - self.team_inventory.get_count(&item) as f64)
+                    / item.probability();
             }
             if value > max_value {
                 max_value = value;

@@ -1,3 +1,5 @@
+use crate::ai_direction::Direction;
+use crate::tile::Tile;
 use crate::{
     ai_state::AiState, broadcast::Message, broadcast::MessageType, item::Item, packet::Packet,
     Result,
@@ -7,10 +9,8 @@ use rand::{
     Rng,
 };
 use std::{env, process::Stdio, sync::Arc, time::Duration};
-use tokio::{process::Command, sync::Mutex};
 use tokio::sync::MutexGuard;
-use crate::ai_direction::Direction;
-use crate::tile::Tile;
+use tokio::{process::Command, sync::Mutex};
 
 /// Possible AI command to the server
 ///
@@ -134,21 +134,29 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         .or_else(|| br_gather(&mut state))
         .or_else(|| request_inventory(&mut state))
         .or_else(|| {
-            state.last_item().clone()
+            state
+                .last_item()
+                .clone()
                 .and_then(|item| broadcast_taken_item(&mut state, item))
         })
         .or_else(|| fork_new_ai(&mut state))
         .or_else(|| {
-            state.destination().clone()
+            state
+                .destination()
+                .clone()
                 .and_then(|dest| get_command_to_destination(&mut state, dest))
         })
-        .or_else(|| look_or_forward(&mut state)) {
+        .or_else(|| look_or_forward(&mut state))
+    {
         return forward_command(&mut state, Some(command));
     }
     None
 }
 
-pub fn forward_command(state: &mut MutexGuard<'_, AiState>, command: Option<AiCommand>) -> Option<AiCommand> {
+pub fn forward_command(
+    state: &mut MutexGuard<'_, AiState>,
+    command: Option<AiCommand>,
+) -> Option<AiCommand> {
     if let Some(AiCommand::Broadcast(msg)) = command.clone() {
         *state.message_id() += 1;
     }
@@ -167,8 +175,16 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                         let mut str: String = String::from(state.teammate_nb().to_string());
                         str.push(':');
                         str.push_str(state.team_inventory().as_broadcast().as_str());
-                        let output_msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(str));
-                        return forward_command(state, Some(AiCommand::Broadcast(output_msg.to_string())))
+                        let output_msg = Message::new(
+                            *state.client_num() as u32,
+                            *state.message_id(),
+                            MessageType::Welcome,
+                            Some(str),
+                        );
+                        return forward_command(
+                            state,
+                            Some(AiCommand::Broadcast(output_msg.to_string())),
+                        );
                     } else {
                         *state.id_getter_queue() += 1;
                     }
@@ -177,7 +193,8 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     if !*state.welcomed() && *state.id_getter_queue() == 0 {
                         *state.welcomed() = true;
                         if let Some(content) = msg.1.content() {
-                            let parts: Vec<u32> = content.split(':').map(|x| x.parse().unwrap()).collect();
+                            let parts: Vec<u32> =
+                                content.split(':').map(|x| x.parse().unwrap()).collect();
                             state.team_inventory().linemate = parts[1] as usize;
                             state.team_inventory().deraumere = parts[2] as usize;
                             state.team_inventory().sibur = parts[3] as usize;
@@ -198,7 +215,10 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
-                    let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
+                    let pos = Direction::add_to_pos(
+                        state.position(),
+                        Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()),
+                    );
                     for tile in state.world_map().clone() {
                         if tile.position() == pos {
                             *state.destination() = Some(tile.clone());
@@ -218,16 +238,24 @@ pub fn send_hello(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
         if !state.broadcast().get_received_messages().is_empty() {
             state.broadcast().clear();
         }
-        let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Hello, None);
+        let msg = Message::new(
+            *state.client_num() as u32,
+            *state.message_id(),
+            MessageType::Hello,
+            None,
+        );
         state.inc_time();
         *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
         state.broadcast().send_message(msg.clone());
-        return Some(AiCommand::Broadcast(msg.to_string()))
+        return Some(AiCommand::Broadcast(msg.to_string()));
     }
     None
 }
 
-pub fn get_command_to_destination(state: &mut MutexGuard<'_, AiState>, dest: Tile) -> Option<AiCommand> {
+pub fn get_command_to_destination(
+    state: &mut MutexGuard<'_, AiState>,
+    dest: Tile,
+) -> Option<AiCommand> {
     let dest_diff = dest.distance_as_pair(state.position());
     if dest_diff.0 == 0 && dest_diff.1 == 0 {
         if dest.nb_items <= 1 {
@@ -258,7 +286,12 @@ pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
 
 pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
     *state.last_item() = None;
-    let msg = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Welcome, Some(item.to_string()));
+    let msg = Message::new(
+        *state.client_num() as u32,
+        *state.message_id(),
+        MessageType::Welcome,
+        Some(item.to_string()),
+    );
     forward_command(state, Some(AiCommand::Broadcast(msg.to_string())))
 }
 
@@ -272,7 +305,12 @@ pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 
 pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.alpha() && state.team_inventory().is_ready() {
-        let message = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Gather, None);
+        let message = Message::new(
+            *state.client_num() as u32,
+            *state.message_id(),
+            MessageType::Gather,
+            None,
+        );
         return forward_command(state, Some(AiCommand::Broadcast(message.to_string())));
     }
     None
@@ -282,7 +320,7 @@ pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiComman
     if state.time() - *state.last_inventory_request() >= 10 || *state.need_inventory_request() {
         *state.last_inventory_request() = state.time() + 1;
         *state.need_inventory_request() = false;
-        return forward_command(state, Some(AiCommand::Inventory))
+        return forward_command(state, Some(AiCommand::Inventory));
     }
     None
 }

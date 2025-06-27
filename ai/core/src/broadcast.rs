@@ -51,8 +51,10 @@ impl Message {
     pub fn msg_type(&self) -> &MessageType {
         &self.msg_type
     }
-    
-    pub fn content(&self) -> &Option<String> { &self.content }
+
+    pub fn content(&self) -> &Option<String> {
+        &self.content
+    }
 }
 
 impl fmt::Display for Message {
@@ -122,7 +124,6 @@ impl Broadcast {
         Ok(Message::new(prog_id, msg_id, msg_type, content))
     }
 
-
     fn parse_message_type(&self, type_str: &str) -> Result<MessageType, String> {
         match type_str {
             "GATHER" => Ok(MessageType::Gather),
@@ -156,11 +157,11 @@ impl Broadcast {
     pub fn get_received_messages(&self) -> &[(i32, Message)] {
         &self.received
     }
-    
+
     pub fn pop_received(&mut self) -> Option<(i32, Message)> {
         self.received.pop()
     }
-    
+
     pub fn clear(&mut self) {
         self.received.clear();
     }
