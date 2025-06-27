@@ -24,8 +24,8 @@ use std::collections::HashMap;
 #[derive(Debug, Clone)]
 pub struct Tile {
     position: (i32, i32),
-    pub nb_items: i32,
-    pub nb_players: i32,
+    nb_items: i32,
+    nb_players: i32,
     items: HashMap<Item, usize>,
     look_time: i32,
 }
@@ -48,22 +48,22 @@ impl Tile {
     /// - `ai_state` - The AI state containing the position and direction.
     /// # Returns
     /// - `Tile` - A new Tile instance with the parsed items and position.
-    pub fn new_from_response(string: String, tile_number: i32, mut ai_state: AiState) -> Self {
+    pub fn new_from_response(string: String, tile_number: i32, ai_state: AiState) -> Self {
         let mut tile = Tile::new(ai_state.time());
         let y = (tile_number as f64).sqrt().floor() as i32;
         let x = tile_number - y * (y + 1);
         match ai_state.direction() {
             crate::ai_direction::Direction::North => {
-                tile.set_position((ai_state.position().0 + x, ai_state.position().1 - y));
+                tile.position_mut((ai_state.position().0 + x, ai_state.position().1 - y));
             }
             crate::ai_direction::Direction::East => {
-                tile.set_position((ai_state.position().0 + y, ai_state.position().1 + x));
+                tile.position_mut((ai_state.position().0 + y, ai_state.position().1 + x));
             }
             crate::ai_direction::Direction::South => {
-                tile.set_position((ai_state.position().1 - x, ai_state.position().1 + y));
+                tile.position_mut((ai_state.position().1 - x, ai_state.position().1 + y));
             }
             crate::ai_direction::Direction::West => {
-                tile.set_position((ai_state.position().1 - y, ai_state.position().1 - x));
+                tile.position_mut((ai_state.position().1 - y, ai_state.position().1 - x));
             }
         }
         for item in string.split(' ') {
@@ -82,8 +82,24 @@ impl Tile {
         self.position
     }
 
-    pub fn set_position(&mut self, pos: (i32, i32)) {
+    pub fn position_mut(&mut self, pos: (i32, i32)) {
         self.position = pos;
+    }
+
+    pub fn nb_items(&self) -> i32 {
+        self.nb_items
+    }
+
+    pub fn nb_items_mut(&mut self) -> &mut i32 {
+        &mut self.nb_items
+    }
+
+    pub fn nb_players(&self) -> i32 {
+        self.nb_players
+    }
+
+    pub fn nb_players_mut(&mut self) -> &mut i32 {
+        &mut self.nb_players
     }
 
     pub fn clear_items(&mut self) {
@@ -91,16 +107,16 @@ impl Tile {
         self.nb_items = 0;
     }
 
-    pub fn get_items(&self) -> &HashMap<Item, usize> {
+    pub fn items(&self) -> &HashMap<Item, usize> {
         &self.items
     }
 
-    pub fn get_look_time(&self) -> i32 {
+    pub fn look_time(&self) -> i32 {
         self.look_time
     }
 
-    pub fn set_look_time(&mut self, time: i32) {
-        self.look_time = time;
+    pub fn look_time_mut(&mut self) -> &mut i32 {
+        &mut self.look_time
     }
 
     pub fn set(&mut self, item: Item) {

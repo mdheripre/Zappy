@@ -80,7 +80,7 @@ impl AiCore {
         let (cmd_tx_, cmd_rx_) = mpsc::unbounded_channel::<AiCommand>();
         let (err_tx_, err_rx_) = mpsc::unbounded_channel::<String>();
 
-        let state = Arc::new(Mutex::new(AiState::new(client_infos, infos.is_child)));
+        let state = Arc::new(Mutex::new(AiState::new(client_infos)));
 
         Ok(AiCore {
             client: Arc::new(Mutex::new(client)),
@@ -193,7 +193,7 @@ impl AiCore {
             loop {
                 {
                     let state = ai_state.lock().await;
-                    if !state.is_running() {
+                    if !state.running() {
                         break;
                     }
                 }
@@ -201,7 +201,7 @@ impl AiCore {
                 let command = ai_decision(&ai_state).await;
                 {
                     let mut state = ai_state.lock().await;
-                    *state.last_command() = command.clone();
+                    *state.last_command_mut() = command.clone();
                 }
                 if let Some(cmd) = command {
                     if ai_cmd_queue.send(cmd).is_err() {
@@ -232,7 +232,7 @@ impl AiCore {
             }
             {
                 let state = self.state.lock().await;
-                if !state.is_running() {
+                if !state.running() {
                     break;
                 }
             }
@@ -245,7 +245,7 @@ impl AiCore {
                 match command {
                     AiCommand::Stop => {
                         let mut state = self.state.lock().await;
-                        state.set_running(false);
+                        *state.running_mut() = false;
                         break;
                     }
                     _ => {
@@ -270,7 +270,7 @@ impl AiCore {
 
         let mut state = self.state.lock().await;
         let last_command = state.last_command().clone();
-        *state.previous_command() = last_command.clone();
+        *state.previous_command_mut() = last_command.clone();
 
         match &response {
             ServerResponse::Ok => match last_command {
@@ -281,22 +281,26 @@ impl AiCore {
                     state.remove_item_from_map(&item);
                 }
                 Some(AiCommand::Set(item)) => {
-                    let _ = state.inventory().remove_item(&item);
+                    let _ = state.inventory_mut().remove_item(&item);
                     state.add_item_to_map(&item);
+                    *state.last_item_mut() = Some(item.clone());
                 }
                 Some(AiCommand::Forward) => {
                     state.forward();
                 }
                 Some(AiCommand::Left) => {
-                    *state.direction() = state.direction().left();
+                    *state.direction_mut() = state.direction().left();
                 }
                 Some(AiCommand::Right) => {
-                    *state.direction() = state.direction().right();
+                    *state.direction_mut() = state.direction().right();
                 }
                 Some(AiCommand::Fork) => {
                     spawn_child_process().await?;
                 }
-                Some(AiCommand::Broadcast(_)) => {}
+                Some(AiCommand::Broadcast(msg)) => {
+                    let elapsed_time = state.uptime().as_millis() as u64;
+                    state.broadcast_mut().send_message((msg, elapsed_time));
+                }
                 _ => {
                     println!("Received Ok but no command was sent.")
                 }
@@ -311,32 +315,32 @@ impl AiCore {
                 for item in items {
                     let tile = Tile::new_from_response(item.clone(), i, state.clone());
                     state
-                        .world_map()
+                        .world_map_mut()
                         .retain(|t| t.position() != tile.position());
-                    state.world_map().push(tile);
+                    state.world_map_mut().push(tile);
                     i += 1;
                 }
             }
             ServerResponse::ClientNum(num) => {
-                state.set_client_num(*num);
+                *state.client_num_mut() = *num;
             }
             ServerResponse::Inventory(food) => {
-                state.inventory().food = *food as usize;
+                *state.inventory_mut().food_mut() = *food as usize;
             }
             ServerResponse::Message(dir, msg) => {
-                if let Err(e) = state.broadcast().receive_message(*dir, msg) {
+                if let Err(e) = state.broadcast_mut().receive_message(*dir, msg) {
                     eprintln!("Error in message received: {}", e);
                 }
                 return Ok(());
             }
             ServerResponse::Dead => {
-                state.set_running(false);
+                *state.running_mut() = false;
             }
             ServerResponse::Unknown(msg) => {
                 println!("Unknown or invalid command received: {}", msg)
             }
         }
-        *state.last_command() = None;
+        *state.last_command_mut() = None;
         self.resp_queue
             .send(response)
             .map_err(CoreError::SendChannelErrorSR)

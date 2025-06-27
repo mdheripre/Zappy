@@ -21,3 +21,6 @@ test_bin
 
 #Asset
 *.DS_Store
+
+#Log files
+*log*
