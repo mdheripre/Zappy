@@ -45,7 +45,8 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
     std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
         size.x,
         size.y,
-        _maManager.getTileSprites(_renderer->getFactory())
+        _maManager.getTileSprites(_renderer->getFactory()),
+        _maManager.getProps(_renderer->getFactory())
     );
     _gm.map = map;
     _renderer->pushEntity(map);
