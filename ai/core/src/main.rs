@@ -17,7 +17,6 @@ mod utils;
 
 use crate::{ai_core::AiCore, prelude::*};
 use clap::Parser;
-use std::env;
 use tokio::runtime::Runtime;
 
 /// Informations requiered for server connection
@@ -46,18 +45,15 @@ struct ServerInfos {
     port: u16,
     #[arg(short = 'n', long)]
     name: String,
-    is_child: bool,
 }
 
 impl ServerInfos {
     fn new() -> Self {
         let args = ServerInfos::parse();
-        let is_child = env::var("IS_CHILD").ok().as_deref() == Some("1");
         ServerInfos {
             ip: args.ip,
             port: args.port,
             name: args.name,
-            is_child,
         }
     }
 }

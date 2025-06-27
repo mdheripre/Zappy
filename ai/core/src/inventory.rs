@@ -14,19 +14,19 @@ use crate::item::Item;
 ///
 #[derive(Clone, Debug)]
 pub struct Inventory {
-    pub food: usize,
-    pub linemate: usize,
-    pub deraumere: usize,
-    pub sibur: usize,
-    pub mendiane: usize,
-    pub phiras: usize,
-    pub thystame: usize,
+    food: usize,
+    linemate: usize,
+    deraumere: usize,
+    sibur: usize,
+    mendiane: usize,
+    phiras: usize,
+    thystame: usize,
 }
 
 impl Inventory {
     pub fn new() -> Self {
         Inventory {
-            food: 0,
+            food: 10,
             linemate: 0,
             deraumere: 0,
             sibur: 0,
@@ -34,6 +34,62 @@ impl Inventory {
             phiras: 0,
             thystame: 0,
         }
+    }
+
+    pub fn food(&self) -> usize {
+        self.food
+    }
+
+    pub fn food_mut(&mut self) -> &mut usize {
+        &mut self.food
+    }
+
+    pub fn linemate(&self) -> usize {
+        self.linemate
+    }
+
+    pub fn linemate_mut(&mut self) -> &mut usize {
+        &mut self.linemate
+    }
+
+    pub fn deraumere(&self) -> usize {
+        self.deraumere
+    }
+
+    pub fn deraumere_mut(&mut self) -> &mut usize {
+        &mut self.deraumere
+    }
+
+    pub fn sibur(&self) -> usize {
+        self.sibur
+    }
+
+    pub fn sibur_mut(&mut self) -> &mut usize {
+        &mut self.sibur
+    }
+
+    pub fn mendiane(&self) -> usize {
+        self.mendiane
+    }
+
+    pub fn mendiane_mut(&mut self) -> &mut usize {
+        &mut self.mendiane
+    }
+
+    pub fn phiras(&self) -> usize {
+        self.phiras
+    }
+
+    pub fn phiras_mut(&mut self) -> &mut usize {
+        &mut self.phiras
+    }
+
+    pub fn thystame(&self) -> usize {
+        self.thystame
+    }
+
+    pub fn thystame_mut(&mut self) -> &mut usize {
+        &mut self.thystame
     }
 
     /// Add an item to the inventory.

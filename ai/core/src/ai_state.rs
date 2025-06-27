@@ -1,13 +1,14 @@
+use std::time::Instant;
+
 use crate::ai::AiCommand;
 use crate::ai_direction::Direction;
-use crate::ai_role::Role;
-use crate::broadcast::{Broadcast, Message};
+use crate::broadcast::{Broadcast, Message, MessageType};
 use crate::init::ClientInfos;
 use crate::inventory::Inventory;
 use crate::item::Item;
 use crate::tile::Tile;
 use rand::Rng;
-use std::env;
+use tokio::time;
 
 /// Zappy game state
 ///
@@ -17,7 +18,7 @@ use std::env;
 /// - `position` ((`i32`, `i32`)) - position on the map.
 /// - `inventory` (`Inventory`) - inventory content.
 /// - `world_map` (`Vec<Tile>`) - map empty at start.
-/// - `is_running` (`bool`) - checker.
+/// - `running` (`bool`) - checker.
 /// - `role` (`Role`) - AI role.
 /// - `time` (`i32`) - time since the start of the game. (to implement)
 /// - `direction` (`Direction`) - current direction.
@@ -35,7 +36,7 @@ use std::env;
 ///     position: value,
 ///     inventory: value,
 ///     world_map: value,
-///     is_running: value,
+///     running: value,
 ///     role: value,
 ///     time: value,
 ///     direction: value,
@@ -46,12 +47,11 @@ use std::env;
 /// ```
 #[derive(Debug, Clone)]
 pub struct AiState {
-    is_child: bool,
     client_num: i32,
     position: (i32, i32),
     inventory: Inventory,
     world_map: Vec<Tile>,
-    is_running: bool,
+    running: bool,
     is_alpha: bool,
     time: i32,
     direction: Direction,
@@ -67,25 +67,25 @@ pub struct AiState {
     last_item: Option<Item>,
     last_inventory_request: i32,
     need_inventory_request: bool,
+    start_time: Instant,
 }
 
 impl AiState {
-    pub fn new(ci: ClientInfos, is_child: bool) -> Self {
+    pub fn new(ci: ClientInfos) -> Self {
         Self {
-            is_child,
             client_num: rand::rng().random(),
             position: (ci.x, ci.y),
             inventory: Inventory::new(),
             team_inventory: Inventory::new(),
             world_map: vec![],
-            is_running: true,
+            running: true,
             is_alpha: false,
             time: 0,
             direction: Direction::North,
             last_command: None,
             previous_command: None,
             destination: None,
-            broadcast: Broadcast::new(123),
+            broadcast: Broadcast::new(),
             id_getter_queue: 0,
             welcomed: false,
             teammate_nb: 1,
@@ -93,108 +93,177 @@ impl AiState {
             last_item: None,
             last_inventory_request: 0,
             need_inventory_request: false,
+            start_time: Instant::now(),
         }
     }
 
-    pub fn is_running(&self) -> bool {
-        self.is_running
+    pub fn running(&self) -> bool {
+        self.running
     }
 
-    pub fn set_running(&mut self, new: bool) {
-        self.is_running = new
-    }
-    pub fn is_child(&self) -> bool {
-        self.is_child
+    pub fn running_mut(&mut self) -> &mut bool {
+        &mut self.running
     }
 
-    pub fn client_num(&mut self) -> &mut i32 {
+    pub fn client_num(&self) -> i32 {
+        self.client_num
+    }
+
+    pub fn client_num_mut(&mut self) -> &mut i32 {
         &mut self.client_num
-    }
-
-    pub fn set_client_num(&mut self, new: i32) {
-        self.client_num = new
     }
 
     pub fn position(&self) -> (i32, i32) {
         self.position
     }
 
-    pub fn set_position(&mut self, new: (i32, i32)) {
-        self.position = new
+    pub fn position_mut(&mut self) -> &mut (i32, i32) {
+        &mut self.position
     }
 
-    pub fn last_inventory_request(&mut self) -> &mut i32 {
+    pub fn last_inventory_request(&self) -> i32 {
+        self.last_inventory_request
+    }
+
+    pub fn last_inventory_request_mut(&mut self) -> &mut i32 {
         &mut self.last_inventory_request
     }
 
-    pub fn need_inventory_request(&mut self) -> &mut bool {
+    pub fn need_inventory_request(&self) -> bool {
+        self.need_inventory_request
+    }
+
+    pub fn need_inventory_request_mut(&mut self) -> &mut bool {
         &mut self.need_inventory_request
     }
 
-    pub fn inventory(&mut self) -> &mut Inventory {
+    pub fn inventory(&self) -> &Inventory {
+        &self.inventory
+    }
+
+    pub fn inventory_mut(&mut self) -> &mut Inventory {
         &mut self.inventory
     }
 
-    pub fn team_inventory(&mut self) -> &mut Inventory {
+    pub fn team_inventory(&self) -> &Inventory {
+        &self.team_inventory
+    }
+
+    pub fn team_inventory_mut(&mut self) -> &mut Inventory {
         &mut self.team_inventory
     }
 
-    pub fn world_map(&mut self) -> &mut Vec<Tile> {
+    pub fn world_map(&self) -> &Vec<Tile> {
+        &self.world_map
+    }
+
+    pub fn world_map_mut(&mut self) -> &mut Vec<Tile> {
         &mut self.world_map
     }
 
-    pub fn last_item(&mut self) -> &mut Option<Item> {
+    pub fn last_item(&self) -> &Option<Item> {
+        &self.last_item
+    }
+
+    pub fn last_item_mut(&mut self) -> &mut Option<Item> {
         &mut self.last_item
     }
 
-    pub fn alpha(&mut self) -> &mut bool {
+    pub fn alpha(&self) -> &bool {
+        &self.is_alpha
+    }
+
+    pub fn alpha_mut(&mut self) -> &mut bool {
         &mut self.is_alpha
     }
 
-    pub fn id_getter_queue(&mut self) -> &mut u32 {
+    pub fn id_getter_queue(&self) -> u32 {
+        self.id_getter_queue
+    }
+
+    pub fn id_getter_queue_mut(&mut self) -> &mut u32 {
         &mut self.id_getter_queue
     }
 
-    pub fn welcomed(&mut self) -> &mut bool {
+    pub fn welcomed(&self) -> &bool {
+        &self.welcomed
+    }
+
+    pub fn welcomed_mut(&mut self) -> &mut bool {
         &mut self.welcomed
     }
 
-    pub fn teammate_nb(&mut self) -> &mut u32 {
+    pub fn teammate_nb(&self) -> u32 {
+        self.teammate_nb
+    }
+
+    pub fn teammate_nb_mut(&mut self) -> &mut u32 {
         &mut self.teammate_nb
     }
 
-    pub fn message_id(&mut self) -> &mut u32 {
+    pub fn message_id(&self) -> u32 {
+        self.message_id
+    }
+
+    pub fn message_id_mut(&mut self) -> &mut u32 {
         &mut self.message_id
     }
 
-    pub fn time(&mut self) -> i32 {
+    pub fn time(&self) -> i32 {
         self.time
+    }
+
+    pub fn time_mut(&mut self) -> &mut i32 {
+        &mut self.time
     }
 
     pub fn inc_time(&mut self) {
         self.time += 1;
     }
 
-    pub fn direction(&mut self) -> &mut Direction {
+    pub fn direction(&self) -> &Direction {
+        &self.direction
+    }
+
+    pub fn direction_mut(&mut self) -> &mut Direction {
         &mut self.direction
     }
 
-    pub fn last_command(&mut self) -> &mut Option<AiCommand> {
+    pub fn last_command(&self) -> &Option<AiCommand> {
+        &self.last_command
+    }
+
+    pub fn last_command_mut(&mut self) -> &mut Option<AiCommand> {
         &mut self.last_command
     }
 
-    pub fn previous_command(&mut self) -> &mut Option<AiCommand> {
+    pub fn previous_command(&self) -> &Option<AiCommand> {
+        &self.previous_command
+    }
+
+    pub fn previous_command_mut(&mut self) -> &mut Option<AiCommand> {
         &mut self.previous_command
     }
 
-    pub fn destination(&mut self) -> &mut Option<Tile> {
+    pub fn destination(&self) -> &Option<Tile> {
+        &self.destination
+    }
+
+    pub fn destination_mut(&mut self) -> &mut Option<Tile> {
         &mut self.destination
     }
 
-    pub fn broadcast(&mut self) -> &mut Broadcast {
+    pub fn broadcast(&self) -> &Broadcast {
+        &self.broadcast
+    }
+
+    pub fn broadcast_mut(&mut self) -> &mut Broadcast {
         &mut self.broadcast
     }
 
+    pub fn uptime(&self) -> time::Duration {
+        self.start_time.elapsed()
+    }
     /// Make the AI move forward in the current direction
     pub fn forward(&mut self) {
         match self.direction {
@@ -217,7 +286,7 @@ impl AiState {
             if distance == 0.0 {
                 distance = 0.5
             }
-            for item in tile.get_items() {
+            for item in tile.items() {
                 if *item.0 == Item::Food {
                     value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
                         / (item.0.probability() * distance)
@@ -243,14 +312,12 @@ impl AiState {
         let mut max_value: f64 = 0.0;
         let mut selected_item: Option<Item> = None;
         for item in items {
-            let value: f64;
-            if item == Item::Food {
-                value = (item.needed() as f64 - self.inventory.get_count(&item) as f64)
-                    / item.probability();
+            let value: f64 = if item == Item::Food {
+                (item.needed() as f64 - self.inventory.get_count(&item) as f64) / item.probability()
             } else {
-                value = (item.needed() as f64 - self.team_inventory.get_count(&item) as f64)
-                    / item.probability();
-            }
+                (item.needed() as f64 - self.team_inventory.get_count(&item) as f64)
+                    / item.probability()
+            };
             if value > max_value {
                 max_value = value;
                 selected_item = Some(item.clone());
@@ -265,7 +332,7 @@ impl AiState {
     /// - `bool` - True if there are items in the map, false otherwise.
     pub fn is_there_things_in_map(&self) -> bool {
         for tile in &self.world_map {
-            if !tile.get_items().is_empty() {
+            if !tile.items().is_empty() {
                 return true;
             }
         }
@@ -279,7 +346,7 @@ impl AiState {
         for tile in &mut self.world_map {
             if tile.position() == self.position {
                 tile.take(item.clone());
-                tile.nb_items -= 1;
+                *tile.nb_items_mut() -= 1;
             }
         }
         if let Some(dest) = self.destination.clone() {
@@ -298,7 +365,7 @@ impl AiState {
         for tile in &mut self.world_map {
             if tile.position() == self.position {
                 tile.set(item.clone());
-                tile.nb_items += 1;
+                *tile.nb_items_mut() += 1;
             }
         }
         if let Some(dest) = self.destination.clone() {
@@ -308,5 +375,32 @@ impl AiState {
                 }
             }
         }
+    }
+
+    /// Create a message with program informations
+    /// 
+    /// # Arguments
+    /// 
+    /// - `msg_type` (`MessageType`) - Type of the message.
+    /// - `content` (`Option<String>`) - content of the messsage.
+    /// 
+    /// # Returns
+    /// 
+    /// - `Message` - Formated message with correct infos.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use crate::...;
+    /// 
+    /// let _ = new_message();
+    /// ```
+    pub fn new_message(&self, msg_type: MessageType, content: Option<String>) -> Message {
+        Message::new(
+            self.client_num() as u32,
+            self.message_id(),
+            msg_type,
+            content,
+        )
     }
 }

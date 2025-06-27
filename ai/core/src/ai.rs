@@ -1,14 +1,8 @@
 use crate::ai_direction::Direction;
+use crate::broadcast::Message;
 use crate::tile::Tile;
-use crate::{
-    ai_state::AiState, broadcast::Message, broadcast::MessageType, item::Item, packet::Packet,
-    Result,
-};
-use rand::{
-    distr::{Alphanumeric, SampleString},
-    Rng,
-};
-use std::{env, process::Stdio, sync::Arc, time::Duration};
+use crate::{ai_state::AiState, broadcast::MessageType, item::Item, packet::Packet, Result};
+use std::{env, process::Stdio, sync::Arc};
 use tokio::sync::MutexGuard;
 use tokio::{process::Command, sync::Mutex};
 
@@ -45,7 +39,7 @@ pub enum AiCommand {
     Left,
     Look,
     Inventory,
-    Broadcast(String),
+    Broadcast(Message),
     ConnectNbr,
     Fork,
     Eject,
@@ -66,7 +60,7 @@ impl From<AiCommand> for Packet {
             AiCommand::Look => Packet::Look,
             AiCommand::Inventory => Packet::Inventory,
             AiCommand::ConnectNbr => Packet::ConnectNbr,
-            AiCommand::Broadcast(msg) => Packet::Broadcast(msg),
+            AiCommand::Broadcast(msg) => Packet::Broadcast(msg.to_string()),
             AiCommand::Fork => Packet::Fork,
             AiCommand::Eject => Packet::Eject,
             AiCommand::Take(item) => Packet::Take(item.to_string()),
@@ -96,11 +90,6 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-        .env("IS_CHILD", "1")
-        .env(
-            "ZAPPY_AI_ID",
-            Alphanumeric.sample_string(&mut rand::rng(), 16),
-        )
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -125,14 +114,19 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         return None;
     }
     if !*state.welcomed() && state.time() >= 30 {
-        *state.welcomed() = true;
-        *state.alpha() = true;
+        *state.welcomed_mut() = true;
+        *state.alpha_mut() = true;
+    }
+    if is_dying(&mut state) {
+        let msg = state.new_message(MessageType::Dead, None);
+        return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
     }
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
         .or_else(|| br_gather(&mut state))
         .or_else(|| request_inventory(&mut state))
+        .or_else(|| dead_command(&mut state))
         .or_else(|| {
             state
                 .last_item()
@@ -157,60 +151,85 @@ pub fn forward_command(
     state: &mut MutexGuard<'_, AiState>,
     command: Option<AiCommand>,
 ) -> Option<AiCommand> {
-    if let Some(AiCommand::Broadcast(msg)) = command.clone() {
-        *state.message_id() += 1;
+    if let Some(AiCommand::Broadcast(_)) = command.clone() {
+        *state.message_id_mut() += 1;
     }
-    *state.last_command() = command.clone();
+    *state.last_command_mut() = command.clone();
     state.inc_time();
     command
 }
 
+fn dead_command(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    match is_dying(state) {
+        true => {
+            let msg = state.new_message(MessageType::Dead, None);
+            forward_command(state, Some(AiCommand::Broadcast(msg)))
+        }
+        false => None
+    }
+}
+
+fn is_dying(state: &mut MutexGuard<'_, AiState>) -> bool {
+    let current_time = state.uptime().as_millis() as u64;
+    let cooldown = 5000;
+
+    let last_dead_message= state.broadcast().sent().iter()
+        .filter(|msg| matches!(msg.0.msg_type(), MessageType::Dead))
+        .map(|msg| msg.1)
+        .max();
+
+    match last_dead_message {
+        Some(last_time) => {
+            let time_since_last = current_time - last_time;
+            state.inventory().food() <= 1 && time_since_last >= cooldown
+        }
+        None => {
+            state.inventory().food() <= 1
+        }
+    }
+}
+
 pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     while !state.broadcast().get_received_messages().is_empty() {
-        if let Some(msg) = state.broadcast().pop_received() {
+        if let Some(msg) = state.broadcast_mut().pop_received() {
             match msg.1.msg_type() {
                 MessageType::Hello => {
-                    *state.teammate_nb() += 1;
+                    *state.teammate_nb_mut() += 1;
                     if *state.alpha() {
-                        let mut str: String = String::from(state.teammate_nb().to_string());
+                        let mut str: String = state.teammate_nb().to_string();
                         str.push(':');
                         str.push_str(state.team_inventory().as_broadcast().as_str());
-                        let output_msg = Message::new(
-                            *state.client_num() as u32,
-                            *state.message_id(),
-                            MessageType::Welcome,
-                            Some(str),
-                        );
+                        let output_msg = state.new_message(MessageType::Welcome, Some(str));
                         return forward_command(
                             state,
-                            Some(AiCommand::Broadcast(output_msg.to_string())),
+                            Some(AiCommand::Broadcast(output_msg)),
                         );
                     } else {
-                        *state.id_getter_queue() += 1;
+                        *state.id_getter_queue_mut() += 1;
                     }
                 }
                 MessageType::Welcome => {
-                    if !*state.welcomed() && *state.id_getter_queue() == 0 {
-                        *state.welcomed() = true;
+                    if !*state.welcomed() && *state.id_getter_queue_mut() == 0 {
+                        *state.welcomed_mut() = true;
                         if let Some(content) = msg.1.content() {
-                            let parts: Vec<u32> =
+                            let parts: Vec<usize> =
                                 content.split(':').map(|x| x.parse().unwrap()).collect();
-                            state.team_inventory().linemate = parts[1] as usize;
-                            state.team_inventory().deraumere = parts[2] as usize;
-                            state.team_inventory().sibur = parts[3] as usize;
-                            state.team_inventory().mendiane = parts[4] as usize;
-                            state.team_inventory().phiras = parts[5] as usize;
-                            state.team_inventory().thystame = parts[6] as usize;
+                            *state.team_inventory_mut().linemate_mut() = parts[1];
+                            *state.team_inventory_mut().deraumere_mut() = parts[2];
+                            *state.team_inventory_mut().sibur_mut() = parts[3];
+                            *state.team_inventory_mut().mendiane_mut() = parts[4];
+                            *state.team_inventory_mut().phiras_mut() = parts[5];
+                            *state.team_inventory_mut().thystame_mut() = parts[6];
                         }
                     }
-                    if *state.id_getter_queue() != 0 {
-                        *state.id_getter_queue() -= 1;
+                    if state.id_getter_queue() != 0 {
+                        *state.id_getter_queue_mut() -= 1;
                     }
                 }
                 MessageType::Item => {
                     if let Some(content) = msg.1.content() {
                         if let Ok(item) = content.parse::<Item>() {
-                            state.team_inventory().add_item(&item);
+                            state.team_inventory_mut().add_item(&item);
                         }
                     }
                 }
@@ -221,7 +240,7 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     );
                     for tile in state.world_map().clone() {
                         if tile.position() == pos {
-                            *state.destination() = Some(tile.clone());
+                            *state.destination_mut() = Some(tile.clone());
                         }
                     }
                 }
@@ -236,18 +255,12 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
 pub fn send_hello(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if state.time() == 0 {
         if !state.broadcast().get_received_messages().is_empty() {
-            state.broadcast().clear();
+            state.broadcast_mut().clear();
         }
-        let msg = Message::new(
-            *state.client_num() as u32,
-            *state.message_id(),
-            MessageType::Hello,
-            None,
-        );
+        let msg = state.new_message(MessageType::Hello, None);
         state.inc_time();
-        *state.last_command() = Some(AiCommand::Broadcast(msg.to_string()));
-        state.broadcast().send_message(msg.clone());
-        return Some(AiCommand::Broadcast(msg.to_string()));
+        *state.last_command_mut() = Some(AiCommand::Broadcast(msg.clone()));
+        return Some(AiCommand::Broadcast(msg));
     }
     None
 }
@@ -258,10 +271,10 @@ pub fn get_command_to_destination(
 ) -> Option<AiCommand> {
     let dest_diff = dest.distance_as_pair(state.position());
     if dest_diff.0 == 0 && dest_diff.1 == 0 {
-        if dest.nb_items <= 1 {
-            *state.destination() = None;
+        if dest.nb_items() <= 1 {
+            *state.destination_mut() = None;
         }
-        let command = state.chose_best_item(dest.get_items().keys().cloned().collect());
+        let command = state.chose_best_item(dest.items().keys().cloned().collect());
         return forward_command(state, command);
     }
     if !state.direction().is_along(dest_diff) {
@@ -273,7 +286,7 @@ pub fn get_command_to_destination(
 
 pub fn update_destination(state: &mut MutexGuard<'_, AiState>) {
     if state.is_there_things_in_map() && state.destination().is_none() {
-        *state.destination() = state.chose_destination_tile()
+        *state.destination_mut() = state.chose_destination_tile()
     }
 }
 
@@ -285,19 +298,14 @@ pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
 }
 
 pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
-    *state.last_item() = None;
-    let msg = Message::new(
-        *state.client_num() as u32,
-        *state.message_id(),
-        MessageType::Welcome,
-        Some(item.to_string()),
-    );
-    forward_command(state, Some(AiCommand::Broadcast(msg.to_string())))
+    *state.last_item_mut() = None;
+    let msg = state.new_message(MessageType::Welcome, Some(item.to_string()));
+    forward_command(state, Some(AiCommand::Broadcast(msg)))
 }
 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb() <= 10 && state.inventory().food >= 3 && *state.alpha() {
-        *state.need_inventory_request() = true;
+    if *state.teammate_nb_mut() <= 10 && state.inventory().food() >= 3 && *state.alpha() {
+        *state.need_inventory_request_mut() = true;
         return forward_command(state, Some(AiCommand::Fork));
     }
     None
@@ -305,21 +313,16 @@ pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 
 pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.alpha() && state.team_inventory().is_ready() {
-        let message = Message::new(
-            *state.client_num() as u32,
-            *state.message_id(),
-            MessageType::Gather,
-            None,
-        );
-        return forward_command(state, Some(AiCommand::Broadcast(message.to_string())));
+        let message = state.new_message(MessageType::Gather, None);
+        return forward_command(state, Some(AiCommand::Broadcast(message)));
     }
     None
 }
 
 pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if state.time() - *state.last_inventory_request() >= 10 || *state.need_inventory_request() {
-        *state.last_inventory_request() = state.time() + 1;
-        *state.need_inventory_request() = false;
+    if state.time() - state.last_inventory_request() >= 10 || state.need_inventory_request() {
+        *state.last_inventory_request_mut() = state.time() + 1;
+        *state.need_inventory_request_mut() = false;
         return forward_command(state, Some(AiCommand::Inventory));
     }
     None
