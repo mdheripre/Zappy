@@ -89,6 +89,7 @@ static int angle_to_sector(float angle)
 {
     int sector = (int)((angle + 22.5f) / 45.0f);
 
+    sector = (sector % 8);
     return (sector == 0) ? 8 : sector;
 }
 
@@ -105,11 +106,20 @@ static int angle_to_sector(float angle)
 int compute_broadcast_direction(game_t *game, player_t *sender,
     player_t *r)
 {
-    vector2i_t dir = compute_direction(game, sender, r);
-    float angle = vector_to_angle(&dir);
+    vector2i_t dir;
+    float angle = 0.0f;
 
+    if (!sender || !r || sender == r)
+        return 0;
+    dir = compute_direction(game, sender, r);
+    if (dir.x == 0 && dir.y == 0)
+        return 0;
+    angle = vector_to_angle(&dir);
     angle += orientation_offset(r->orientation);
-    angle = fmodf(angle, 360.0f);
+    if (angle < 0.0f)
+        angle += 360.0f;
+    if (angle >= 360.0f)
+        angle -= 360.0f;
     return angle_to_sector(angle);
 }
 
