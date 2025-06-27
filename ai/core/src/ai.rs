@@ -248,7 +248,7 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
 }
 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb() >= 10 && state.inventory().food >= 3 {
+    if *state.teammate_nb() <= 10 && state.inventory().food >= 3 {
         return forward_command(state, Some(AiCommand::Fork));
     }
     None
