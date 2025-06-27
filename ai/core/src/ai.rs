@@ -239,8 +239,11 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                         let mut tile = Tile::new(0);
                         tile.position_mut(pos);
                         *state.destination_mut() = Some(tile.clone());
+                    } else {
+                        return forward_command(state, Some(AiCommand::Broadcast(state.new_message(MessageType::Here, None))))
                     }
                 }
+                MessageType::Here => {}
                 MessageType::Dead => {}
                 MessageType::Need => {}
             }
@@ -303,7 +306,7 @@ pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
 
 pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
     *state.last_item_mut() = None;
-    let msg = state.new_message(MessageType::Welcome, Some(item.to_string()));
+    let msg = state.new_message(MessageType::Item, Some(item.to_string()));
     forward_command(state, Some(AiCommand::Broadcast(msg)))
 }
 

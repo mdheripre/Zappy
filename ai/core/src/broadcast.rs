@@ -9,6 +9,7 @@ pub enum MessageType {
     Hello,
     Welcome,
     Item,
+    Here,
 }
 
 impl fmt::Display for MessageType {
@@ -20,6 +21,7 @@ impl fmt::Display for MessageType {
             MessageType::Hello => "HELLO".to_string(),
             MessageType::Welcome => "WELCOME".to_string(),
             MessageType::Item => "ITEM".to_string(),
+            MessageType::Here => "HERE".to_string(),
         };
         write!(f, "{}", out)
     }
@@ -131,6 +133,7 @@ impl Broadcast {
             "HELLO" => Ok(MessageType::Hello),
             "WELCOME" => Ok(MessageType::Welcome),
             "ITEM" => Ok(MessageType::Item),
+            "HERE" => Ok(MessageType::Here),
             _ => Err(format!("Invalid msg type: {}", type_str)),
         }
     }
