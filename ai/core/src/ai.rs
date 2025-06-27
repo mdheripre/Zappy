@@ -8,6 +8,9 @@ use rand::{
 };
 use std::{env, process::Stdio, sync::Arc, time::Duration};
 use tokio::{process::Command, sync::Mutex};
+use tokio::sync::MutexGuard;
+use crate::ai_direction::Direction;
+use crate::tile::Tile;
 
 /// Possible AI command to the server
 ///
@@ -122,7 +125,6 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         return None;
     }
     if !*state.welcomed() && state.time() >= 10 {
-        println!("Now alpha");
         *state.welcomed() = true;
         *state.alpha() = true;
     }
@@ -147,6 +149,9 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
 }
 
 pub fn forward_command(state: &mut MutexGuard<'_, AiState>, command: Option<AiCommand>) -> Option<AiCommand> {
+    if let Some(AiCommand::Broadcast(msg)) = command.clone() {
+        *state.message_id() += 1;
+    }
     *state.last_command() = command.clone();
     state.inc_time();
     command
@@ -155,7 +160,7 @@ pub fn forward_command(state: &mut MutexGuard<'_, AiState>, command: Option<AiCo
 pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     while !state.broadcast().get_received_messages().is_empty() {
         if let Some(msg) = state.broadcast().pop_received() {
-            match msg.msg_type() {
+            match msg.1.msg_type() {
                 MessageType::Hello => {
                     *state.teammate_nb() += 1;
                     if *state.alpha() {
@@ -171,9 +176,8 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                 MessageType::Welcome => {
                     if !*state.welcomed() && *state.id_getter_queue() == 0 {
                         *state.welcomed() = true;
-                        if let Some(content) = msg.content() {
+                        if let Some(content) = msg.1.content() {
                             let parts: Vec<u32> = content.split(':').map(|x| x.parse().unwrap()).collect();
-                            *state.client_num() = parts[0] as i32;
                             state.team_inventory().linemate = parts[1] as usize;
                             state.team_inventory().deraumere = parts[2] as usize;
                             state.team_inventory().sibur = parts[3] as usize;
@@ -187,15 +191,14 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Item => {
-                    if let Some(content) = msg.content() {
+                    if let Some(content) = msg.1.content() {
                         if let Ok(item) = content.parse::<Item>() {
                             state.team_inventory().add_item(&item);
                         }
                     }
                 }
                 MessageType::Gather => {
-                    println!("Gathering");
-                    let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(*msg.direction(), state.direction().clone()));
+                    let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
                     for tile in state.world_map().clone() {
                         if tile.position() == pos {
                             *state.destination() = Some(tile.clone());
@@ -276,7 +279,6 @@ pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    println!("{}", *state.need_inventory_request());
     if state.time() - *state.last_inventory_request() >= 4 || *state.need_inventory_request() {
         *state.last_inventory_request() = state.time() + 1;
         *state.need_inventory_request() = false;

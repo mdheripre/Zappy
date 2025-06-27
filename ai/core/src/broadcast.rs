@@ -29,7 +29,6 @@ pub struct Message {
     ids: (u32, u32),
     msg_type: MessageType,
     content: Option<String>,
-    direction: u32,
 }
 
 impl Message {
@@ -38,7 +37,6 @@ impl Message {
             ids: (prog_id, msg_id),
             msg_type,
             content,
-            direction: 0,
         }
     }
 
@@ -55,8 +53,6 @@ impl Message {
     }
     
     pub fn content(&self) -> &Option<String> { &self.content }
-    
-    pub fn direction(&self) -> &u32 { &self.direction }
 }
 
 impl fmt::Display for Message {
@@ -101,36 +97,29 @@ impl Broadcast {
     }
 
     fn parse_message(&self, msg: &str) -> Result<Message, String> {
-        let without_prefix = msg
-            .strip_prefix("message ")
-            .ok_or_else(|| "Missing 'message ' prefix".to_string())?;
-        let (direction_str, content) = without_prefix
-            .split_once(", ")
-            .ok_or_else(|| "Expected ', ' separator after direction".to_string())?;
-        let direction: u32 = direction_str
-            .parse()
-            .map_err(|_| format!("Invalid direction (not a number): {}", direction_str))?;
-        let parts: Vec<&str> = content.split(':').collect();
+        let parts: Vec<&str> = msg.split(':').collect();
+
         if parts.len() < 3 {
-            return Err(format!(
-                "Expected at least 3 parts separated by ':', got {}",
-                parts.len()
-            ));
+            return Err("not enough parts".to_string());
         }
+
         let prog_id = parts[0]
             .parse::<u32>()
-            .map_err(|_| format!("Invalid program ID (not a number): {}", parts[0]))?;
+            .map_err(|_| format!("Invalid program id: {}", parts[0]))?;
+
         let msg_id = parts[1]
             .parse::<u32>()
-            .map_err(|_| format!("Invalid message ID (not a number): {}", parts[1]))?;
+            .map_err(|_| format!("Invalid msg id: {}", parts[1]))?;
+
         let msg_type = self.parse_message_type(parts[2])?;
-        let content = match parts.get(3..) {
-            Some(rest) if !rest.is_empty() && !rest.join(":").is_empty() => Some(rest.join(":")),
-            _ => None,
+
+        let content = if parts.len() > 3 && !parts[3].is_empty() {
+            Some(parts[3..].join(":"))
+        } else {
+            None
         };
-        let mut out = Message::new(prog_id, msg_id, msg_type, content);
-        out.direction = direction;
-        Ok(out)
+
+        Ok(Message::new(prog_id, msg_id, msg_type, content))
     }
 
 
