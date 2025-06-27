@@ -113,7 +113,8 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if state.last_command().is_some() {
         return None;
     }
-    if !*state.welcomed() && state.time() >= 5 {
+    if !*state.welcomed() && state.time() >= 10 {
+        println!("Now alpha");
         *state.welcomed() = true;
         *state.alpha() = true;
     }
@@ -121,6 +122,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
         .or_else(|| br_gather(&mut state))
+        .or_else(|| request_inventory(&mut state))
         .or_else(|| {
             state.last_item().clone()
                 .and_then(|item| broadcast_taken_item(&mut state, item))
@@ -251,6 +253,7 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.teammate_nb() <= 10 && state.inventory().food >= 3 {
+        *state.need_inventory_request() = true;
         return forward_command(state, Some(AiCommand::Fork));
     }
     None
@@ -260,6 +263,16 @@ pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.alpha() && state.team_inventory().is_ready() {
         let message = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Gather, None);
         return forward_command(state, Some(AiCommand::Broadcast(message.to_string())));
+    }
+    None
+}
+
+pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    println!("{}", *state.need_inventory_request());
+    if state.time() - *state.last_inventory_request() >= 4 || *state.need_inventory_request() {
+        *state.last_inventory_request() = state.time() + 1;
+        *state.need_inventory_request() = false;
+        return forward_command(state, Some(AiCommand::Inventory))
     }
     None
 }

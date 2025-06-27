@@ -63,6 +63,8 @@ pub struct AiState {
     message_id: u32,
     team_inventory: Inventory,
     last_item: Option<Item>,
+    last_inventory_request: i32,
+    need_inventory_request: bool,
 }
 
 impl AiState {
@@ -87,6 +89,8 @@ impl AiState {
             teammate_nb: 1,
             message_id: 0,
             last_item: None,
+            last_inventory_request: 0,
+            need_inventory_request: false,
         }
     }
 
@@ -116,6 +120,10 @@ impl AiState {
     pub fn set_position(&mut self, new: (i32, i32)) {
         self.position = new
     }
+    
+    pub fn last_inventory_request(&mut self) -> &mut i32 { &mut self.last_inventory_request }
+    
+    pub fn need_inventory_request(&mut self) -> &mut bool { &mut self.need_inventory_request }
 
     pub fn inventory(&mut self) -> &mut Inventory {
         &mut self.inventory
