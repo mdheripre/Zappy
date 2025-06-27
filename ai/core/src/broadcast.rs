@@ -56,6 +56,8 @@ impl Message {
     }
     
     pub fn content(&self) -> &Option<String> { &self.content }
+    
+    pub fn direction(&self) -> &u32 { &self.direction }
 }
 
 impl fmt::Display for Message {

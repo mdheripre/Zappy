@@ -2,6 +2,7 @@ use crate::{ai_state::AiState, broadcast::Message, broadcast::MessageType, item:
 use std::{env, process::Stdio, sync::Arc, time::Duration};
 use tokio::{process::Command, sync::Mutex};
 use tokio::sync::MutexGuard;
+use crate::ai_direction::Direction;
 use crate::tile::Tile;
 
 /// Possible AI command to the server
@@ -115,6 +116,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
+        .or_else(|| br_gather(&mut state))
         .or_else(|| {
             state.last_item().clone()
                 .and_then(|item| broadcast_taken_item(&mut state, item))
@@ -179,7 +181,15 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                         }
                     }
                 }
-                MessageType::Gather => {}
+                MessageType::Gather => {
+                    println!("Gathering");
+                    let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(*msg.direction(), state.direction().clone()));
+                    for tile in state.world_map().clone() {
+                        if tile.position() == pos {
+                            *state.destination() = Some(tile.clone());
+                        }
+                    }
+                }
                 MessageType::Dead => {}
                 MessageType::Need => {}
             }
@@ -240,6 +250,14 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.teammate_nb() >= 10 && state.inventory().food >= 3 {
         return forward_command(state, Some(AiCommand::Fork));
+    }
+    None
+}
+
+pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if *state.alpha() && state.team_inventory().is_ready() {
+        let message = Message::new(*state.client_num() as u32, *state.message_id(), MessageType::Gather, None);
+        return forward_command(state, Some(AiCommand::Broadcast(message.to_string())));
     }
     None
 }

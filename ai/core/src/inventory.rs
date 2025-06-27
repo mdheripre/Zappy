@@ -122,4 +122,26 @@ impl Inventory {
         str.push_str(&self.thystame.to_string());
         str
     }
+    
+    pub fn is_ready(&self) -> bool {
+        if self.linemate < 9 {
+            return false;
+        }
+        if self.deraumere < 8 {
+            return false;
+        }
+        if self.sibur < 10 {
+            return false;
+        }
+        if self.mendiane < 5 {
+            return false;
+        }
+        if self.phiras < 6 {
+            return false;
+        }
+        if self.thystame < 1 {
+            return false;
+        }
+        true
+    }
 }
