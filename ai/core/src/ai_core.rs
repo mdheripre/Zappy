@@ -270,8 +270,8 @@ impl AiCore {
 
         let mut state = self.state.lock().await;
         let last_command = state.last_command().clone();
-        *state.last_command() = None;
         *state.previous_command() = last_command.clone();
+
         match &response {
             ServerResponse::Ok => match last_command {
                 Some(AiCommand::Take(item)) => {
@@ -294,7 +294,7 @@ impl AiCore {
                 Some(AiCommand::Fork) => {
                     spawn_child_process().await?;
                 }
-                Some(AiCommand::Broadcast(msg)) => {}
+                Some(AiCommand::Broadcast(_)) => {}
                 _ => {
                     println!("Received Ok but no command was sent.")
                 }
@@ -321,13 +321,20 @@ impl AiCore {
             ServerResponse::Inventory(food) => {
                 state.inventory().food = *food as usize;
             }
-            ServerResponse::Message(msg) => {
-                if let Err(e) = state.broadcast().receive_message(msg) {
+            ServerResponse::Message(dir, msg) => {
+                if let Err(e) = state.broadcast().receive_message(*dir, msg) {
                     eprintln!("Error in message received: {}", e);
                 }
+                return Ok(());
             }
-            _ => {}
+            ServerResponse::Dead => {
+                state.set_running(false);
+            }
+            ServerResponse::Unknown(msg) => {
+                println!("Unknown or invalid command received: {}", msg)
+            }
         }
+        *state.last_command() = None;
         self.resp_queue
             .send(response)
             .map_err(CoreError::SendChannelErrorSR)
