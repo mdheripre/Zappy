@@ -1,9 +1,13 @@
-use crate::{ai_state::AiState, broadcast::Message, broadcast::MessageType, item::Item, packet::Packet, Result};
+use crate::{
+    ai_state::AiState, broadcast::Message, broadcast::MessageType, item::Item, packet::Packet,
+    Result,
+};
+use rand::{
+    distr::{Alphanumeric, SampleString},
+    Rng,
+};
 use std::{env, process::Stdio, sync::Arc, time::Duration};
 use tokio::{process::Command, sync::Mutex};
-use tokio::sync::MutexGuard;
-use crate::ai_direction::Direction;
-use crate::tile::Tile;
 
 /// Possible AI command to the server
 ///
@@ -90,6 +94,10 @@ pub async fn spawn_child_process() -> Result<()> {
     let child = Command::new(exe_path)
         .args(&args)
         .env("IS_CHILD", "1")
+        .env(
+            "ZAPPY_AI_ID",
+            Alphanumeric.sample_string(&mut rand::rng(), 16),
+        )
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())

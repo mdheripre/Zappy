@@ -9,7 +9,7 @@ AUTO_START="on"
 DISPLAY_EGGS="true"
 TEAMS=("team1" "team2")
 
-SERVER_BINARY="./epitech_binary/zappy_server"
+SERVER_BINARY="./zappy_server"
 
 TEAM_ARGS=()
 for team in "${TEAMS[@]}"; do
@@ -23,5 +23,4 @@ $SERVER_BINARY \
     -n "${TEAM_ARGS[@]}" \
     -c $CLIENTS \
     -f $FREQ \
-    --auto-start $AUTO_START \
-    --display-eggs $DISPLAY_EGGS 
+    -d

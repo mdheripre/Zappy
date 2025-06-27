@@ -37,8 +37,9 @@ pub enum ServerResponse {
     Dead,
     Look(Vec<String>),
     Inventory(i32),
-    Message(String),
+    Message(i32, String),
     ClientNum(i32),
+    Unknown(String),
 }
 
 impl ServerResponse {
@@ -49,32 +50,63 @@ impl ServerResponse {
             "ko" => ServerResponse::Ko,
             "dead" => ServerResponse::Dead,
             s if s.starts_with("[") && s.ends_with("]") && !s.chars().any(|c| c.is_numeric()) => {
-                let items = s[1..s.len() - 1]
-                    .split(',')
-                    .map(|s| s.trim().to_string())
-                    .collect();
-                ServerResponse::Look(items)
+                Self::parse_look_response(s)
             }
             s if s.starts_with("[") && s.ends_with("]") && s.chars().any(|c| c.is_numeric()) => {
-                match Regex::new(r"food (\d+)")
-                    .ok()
-                    .and_then(|re| re.captures(s))
-                    .and_then(|cap| cap.get(1))
-                    .and_then(|mat| mat.as_str().parse().ok())
-                {
-                    Some(food_value) => ServerResponse::Inventory(food_value),
-                    None => ServerResponse::Inventory(0),
-                }
+                Self::parse_inventory_response(s)
             }
-            s if s.starts_with("CLIENT-") => {
-                if let Ok(num) = s[7..].parse::<i32>() {
-                    ServerResponse::ClientNum(num)
-                } else {
-                    ServerResponse::Message(s.to_string())
-                }
-            }
-            s  if s.starts_with("message") => ServerResponse::Message(response.to_string()),
-            _ => ServerResponse::Message("Unknown response".to_string()),
+            s if s.starts_with("CLIENT-") => Self::parse_clientnum_response(s),
+            s if s.starts_with("message ") => Self::parse_message_response(s),
+            _ => ServerResponse::Unknown(response.to_string()),
+        }
+    }
+
+    fn parse_look_response(s: &str) -> Self {
+        let items = s[1..s.len() - 1]
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .collect();
+        ServerResponse::Look(items)
+    }
+
+    fn parse_inventory_response(s: &str) -> Self {
+        match Regex::new(r"food (\d+)")
+            .ok()
+            .and_then(|re| re.captures(s))
+            .and_then(|cap| cap.get(1))
+            .and_then(|mat| mat.as_str().parse().ok())
+        {
+            Some(food_value) => ServerResponse::Inventory(food_value),
+            None => ServerResponse::Inventory(0),
+        }
+    }
+
+    fn parse_clientnum_response(s: &str) -> Self {
+        match s[7..].parse::<i32>() {
+            Ok(num) => ServerResponse::ClientNum(num),
+            Err(_) => ServerResponse::Unknown(s.to_string()),
+        }
+    }
+
+    fn parse_message_response(s: &str) -> Self {
+        let regex = match Regex::new(r"^message\s+(\w+)\s*,\s*(.+)$") {
+            Ok(re) => re,
+            Err(_) => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let caps = match regex.captures(s) {
+            Some(caps) => caps,
+            None => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let (dir, msg) = match (caps.get(1), caps.get(2)) {
+            (Some(dir), Some(msg)) => (dir, msg),
+            _ => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        match dir.as_str().parse::<i32>() {
+            Ok(num) => ServerResponse::Message(num, msg.as_str().to_string()),
+            Err(_) => return ServerResponse::Unknown(s.to_string()),
         }
     }
 }
