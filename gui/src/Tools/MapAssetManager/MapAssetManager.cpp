@@ -41,5 +41,30 @@ namespace tools
         }
         return result;
     }
+
+    std::array<std::unique_ptr<render::IAnimatedSprite>, 7>
+    MapAssetManager::getProps(render::IObjectFactory& factory) const
+    {
+        std::array<std::unique_ptr<render::IAnimatedSprite>, 7> props;
+
+        for (const auto& [res, tuple] : _resourceAssets) {
+            const std::string& file = std::get<0>(tuple);
+            float size = std::get<1>(tuple);
+
+            props[static_cast<int>(res)] = factory.createAnimatedSprite(
+                tools::AssetDefinition(
+                    "gui/assets/Tiny Swords/Resources/Resources/" + file,
+                    { {0, {false, 0, 1}} },
+                    size,
+                    1, 1
+                )
+            );
+            props[static_cast<int>(res)]->playAnimation(0, false);
+        }
+
+        return props;
+    }
+
+
 } // namespace tools
 
