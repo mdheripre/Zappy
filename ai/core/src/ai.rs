@@ -198,11 +198,11 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
-                    let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
-                    for tile in state.world_map().clone() {
-                        if tile.position() == pos {
-                            *state.destination() = Some(tile.clone());
-                        }
+                    if msg.0 != 0 {
+                        let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
+                        let mut tile = Tile::new(0);
+                        tile.set_position(pos);
+                        *state.destination() = Some(tile.clone());
                     }
                 }
                 MessageType::Dead => {}
