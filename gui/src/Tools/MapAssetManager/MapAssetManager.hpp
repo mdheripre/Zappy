@@ -23,7 +23,9 @@ namespace tools
         const AssetDefinition& getTile(gui::Map::MapTileType type) const;
         std::unordered_map<gui::Map::MapTileType,  std::unique_ptr<render::IStaticSprite>>
             getTileSprites(render::IObjectFactory& factory) const;
-
+        std::array<std::unique_ptr<render::IAnimatedSprite>, 7>
+            getProps(render::IObjectFactory& factory) const;
+            
     private:
         std::unordered_map<gui::Map::MapTileType, AssetDefinition> _tiles;
         const std::string _basePathTinySword = "gui/assets/Tiny Swords/Terrain/Ground/";
@@ -39,6 +41,16 @@ namespace tools
             { gui::Map::MapTileType::RIGHT_TOP_GROUND,   "groundTopRightCorner.png" },
             { gui::Map::MapTileType::SEA,                "Water.png" }
         };
+        const std::unordered_map<gui::Tile::Resource, std::tuple<std::string, float>> _resourceAssets = {
+            { gui::Tile::Resource::FOOD,     { "Food.png",      TILE_SIZE } },
+            { gui::Tile::Resource::LINEMATE, { "Linemate.png",  25.f } },
+            { gui::Tile::Resource::DERAUMERE,{ "Deraumere.png", 25.f } },
+            { gui::Tile::Resource::SIBUR,    { "Sibur.png",     25.f } },
+            { gui::Tile::Resource::MENDIANE, { "Mendiane.png",  25.f } },
+            { gui::Tile::Resource::PHIRAS,   { "Phiras.png",    25.f } },
+            { gui::Tile::Resource::THYSTAME, { "Thystame.png",  25.f } }
+        };
+        
     };
 }
 
