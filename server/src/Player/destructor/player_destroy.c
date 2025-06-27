@@ -26,4 +26,5 @@ void player_destroy(player_t *self)
     if (!self)
         return;
     free(self->team_name);
+    self = NULL;
 }
