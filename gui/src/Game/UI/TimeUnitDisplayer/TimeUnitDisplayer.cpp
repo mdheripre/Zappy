@@ -33,9 +33,11 @@ gui::TimeUnitDisplayer::TimeUnitDisplayer(render::IObjectFactory &factory)
     _progressBar->setValue(_timeUnit);
     _progressBar->setPosition({absPos.x + 10.f, absPos.y + absSize.y - 20.f});
     _progressBar->setSize({absSize.x - 20.f, 10.f});
+    _progressBar->setColor({125, 107, 87, 255});
 
     _valueText->setPosition({absPos.x + 10.f, absPos.y + 30.f});
     _valueText->setSize({absSize.x - 20.f, absSize.y - 20.f});
+    _valueText->setColor(tools::Color(51, 51, 51, 255));
     updateText();
 }
 

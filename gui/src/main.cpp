@@ -6,11 +6,7 @@
 */
 
 #include "Core/Core.hpp"
-
-
-#include "raylib.h"
 #include <iostream>
-#include <cmath>
 
 int main(int, char **av, char **env)
 {
