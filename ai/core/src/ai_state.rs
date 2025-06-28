@@ -1,3 +1,4 @@
+use std::slice::GetDisjointMutError;
 use std::time::Instant;
 
 use crate::ai::AiCommand;
@@ -68,6 +69,9 @@ pub struct AiState {
     last_inventory_request: i32,
     need_inventory_request: bool,
     start_time: Instant,
+    ready_to_incant: bool,
+    ready_nb: u32,
+    gathering: bool,
 }
 
 impl AiState {
@@ -94,6 +98,9 @@ impl AiState {
             last_inventory_request: 0,
             need_inventory_request: false,
             start_time: Instant::now(),
+            ready_to_incant: false,
+            ready_nb: 0,
+            gathering: false,
         }
     }
 
@@ -259,6 +266,30 @@ impl AiState {
 
     pub fn broadcast_mut(&mut self) -> &mut Broadcast {
         &mut self.broadcast
+    }
+    
+    pub fn ready_to_incant(&self) -> bool {
+        self.ready_to_incant
+    }
+    
+    pub fn ready_to_incant_mut(&mut self) -> &mut bool {
+        &mut self.ready_to_incant
+    }
+    
+    pub fn ready_nb(&self) -> u32 {
+        self.ready_nb
+    }
+    
+    pub fn ready_nb_mut(&mut self) -> &mut u32 {
+        &mut self.ready_nb
+    }
+    
+    pub fn gathering(&self) -> bool {
+        self.gathering
+    }
+    
+    pub fn gathering_mut(&mut self) -> &mut bool {
+        &mut self.gathering
     }
 
     pub fn uptime(&self) -> time::Duration {

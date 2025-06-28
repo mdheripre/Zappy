@@ -90,9 +90,9 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
+//        .stdin(Stdio::null())
+//        .stdout(Stdio::null())
+//        .stderr(Stdio::null())
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
@@ -110,8 +110,11 @@ pub async fn spawn_child_process() -> Result<()> {
 pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let mut state = state.lock().await;
 
-    if state.last_command().is_some() {
+    if state.last_command().is_some() || state.ready_to_incant() {
         return None;
+    }
+    if state.gathering() {
+        return interpret_broadcast(&mut state);
     }
     if !*state.welcomed() && state.time() >= 30 {
         *state.welcomed_mut() = true;
@@ -234,16 +237,21 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
-                    if msg.0 != 0 {
-                        let pos = Direction::add_to_pos(state.position(), Direction::get_direction_from_nb(msg.0 as u32, state.direction().clone()));
-                        let mut tile = Tile::new(0);
-                        tile.position_mut(pos);
-                        *state.destination_mut() = Some(tile.clone());
-                    } else {
-                        return forward_command(state, Some(AiCommand::Broadcast(state.new_message(MessageType::Here, None))))
+                    *state.gathering_mut() = true;
+                    return match msg.0 {
+                        0 => {
+                            *state.ready_to_incant_mut() = true;
+                            forward_command(state, Some(AiCommand::Broadcast(state.new_message(MessageType::Here, None))))
+                        },
+                        1 | 2 | 8 => forward_command(state, Some(AiCommand::Forward)),
+                        3 => forward_command(state, Some(AiCommand::Left)),
+                        7 => forward_command(state, Some(AiCommand::Right)),
+                        _ => forward_command(state, Some(AiCommand::Left))
                     }
                 }
-                MessageType::Here => {}
+                MessageType::Here => {
+                    *state.ready_nb_mut() += 1;
+                }
                 MessageType::Dead => {}
                 MessageType::Need => {}
             }
