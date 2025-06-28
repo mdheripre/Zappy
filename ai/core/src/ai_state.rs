@@ -72,6 +72,7 @@ pub struct AiState {
     ready_to_incant: bool,
     ready_nb: u32,
     gathering: bool,
+    gather_lock: bool
 }
 
 impl AiState {
@@ -101,6 +102,7 @@ impl AiState {
             ready_to_incant: false,
             ready_nb: 0,
             gathering: false,
+            gather_lock: false,
         }
     }
 
@@ -290,6 +292,14 @@ impl AiState {
     
     pub fn gathering_mut(&mut self) -> &mut bool {
         &mut self.gathering
+    }
+    
+    pub fn gather_lock(&self) -> bool {
+        self.gather_lock
+    }
+    
+    pub fn gather_lock_mut(&mut self) -> &mut bool {
+        &mut self.gather_lock
     }
 
     pub fn uptime(&self) -> time::Duration {

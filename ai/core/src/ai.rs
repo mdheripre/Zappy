@@ -90,9 +90,9 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-//        .stdin(Stdio::null())
-//        .stdout(Stdio::null())
-//        .stderr(Stdio::null())
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
@@ -237,6 +237,10 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
+                    if state.gather_lock() {
+                        return None;
+                    }
+                    *state.gather_lock_mut() = true;
                     *state.gathering_mut() = true;
                     return match msg.0 {
                         0 => {
@@ -244,8 +248,8 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                             forward_command(state, Some(AiCommand::Broadcast(state.new_message(MessageType::Here, None))))
                         },
                         1 | 2 | 8 => forward_command(state, Some(AiCommand::Forward)),
-                        3 => forward_command(state, Some(AiCommand::Left)),
-                        7 => forward_command(state, Some(AiCommand::Right)),
+                        3 | 4 | 5 => forward_command(state, Some(AiCommand::Left)),
+                        6 | 7 => forward_command(state, Some(AiCommand::Right)),
                         _ => forward_command(state, Some(AiCommand::Left))
                     }
                 }
