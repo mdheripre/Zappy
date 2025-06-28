@@ -207,6 +207,8 @@ impl AiCore {
                     if ai_cmd_queue.send(cmd).is_err() {
                         break;
                     }
+                } else {
+                    continue;
                 }
                 // block until the server respond, the state has already been updated.
                 // You can use the response type for more decision control

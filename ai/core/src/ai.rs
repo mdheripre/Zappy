@@ -237,6 +237,7 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
+                    println!("gather received AAAAAAAAAAAAA {:?}", state.client_num());
                     *state.gathering_mut() = true;
                     return match msg.0 {
                         0 => {
