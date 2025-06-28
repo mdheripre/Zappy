@@ -28,5 +28,6 @@ target_link_libraries(zappy_gui
     sfml-graphics
     sfml-window
     sfml-system
+    sfml-audio
 )
 

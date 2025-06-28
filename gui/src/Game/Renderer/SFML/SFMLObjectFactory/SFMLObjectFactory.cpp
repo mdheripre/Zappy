@@ -153,5 +153,29 @@ std::unique_ptr<render::IAnimatedSprite> SFMLObjectFactory::createAnimatedSprite
     );
 }
 
+/**
+ * @brief Creates a sound object for playback.
+ * @details Loads (or retrieves from cache) an sf::SoundBuffer from the provided file path,
+ * then instantiates an SFMLSound to manage playback, looping, pausing, stopping, and resetting.
+ * Caching the buffer avoids redundant reloads on repeated calls.
+ *
+ * @param soundPath Reference to a std::string containing the path to the audio file to load.
+ * @return std::unique_ptr<render::ISound> Unique pointer to the created sound instance.
+ * @throws std::runtime_error If loading the buffer fails (e.g., file not found or invalid format).
+ */
+
+std::unique_ptr<render::ISound> SFMLObjectFactory::createSound(const std::string &soundPath)
+{
+    auto it = _soundBufferMap.find(soundPath);
+    if (it == _soundBufferMap.end()) {
+        sf::SoundBuffer buffer;
+        if (!buffer.loadFromFile(soundPath))
+            throw std::runtime_error("Failed to load sound: " + soundPath);
+        auto result = _soundBufferMap.emplace(soundPath, std::move(buffer));
+        it = result.first;
+    }
+    return std::make_unique<SFMLSound>(it->second);
+}
+
 } // namespace sfml
 

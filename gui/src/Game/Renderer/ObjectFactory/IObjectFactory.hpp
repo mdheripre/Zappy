@@ -12,6 +12,7 @@
 #include "Game/Renderer/Object/ICanva.hpp"
 #include "Game/Renderer/Object/IText.hpp"
 #include "Game/Renderer/Object/IProgressBar.hpp"
+#include "Game/Renderer/Sound/ISound.hpp"
 #include "Tools/Color/Color.hpp"
 #include <memory>
 
@@ -29,5 +30,6 @@ namespace render
         virtual std::unique_ptr<IObject> createRectangle() const = 0;
         virtual std::unique_ptr<IObject> createRoundedRectangle(int radius) const = 0;
         virtual std::unique_ptr<IProgressBar> createProgressBar() const = 0;
+        virtual std::unique_ptr<ISound> createSound(const std::string &soundPath) = 0;
     };
 } // namespace render

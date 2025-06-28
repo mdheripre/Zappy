@@ -11,6 +11,7 @@
 #include "Game/Renderer/ObjectFactory/IObjectFactory.hpp"
 #include "Tools/Input/Input.hpp"
 #include <functional>
+#include <vector>
 
 namespace render
 {

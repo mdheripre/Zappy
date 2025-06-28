@@ -16,6 +16,7 @@
 #include "Tools/Input/Input.hpp"
 #include "Tools/Define.hpp"
 #include "Game/UI/UI.hpp"
+#include "Game/Renderer/Sound/ISound.hpp"
 #include <chrono>
 #include <sstream>
 #include <thread>
@@ -44,6 +45,7 @@ namespace game
             std::shared_ptr<gui::UI> _ui;
             tools::TeamBrandingManager _tbManager;
             tools::MapAssetManager _maManager;
+            std::unique_ptr<render::ISound> _mainSound;
 
             void welcomeCm(const std::vector<std::string> &token);
             void mszCommand(const std::vector<std::string> &token);
@@ -121,6 +123,7 @@ namespace game
                 { tools::KeyCode::E,     [this]() { _ui->changeEventVisibility();}},
                 { tools::KeyCode::Y,     [this]() { _ui->changePlayerVisibility();}},
                 { tools::KeyCode::T,     [this]() { _ui->changeTimeVisibility();}},
+                { tools::KeyCode::Q,     [this]() { _mainSound->changeState();}},
             };
     };
 } // namespace Game
