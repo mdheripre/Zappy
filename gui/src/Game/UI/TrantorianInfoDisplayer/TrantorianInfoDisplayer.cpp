@@ -50,6 +50,7 @@ namespace gui {
     _currentAction = factory.createText("gui/assets/Fonts/SpaceMono-Regular.ttf");
     _currentAction->setText("Idle");
     _currentAction->setCharacterSize(20);
+    _currentAction->setColor(tools::Color(51, 51, 51, 255));
     tools::Vector2<float> absPos(
         (_left + padding) * WIDTH_WINDOW,
         (baseTop + 2 * (blockHeight + padding)) * HEIGHT_WINDOW + 160

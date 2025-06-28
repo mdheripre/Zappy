@@ -33,6 +33,8 @@ game::Game::Game(std::shared_ptr<tools::MessageQueue> incoming,
     _renderer->setBindings(bindings);
     _ui = std::make_shared<gui::UI>(_renderer->getFactory());
     _renderer->setUI(_ui);
+    _mainSound = _renderer->getFactory().createSound("gui/assets/Sound/Surf Rider.mp3");
+    _mainSound->play(true);
 }
 
 /**

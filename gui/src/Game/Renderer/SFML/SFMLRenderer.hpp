@@ -52,6 +52,7 @@ namespace sfml
             { sf::Keyboard::Y,     tools::KeyCode::Y },
             { sf::Keyboard::T,     tools::KeyCode::T },
             { sf::Keyboard::R,     tools::KeyCode::R },
+            { sf::Keyboard::Q,     tools::KeyCode::Q },
         };
     private:
         void handleMouseInteraction();

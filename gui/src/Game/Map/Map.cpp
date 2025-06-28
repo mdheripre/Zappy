@@ -84,20 +84,23 @@ void gui::Map::drawProps(const Tile &tile, const tools::Vector2<float> &tilePos)
         if (_propsObject[i] && ress[i] > 0) {
             int cellX = placed % 3;
             int cellY = placed / 3;
-            tools::Vector2<float>  offset(
-                (cellX - 1) * cellSizeX,
-                (cellY - 1) * cellSizeY
+
+            tools::Vector2<float> propPos(
+                tilePos.x + cellX * cellSizeX + cellSizeX / 2.f,
+                tilePos.y + cellY * cellSizeY + cellSizeY / 2.f
             );
-            tools::Vector2<float>  propPos(
-                tilePos.x + offset.x,
-                tilePos.y + offset.y
-            );
-            _propsObject[i]->setPosition(tools::Vector2<float> (propPos.x, propPos.y));
+
+            tools::Vector2<float> size = _propsObject[i]->getSize();
+            propPos.x -= size.x / 2.f;
+            propPos.y -= size.y / 2.f;
+    
+            _propsObject[i]->setPosition(propPos);
             _propsObject[i]->drawObject();
             ++placed;
         }
     }
 }
+
 
 /**
  * @brief Draws the Sea tiles.

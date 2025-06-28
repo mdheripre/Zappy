@@ -45,7 +45,8 @@ void game::Game::mszCommand(const std::vector<std::string> &token)
     std::shared_ptr<gui::Map> map = std::make_shared<gui::Map>(
         size.x,
         size.y,
-        _maManager.getTileSprites(_renderer->getFactory())
+        _maManager.getTileSprites(_renderer->getFactory()),
+        _maManager.getProps(_renderer->getFactory())
     );
     _gm.map = map;
     _renderer->pushEntity(map);
@@ -587,9 +588,6 @@ void game::Game::pdrCommand(const std::vector<std::string> &token)
     if (it != _gm.trantorians.end()) {
         tools::Vector2<int> pos = it->second->getPosition();
 
-        _gm.map->popResource(res, pos);
-        it->second->removeFromInventory(res);
-
         std::cout << "[PDR] --- Resource dropped ---" << std::endl;
         std::cout << "    ID       : " << id << std::endl;
         std::cout << "    Position : (" << pos.x << ", " << pos.y << ")" << std::endl;
@@ -629,9 +627,6 @@ void game::Game::pgtCommand(const std::vector<std::string> &token)
     auto it = _gm.trantorians.find(id);
     if (it != _gm.trantorians.end()) {
         tools::Vector2<int> pos = it->second->getPosition();
-
-        _gm.map->pushResource(res, pos);
-        it->second->addToInventory(res);
 
         std::cout << "[PGT] --- Resource taken ---" << std::endl;
         std::cout << "    ID       : " << id << std::endl;
