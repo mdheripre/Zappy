@@ -93,7 +93,6 @@ impl Broadcast {
 
     pub fn receive_message(&mut self, dir: i32, msg: &str) -> Result<(), String> {
         let parsed_msg = self.parse_message(msg)?;
-
         self.is_valid_message(&parsed_msg)?;
         self.received.insert(0, (dir, parsed_msg));
         Ok(())

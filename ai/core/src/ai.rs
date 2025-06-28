@@ -90,9 +90,9 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
+//        .stdin(Stdio::null())
+//        .stdout(Stdio::null())
+//        .stderr(Stdio::null())
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
@@ -113,9 +113,6 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if state.last_command().is_some() || state.ready_to_incant() {
         return None;
     }
-    if state.gathering() {
-        return interpret_broadcast(&mut state);
-    }
     if !*state.welcomed() && state.time() >= 30 {
         *state.welcomed_mut() = true;
         *state.alpha_mut() = true;
@@ -123,6 +120,10 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if is_dying(&mut state) {
         let msg = state.new_message(MessageType::Dead, None);
         return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
+    }
+    if state.gathering() {
+        let command = interpret_broadcast(&mut state);
+        return forward_command(&mut state, command);
     }
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
@@ -237,10 +238,6 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
-                    if state.gather_lock() {
-                        return None;
-                    }
-                    *state.gather_lock_mut() = true;
                     *state.gathering_mut() = true;
                     return match msg.0 {
                         0 => {

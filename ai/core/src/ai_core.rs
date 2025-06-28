@@ -285,15 +285,12 @@ impl AiCore {
                     state.add_item_to_map(&item);
                 }
                 Some(AiCommand::Forward) => {
-                    *state.gather_lock_mut() = false;
                     state.forward();
                 }
                 Some(AiCommand::Left) => {
-                    *state.gather_lock_mut() = false;
                     *state.direction_mut() = state.direction().left();
                 }
                 Some(AiCommand::Right) => {
-                    *state.gather_lock_mut() = false;
                     *state.direction_mut() = state.direction().right();
                 }
                 Some(AiCommand::Fork) => {
