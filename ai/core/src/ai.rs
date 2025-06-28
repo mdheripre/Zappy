@@ -122,8 +122,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
     }
     if state.gathering() {
-        let command = interpret_broadcast(&mut state);
-        return forward_command(&mut state, command);
+        return interpret_broadcast(&mut state);
     }
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
@@ -329,8 +328,15 @@ pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 
 pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if *state.alpha() && state.team_inventory().is_ready() {
-        let message = state.new_message(MessageType::Gather, None);
-        return forward_command(state, Some(AiCommand::Broadcast(message)));
+        match state.previous_command() {
+            Some(AiCommand::Broadcast(_)) => {
+                return forward_command(state, Some(AiCommand::Look));
+            }
+            _ => {
+                let message = state.new_message(MessageType::Gather, None);
+                return forward_command(state, Some(AiCommand::Broadcast(message)));
+            }
+        }
     }
     None
 }
