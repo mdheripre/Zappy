@@ -72,6 +72,7 @@ pub struct AiState {
     ready_to_incant: bool,
     ready_nb: u32,
     gathering: bool,
+    teammates_with_enough_food: u32,
 }
 
 impl AiState {
@@ -101,6 +102,7 @@ impl AiState {
             ready_to_incant: false,
             ready_nb: 0,
             gathering: false,
+            teammates_with_enough_food: 0,
         }
     }
 
@@ -292,6 +294,14 @@ impl AiState {
         &mut self.ready_nb
     }
     
+    pub fn teammates_with_enough_food(&self) -> u32 {
+        self.teammates_with_enough_food
+    }
+    
+    pub fn teammates_with_enough_food_mut(&mut self) -> &mut u32 {
+        &mut self.teammates_with_enough_food
+    }
+    
     pub fn uptime(&self) -> time::Duration {
         self.start_time.elapsed()
     }
@@ -309,20 +319,21 @@ impl AiState {
     /// # Returns
     /// - `Option<Tile>` - The tile with the highest value based on the items needed and distance.
     pub fn chose_destination_tile(&self) -> Option<Tile> {
+        let missing_over_distance_ratio: f64 = 3.0;
         let mut max_value: f64 = 0.0;
         let mut selected_tile: Option<Tile> = None;
         for tile in &self.world_map {
             let mut value: f64 = 0.0;
             let mut distance: f64 = tile.distance(self.position);
             if distance == 0.0 {
-                distance = 0.5
+                distance = 0.1
             }
             for item in tile.items() {
                 if *item.0 == Item::Food {
-                    value += (item.0.needed() as f64 - self.inventory.get_count(item.0) as f64)
+                    value += ((item.0.needed() as f64 - self.inventory.get_count(item.0) as f64) * missing_over_distance_ratio)
                         / (item.0.probability() * distance)
                 } else {
-                    value += (item.0.needed() as f64 - self.team_inventory.get_count(item.0) as f64)
+                    value += ((item.0.needed() as f64 - self.team_inventory.get_count(item.0) as f64) * missing_over_distance_ratio)
                         / (item.0.probability() * distance)
                 }
             }

@@ -128,6 +128,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if let Some(command) = send_hello(&mut state)
         .or_else(|| interpret_broadcast(&mut state))
         .or_else(|| br_gather(&mut state))
+        .or_else(|| broadcast_food_ready(&mut state))
         .or_else(|| request_inventory(&mut state))
         .or_else(|| dead_command(&mut state))
         .or_else(|| {
@@ -255,6 +256,9 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                 }
                 MessageType::Dead => {}
                 MessageType::Need => {}
+                MessageType::Food => {
+                    *state.teammates_with_enough_food_mut() += 1;
+                }
             }
         }
     }
@@ -320,7 +324,7 @@ pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> 
 }
 
 pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb_mut() <= 10 && state.inventory().food() >= 3 && *state.alpha() {
+    if *state.teammate_nb_mut() <= 15 && state.inventory().food() >= 3 && *state.alpha() {
         *state.need_inventory_request_mut() = true;
         return forward_command(state, Some(AiCommand::Fork));
     }
@@ -328,7 +332,7 @@ pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.alpha() && state.team_inventory().is_ready() {
+    if *state.alpha() && state.team_inventory().is_ready() && state.teammates_with_enough_food() >= 10 {
         match state.previous_command() {
             Some(AiCommand::Broadcast(_)) => {
                 return forward_command(state, Some(AiCommand::Look));
@@ -347,6 +351,14 @@ pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiComman
         *state.last_inventory_request_mut() = state.time() + 1;
         *state.need_inventory_request_mut() = false;
         return forward_command(state, Some(AiCommand::Inventory));
+    }
+    None
+}
+
+pub fn broadcast_food_ready(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if state.inventory().food() >= 25 {
+        let msg = state.new_message(MessageType::Food, None);
+        forward_command(state, Some(AiCommand::Broadcast(msg)));
     }
     None
 }
