@@ -87,4 +87,26 @@ impl Direction {
             }
         }
     }
+
+    pub fn get_direction_from_nb(direction: u32, look_direction: Direction) -> Direction {
+        if direction == 1 || direction == 2 || direction == 8 {
+            return look_direction;
+        }
+        if direction == 3 {
+            return look_direction.left();
+        }
+        if direction == 7 {
+            return look_direction.right();
+        }
+        look_direction.right().right()
+    }
+
+    pub fn add_to_pos(pos: (i32, i32), direction: Direction) -> (i32, i32) {
+        match direction {
+            Direction::North => (pos.0, pos.1 - 1),
+            Direction::East => (pos.0 + 1, pos.1),
+            Direction::South => (pos.0, pos.1 + 1),
+            Direction::West => (pos.0 - 1, pos.1),
+        }
+    }
 }

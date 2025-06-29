@@ -27,6 +27,30 @@ pub struct ClientInfos {
     pub y: i32,
 }
 
+/// Handshake protocol with the server
+///
+/// # Arguments
+///
+/// - `client` (`&mut AsyncTcpClient`) - TCP client tool.
+/// - `infos` (`&ServerInfos`) - Server connection informations.
+///
+/// # Returns
+///
+/// - `Result<ClientInfos>` - Informations sent by the server.
+///
+/// # Errors
+///
+/// CoreError::InvalidResponse.
+///
+/// # Examples
+///
+/// ```no_run
+/// use crate::...;
+///
+/// async {
+///   let result = handshake().await;
+/// };
+/// ```
 async fn handshake(client: &mut AsyncTcpClient, infos: &ServerInfos) -> Result<ClientInfos> {
     let response = client.recv_until(b'\n').await?;
     if response != "WELCOME\n" {

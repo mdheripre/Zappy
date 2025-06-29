@@ -1,10 +1,15 @@
 use core::fmt;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub enum MessageType {
     Gather,
     Dead,
     Need,
+    Hello,
+    Welcome,
+    Item,
+    Here,
 }
 
 impl fmt::Display for MessageType {
@@ -13,6 +18,10 @@ impl fmt::Display for MessageType {
             MessageType::Gather => "GATHER".to_string(),
             MessageType::Dead => "DEAD".to_string(),
             MessageType::Need => "NEED".to_string(),
+            MessageType::Hello => "HELLO".to_string(),
+            MessageType::Welcome => "WELCOME".to_string(),
+            MessageType::Item => "ITEM".to_string(),
+            MessageType::Here => "HERE".to_string(),
         };
         write!(f, "{}", out)
     }
@@ -45,6 +54,10 @@ impl Message {
     pub fn msg_type(&self) -> &MessageType {
         &self.msg_type
     }
+
+    pub fn content(&self) -> &Option<String> {
+        &self.content
+    }
 }
 
 impl fmt::Display for Message {
@@ -63,28 +76,25 @@ impl fmt::Display for Message {
 #[derive(Debug, Clone)]
 pub struct Broadcast {
     received: Vec<(i32, Message)>,
-    sent: Vec<Message>,
-    key: u32,
+    sent: Vec<(Message, u64)>,
 }
 
 impl Broadcast {
-    pub fn new(key: u32) -> Self {
+    pub fn new() -> Self {
         Self {
             received: vec![],
             sent: vec![],
-            key,
         }
     }
 
-    pub fn send_message(&mut self, msg: Message) {
+    pub fn send_message(&mut self, msg: (Message, u64)) {
         self.sent.push(msg);
     }
 
-    pub fn receive_message(&mut self, dir: i32, msg: &String) -> Result<(), String> {
-        let parsed_msg = self.parse_message(&msg)?;
-
+    pub fn receive_message(&mut self, dir: i32, msg: &str) -> Result<(), String> {
+        let parsed_msg = self.parse_message(msg)?;
         self.is_valid_message(&parsed_msg)?;
-        self.received.push((dir, parsed_msg));
+        self.received.insert(0, (dir, parsed_msg));
         Ok(())
     }
 
@@ -119,6 +129,10 @@ impl Broadcast {
             "GATHER" => Ok(MessageType::Gather),
             "NEED" => Ok(MessageType::Need),
             "DEAD" => Ok(MessageType::Dead),
+            "HELLO" => Ok(MessageType::Hello),
+            "WELCOME" => Ok(MessageType::Welcome),
+            "ITEM" => Ok(MessageType::Item),
+            "HERE" => Ok(MessageType::Here),
             _ => Err(format!("Invalid msg type: {}", type_str)),
         }
     }
@@ -138,11 +152,19 @@ impl Broadcast {
         Ok(())
     }
 
-    pub fn get_sent_messages(&self) -> &[Message] {
+    pub fn sent(&self) -> &[(Message, u64)] {
         &self.sent
     }
 
     pub fn get_received_messages(&self) -> &[(i32, Message)] {
         &self.received
+    }
+
+    pub fn pop_received(&mut self) -> Option<(i32, Message)> {
+        self.received.pop()
+    }
+
+    pub fn clear(&mut self) {
+        self.received.clear();
     }
 }

@@ -14,19 +14,19 @@ use crate::item::Item;
 ///
 #[derive(Clone, Debug)]
 pub struct Inventory {
-    pub food: usize,
-    pub linemate: usize,
-    pub deraumere: usize,
-    pub sibur: usize,
-    pub mendiane: usize,
-    pub phiras: usize,
-    pub thystame: usize,
+    food: usize,
+    linemate: usize,
+    deraumere: usize,
+    sibur: usize,
+    mendiane: usize,
+    phiras: usize,
+    thystame: usize,
 }
 
 impl Inventory {
     pub fn new() -> Self {
         Inventory {
-            food: 0,
+            food: 10,
             linemate: 0,
             deraumere: 0,
             sibur: 0,
@@ -34,6 +34,62 @@ impl Inventory {
             phiras: 0,
             thystame: 0,
         }
+    }
+
+    pub fn food(&self) -> usize {
+        self.food
+    }
+
+    pub fn food_mut(&mut self) -> &mut usize {
+        &mut self.food
+    }
+
+    pub fn linemate(&self) -> usize {
+        self.linemate
+    }
+
+    pub fn linemate_mut(&mut self) -> &mut usize {
+        &mut self.linemate
+    }
+
+    pub fn deraumere(&self) -> usize {
+        self.deraumere
+    }
+
+    pub fn deraumere_mut(&mut self) -> &mut usize {
+        &mut self.deraumere
+    }
+
+    pub fn sibur(&self) -> usize {
+        self.sibur
+    }
+
+    pub fn sibur_mut(&mut self) -> &mut usize {
+        &mut self.sibur
+    }
+
+    pub fn mendiane(&self) -> usize {
+        self.mendiane
+    }
+
+    pub fn mendiane_mut(&mut self) -> &mut usize {
+        &mut self.mendiane
+    }
+
+    pub fn phiras(&self) -> usize {
+        self.phiras
+    }
+
+    pub fn phiras_mut(&mut self) -> &mut usize {
+        &mut self.phiras
+    }
+
+    pub fn thystame(&self) -> usize {
+        self.thystame
+    }
+
+    pub fn thystame_mut(&mut self) -> &mut usize {
+        &mut self.thystame
     }
 
     /// Add an item to the inventory.
@@ -105,5 +161,71 @@ impl Inventory {
             Item::Phiras => self.phiras,
             Item::Thystame => self.thystame,
         }
+    }
+
+    pub fn as_broadcast(&self) -> String {
+        let mut str: String = String::new();
+        str.push_str(&self.linemate.to_string());
+        str.push(':');
+        str.push_str(&self.deraumere.to_string());
+        str.push(':');
+        str.push_str(&self.sibur.to_string());
+        str.push(':');
+        str.push_str(&self.mendiane.to_string());
+        str.push(':');
+        str.push_str(&self.phiras.to_string());
+        str.push(':');
+        str.push_str(&self.thystame.to_string());
+        str
+    }
+
+    pub fn is_ready(&self) -> bool {
+        if self.linemate < 9 {
+            return false;
+        }
+        if self.deraumere < 8 {
+            return false;
+        }
+        if self.sibur < 10 {
+            return false;
+        }
+        if self.mendiane < 5 {
+            return false;
+        }
+        if self.phiras < 6 {
+            return false;
+        }
+        if self.thystame < 1 {
+            return false;
+        }
+        true
+    }
+
+    pub fn get_any_item(&self) -> Option<Item> {
+        match () {
+            _ if self.linemate > 0 => Some(Item::Linemate),
+            _ if self.deraumere > 0 => Some(Item::Deraumere),
+            _ if self.sibur > 0 => Some(Item::Sibur),
+            _ if self.mendiane > 0 => Some(Item::Mendiane),
+            _ if self.phiras > 0 => Some(Item::Phiras),
+            _ if self.thystame > 0 => Some(Item::Thystame),
+            _ => None,
+        }
+    }
+
+    pub fn compare(&self, other: &Inventory) -> bool {
+        self.linemate() >= other.linemate()
+            && self.deraumere() >= other.deraumere()
+            && self.sibur() >= other.sibur()
+            && self.phiras() >= other.phiras()
+            && self.thystame() >= other.thystame()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.linemate() == 0
+            && self.deraumere() == 0
+            && self.sibur() == 0
+            && self.phiras() == 0
+            && self.thystame() == 0
     }
 }

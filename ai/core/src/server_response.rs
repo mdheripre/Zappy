@@ -106,7 +106,7 @@ impl ServerResponse {
 
         match dir.as_str().parse::<i32>() {
             Ok(num) => ServerResponse::Message(num, msg.as_str().to_string()),
-            Err(_) => return ServerResponse::Unknown(s.to_string()),
+            Err(_) => ServerResponse::Unknown(s.to_string()),
         }
     }
 }

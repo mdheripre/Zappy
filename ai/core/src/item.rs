@@ -47,7 +47,7 @@ impl fmt::Display for Item {
             Item::Deraumere => "deraumere",
             Item::Sibur => "sibur",
             Item::Mendiane => "mendiane",
-            Item::Phiras => "Phiras",
+            Item::Phiras => "phiras",
             Item::Thystame => "thystame",
         };
         write!(f, "{}", s)
@@ -72,6 +72,17 @@ impl FromStr for Item {
 }
 
 impl Item {
+    pub fn all_items() -> [Item; 7] {
+        [
+            Self::Food,
+            Self::Linemate,
+            Self::Deraumere,
+            Self::Sibur,
+            Self::Mendiane,
+            Self::Phiras,
+            Self::Thystame,
+        ]
+    }
     /// Get the probability of finding the item on a tile.
     /// # Returns
     /// - `f64` - The probability of finding the item.
@@ -92,7 +103,7 @@ impl Item {
     /// - `i32` - The number of items needed.
     pub fn needed(&self) -> i32 {
         match self {
-            Item::Food => 10,
+            Item::Food => 25,
             Item::Linemate => 9,
             Item::Deraumere => 8,
             Item::Sibur => 10,
