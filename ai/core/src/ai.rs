@@ -117,15 +117,8 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         *state.welcomed_mut() = true;
         *state.alpha_mut() = true;
     }
-    if is_dying(&mut state) {
-        let msg = state.new_message(MessageType::Dead, None);
-        return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
-    }
     if state.ready_to_incant() && !state.alpha() && !state.inventory().is_empty() {
         return drop_item(&mut state);
-    }
-    if state.gathering() {
-        return interpret_broadcast(&mut state);
     }
     update_destination(&mut state);
     if let Some(command) = send_hello(&mut state)
@@ -333,7 +326,7 @@ fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if state.alpha() && state.team_inventory().is_ready() {
+    if state.alpha() && state.team_inventory().is_ready() && state.inventory().food() >= 15 {
         match state.previous_command() {
             Some(AiCommand::Broadcast(_)) => {
                 if let Some(command) = try_incantation(state) {

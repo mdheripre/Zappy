@@ -8,7 +8,7 @@ use crate::ai_state::AiState;
 use crate::init::init_client;
 use crate::packet::{Packet, PacketSender};
 use crate::server_response::ServerResponse;
-use crate::tile::Tile;
+use crate::tile::{self, Tile};
 use crate::{CoreError, Result, ServerInfos};
 
 /// Ai core structure for thread communication and main loop
@@ -302,6 +302,19 @@ impl AiCore {
                     let elapsed_time = state.uptime().as_millis() as u64;
                     state.broadcast_mut().send_message((msg, elapsed_time));
                 }
+                Some(AiCommand::Eject) => {
+                    let current_pos = state.position();
+
+                    match state
+                    .world_map_mut()
+                    .iter_mut()
+                    .find(|tile| tile.position() == current_pos) {
+                        Some(tile) => {
+                            *tile.nb_players_mut() = 0;
+                        },
+                        _ => println!("No tile found to eject"),
+                    }
+                }
                 _ => {
                     println!("Received Ok but no command was sent.")
                 }
@@ -339,6 +352,10 @@ impl AiCore {
             }
             ServerResponse::Unknown(msg) => {
                 println!("Unknown or invalid command received: {}", msg)
+            }
+            ServerResponse::Eject(direction) => {
+                state.position_mut().0 += direction.0;
+                state.position_mut().1 += direction.1;
             }
         }
         *state.last_command_mut() = None;

@@ -88,7 +88,7 @@ impl Item {
     /// - `f64` - The probability of finding the item.
     pub fn probability(&self) -> f64 {
         match self {
-            Item::Food => 0.5,
+            Item::Food => 0.3,
             Item::Linemate => 0.3,
             Item::Deraumere => 0.15,
             Item::Sibur => 0.1,
@@ -103,7 +103,7 @@ impl Item {
     /// - `i32` - The number of items needed.
     pub fn needed(&self) -> i32 {
         match self {
-            Item::Food => 25,
+            Item::Food => 30,
             Item::Linemate => 9,
             Item::Deraumere => 8,
             Item::Sibur => 10,

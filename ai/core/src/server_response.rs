@@ -1,5 +1,7 @@
 use regex::Regex;
 
+use crate::ai_direction::Direction;
+
 /// Possible responses from the server.
 ///
 /// # Variants
@@ -39,6 +41,7 @@ pub enum ServerResponse {
     Inventory(i32),
     Message(i32, String),
     ClientNum(i32),
+    Eject((i32, i32)),
     Unknown(String),
 }
 
@@ -56,6 +59,7 @@ impl ServerResponse {
                 Self::parse_inventory_response(s)
             }
             s if s.starts_with("CLIENT-") => Self::parse_clientnum_response(s),
+            s if s.starts_with("eject") => Self::parse_eject_response(s),
             s if s.starts_with("message ") => Self::parse_message_response(s),
             _ => ServerResponse::Unknown(response.to_string()),
         }
@@ -108,5 +112,31 @@ impl ServerResponse {
             Ok(num) => ServerResponse::Message(num, msg.as_str().to_string()),
             Err(_) => ServerResponse::Unknown(s.to_string()),
         }
+    }
+
+    fn parse_eject_response(s: &str) -> Self {
+        let regex = match Regex::new(r"eject\s*:\s*([NSEW])\s*\\?\s*n?") {
+            Ok(re) => re,
+            Err(_) => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let caps = match regex.captures(s) {
+            Some(caps) => caps,
+            None => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let direction_str = match caps.get(1) {
+            Some(dir) => dir.as_str(),
+            None => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let direction = match direction_str {
+            "N" => (1, 0),
+            "S" => (-1, 0),
+            "E" => (0, 1),
+            "W" => (1, 0),
+            _ => return ServerResponse::Unknown(s.to_string()),
+        };
+        ServerResponse::Eject(direction)
     }
 }
