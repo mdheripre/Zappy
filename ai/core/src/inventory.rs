@@ -200,4 +200,32 @@ impl Inventory {
         }
         true
     }
+
+    pub fn get_any_item(&self) -> Option<Item> {
+        match () {
+            _ if self.linemate > 0 => Some(Item::Linemate),
+            _ if self.deraumere > 0 => Some(Item::Deraumere),
+            _ if self.sibur > 0 => Some(Item::Sibur),
+            _ if self.mendiane > 0 => Some(Item::Mendiane),
+            _ if self.phiras > 0 => Some(Item::Phiras),
+            _ if self.thystame > 0 => Some(Item::Thystame),
+            _ => None,
+        }
+    }
+
+    pub fn compare(&self, other: &Inventory) -> bool {
+        self.linemate() >= other.linemate()
+            && self.deraumere() >= other.deraumere()
+            && self.sibur() >= other.sibur()
+            && self.phiras() >= other.phiras()
+            && self.thystame() >= other.thystame()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.linemate() == 0
+            && self.deraumere() == 0
+            && self.sibur() == 0
+            && self.phiras() == 0
+            && self.thystame() == 0
+    }
 }

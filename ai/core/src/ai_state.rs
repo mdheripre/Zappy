@@ -176,8 +176,8 @@ impl AiState {
         &mut self.last_item
     }
 
-    pub fn alpha(&self) -> &bool {
-        &self.is_alpha
+    pub fn alpha(&self) -> bool {
+        self.is_alpha
     }
 
     pub fn alpha_mut(&mut self) -> &mut bool {
@@ -267,31 +267,31 @@ impl AiState {
     pub fn broadcast_mut(&mut self) -> &mut Broadcast {
         &mut self.broadcast
     }
-    
+
     pub fn gathering(&self) -> bool {
         self.gathering
     }
-    
+
     pub fn gathering_mut(&mut self) -> &mut bool {
         &mut self.gathering
     }
-    
+
     pub fn ready_to_incant(&self) -> bool {
         self.ready_to_incant
     }
-    
+
     pub fn ready_to_incant_mut(&mut self) -> &mut bool {
         &mut self.ready_to_incant
     }
-    
+
     pub fn ready_nb(&self) -> u32 {
         self.ready_nb
     }
-    
+
     pub fn ready_nb_mut(&mut self) -> &mut u32 {
         &mut self.ready_nb
     }
-    
+
     pub fn uptime(&self) -> time::Duration {
         self.start_time.elapsed()
     }
@@ -409,21 +409,21 @@ impl AiState {
     }
 
     /// Create a message with program informations
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `msg_type` (`MessageType`) - Type of the message.
     /// - `content` (`Option<String>`) - content of the messsage.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// - `Message` - Formated message with correct infos.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use crate::...;
-    /// 
+    ///
     /// let _ = new_message();
     /// ```
     pub fn new_message(&self, msg_type: MessageType, content: Option<String>) -> Message {

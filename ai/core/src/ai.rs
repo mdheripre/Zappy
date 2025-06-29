@@ -90,9 +90,9 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-//        .stdin(Stdio::null())
-//        .stdout(Stdio::null())
-//        .stderr(Stdio::null())
+        //        .stdin(Stdio::null())
+        //        .stdout(Stdio::null())
+        //        .stderr(Stdio::null())
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
@@ -110,7 +110,7 @@ pub async fn spawn_child_process() -> Result<()> {
 pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let mut state = state.lock().await;
 
-    if state.last_command().is_some() || state.ready_to_incant() {
+    if state.last_command().is_some() {
         return None;
     }
     if !*state.welcomed() && state.time() >= 30 {
@@ -120,6 +120,9 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     if is_dying(&mut state) {
         let msg = state.new_message(MessageType::Dead, None);
         return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
+    }
+    if state.ready_to_incant() && !state.alpha() && !state.inventory().is_empty() {
+        return drop_item(&mut state);
     }
     if state.gathering() {
         return interpret_broadcast(&mut state);
@@ -150,7 +153,7 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     None
 }
 
-pub fn forward_command(
+fn forward_command(
     state: &mut MutexGuard<'_, AiState>,
     command: Option<AiCommand>,
 ) -> Option<AiCommand> {
@@ -168,7 +171,7 @@ fn dead_command(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
             let msg = state.new_message(MessageType::Dead, None);
             forward_command(state, Some(AiCommand::Broadcast(msg)))
         }
-        false => None
+        false => None,
     }
 }
 
@@ -176,7 +179,10 @@ fn is_dying(state: &mut MutexGuard<'_, AiState>) -> bool {
     let current_time = state.uptime().as_millis() as u64;
     let cooldown = 5000;
 
-    let last_dead_message= state.broadcast().sent().iter()
+    let last_dead_message = state
+        .broadcast()
+        .sent()
+        .iter()
         .filter(|msg| matches!(msg.0.msg_type(), MessageType::Dead))
         .map(|msg| msg.1)
         .max();
@@ -186,27 +192,22 @@ fn is_dying(state: &mut MutexGuard<'_, AiState>) -> bool {
             let time_since_last = current_time - last_time;
             state.inventory().food() <= 1 && time_since_last >= cooldown
         }
-        None => {
-            state.inventory().food() <= 1
-        }
+        None => state.inventory().food() <= 1,
     }
 }
 
-pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     while !state.broadcast().get_received_messages().is_empty() {
         if let Some(msg) = state.broadcast_mut().pop_received() {
             match msg.1.msg_type() {
                 MessageType::Hello => {
                     *state.teammate_nb_mut() += 1;
-                    if *state.alpha() {
+                    if state.alpha() {
                         let mut str: String = state.teammate_nb().to_string();
                         str.push(':');
                         str.push_str(state.team_inventory().as_broadcast().as_str());
                         let output_msg = state.new_message(MessageType::Welcome, Some(str));
-                        return forward_command(
-                            state,
-                            Some(AiCommand::Broadcast(output_msg)),
-                        );
+                        return forward_command(state, Some(AiCommand::Broadcast(output_msg)));
                     } else {
                         *state.id_getter_queue_mut() += 1;
                     }
@@ -237,18 +238,22 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
                     }
                 }
                 MessageType::Gather => {
-                    println!("gather received AAAAAAAAAAAAA {:?}", state.client_num());
                     *state.gathering_mut() = true;
                     return match msg.0 {
                         0 => {
                             *state.ready_to_incant_mut() = true;
-                            forward_command(state, Some(AiCommand::Broadcast(state.new_message(MessageType::Here, None))))
-                        },
+                            forward_command(
+                                state,
+                                Some(AiCommand::Broadcast(
+                                    state.new_message(MessageType::Here, None),
+                                )),
+                            )
+                        }
                         1 | 2 | 8 => forward_command(state, Some(AiCommand::Forward)),
-                        3 | 4 | 5 => forward_command(state, Some(AiCommand::Left)),
+                        3_i32..=5_i32 => forward_command(state, Some(AiCommand::Left)),
                         6 | 7 => forward_command(state, Some(AiCommand::Right)),
-                        _ => forward_command(state, Some(AiCommand::Left))
-                    }
+                        _ => forward_command(state, Some(AiCommand::Left)),
+                    };
                 }
                 MessageType::Here => {
                     *state.ready_nb_mut() += 1;
@@ -261,7 +266,7 @@ pub fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiComm
     None
 }
 
-pub fn send_hello(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+fn send_hello(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if state.time() == 0 {
         if !state.broadcast().get_received_messages().is_empty() {
             state.broadcast_mut().clear();
@@ -274,7 +279,7 @@ pub fn send_hello(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     None
 }
 
-pub fn get_command_to_destination(
+fn get_command_to_destination(
     state: &mut MutexGuard<'_, AiState>,
     dest: Tile,
 ) -> Option<AiCommand> {
@@ -293,45 +298,49 @@ pub fn get_command_to_destination(
     forward_command(state, Some(AiCommand::Forward))
 }
 
-pub fn update_destination(state: &mut MutexGuard<'_, AiState>) {
+fn update_destination(state: &mut MutexGuard<'_, AiState>) {
     if state.is_there_things_in_map() && state.destination().is_none() {
         *state.destination_mut() = state.chose_destination_tile()
     }
 }
 
-pub fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+fn look_or_forward(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     match state.previous_command() {
-        Some(AiCommand::Look) => { 
+        Some(AiCommand::Look) => {
             let rand_nb: u32 = rand::random_range(0..=2);
             match rand_nb {
                 0 => forward_command(state, Some(AiCommand::Forward)),
                 1 => forward_command(state, Some(AiCommand::Left)),
                 _ => forward_command(state, Some(AiCommand::Right)),
             }
-        },
+        }
         _ => forward_command(state, Some(AiCommand::Look)),
     }
 }
 
-pub fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
+fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Option<AiCommand> {
     *state.last_item_mut() = None;
     let msg = state.new_message(MessageType::Item, Some(item.to_string()));
     forward_command(state, Some(AiCommand::Broadcast(msg)))
 }
 
-pub fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb_mut() <= 10 && state.inventory().food() >= 3 && *state.alpha() {
+fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if *state.teammate_nb_mut() <= 10 && state.inventory().food() >= 3 && state.alpha() {
         *state.need_inventory_request_mut() = true;
         return forward_command(state, Some(AiCommand::Fork));
     }
     None
 }
 
-pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.alpha() && state.team_inventory().is_ready() {
+fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if state.alpha() && state.team_inventory().is_ready() {
         match state.previous_command() {
             Some(AiCommand::Broadcast(_)) => {
-                return forward_command(state, Some(AiCommand::Look));
+                if let Some(command) = try_incantation(state) {
+                    return forward_command(state, Some(command));
+                } else {
+                    return take_item_or_look(state);
+                }
             }
             _ => {
                 let message = state.new_message(MessageType::Gather, None);
@@ -342,11 +351,45 @@ pub fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     None
 }
 
-pub fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+fn request_inventory(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if state.time() - state.last_inventory_request() >= 10 || state.need_inventory_request() {
         *state.last_inventory_request_mut() = state.time() + 1;
         *state.need_inventory_request_mut() = false;
         return forward_command(state, Some(AiCommand::Inventory));
     }
     None
+}
+
+fn drop_item(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if let Some(item) = state.inventory_mut().get_any_item() {
+        return forward_command(state, Some(AiCommand::Set(item)));
+    }
+    None
+}
+
+fn take_item_or_look(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    match state.previous_command() {
+        Some(AiCommand::Look) => {
+            match state
+                .world_map()
+                .iter()
+                .find(|tile| tile.position() == state.position())
+            {
+                Some(tile) => {
+                    let command = state.chose_best_item(tile.items().keys().cloned().collect());
+                    forward_command(state, command)
+                }
+                _ => None,
+            }
+        }
+        _ => forward_command(state, Some(AiCommand::Look)),
+    }
+}
+
+fn try_incantation(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    if state.ready_nb() >= 6 {
+        forward_command(state, Some(AiCommand::Incantation))
+    } else {
+        None
+    }
 }

@@ -28,25 +28,25 @@ pub struct ClientInfos {
 }
 
 /// Handshake protocol with the server
-/// 
+///
 /// # Arguments
-/// 
+///
 /// - `client` (`&mut AsyncTcpClient`) - TCP client tool.
 /// - `infos` (`&ServerInfos`) - Server connection informations.
-/// 
+///
 /// # Returns
-/// 
+///
 /// - `Result<ClientInfos>` - Informations sent by the server.
-/// 
+///
 /// # Errors
-/// 
+///
 /// CoreError::InvalidResponse.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use crate::...;
-/// 
+///
 /// async {
 ///   let result = handshake().await;
 /// };

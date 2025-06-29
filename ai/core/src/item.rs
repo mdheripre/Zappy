@@ -72,6 +72,17 @@ impl FromStr for Item {
 }
 
 impl Item {
+    pub fn all_items() -> [Item; 7] {
+        [
+            Self::Food,
+            Self::Linemate,
+            Self::Deraumere,
+            Self::Sibur,
+            Self::Mendiane,
+            Self::Phiras,
+            Self::Thystame,
+        ]
+    }
     /// Get the probability of finding the item on a tile.
     /// # Returns
     /// - `f64` - The probability of finding the item.
