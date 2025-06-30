@@ -20,18 +20,18 @@
  * and an unused field (set to 0).
  */
 static const queued_command_t COMMAND_DELAYS[] = {
-    { "Forward", 7, 0},
-    { "Right", 7, 0},
-    { "Left", 7, 0},
-    { "Look", 7, 0},
-    { "Inventory", 1, 0},
-    { "Broadcast", 7, 0},
-    { "Connect_nbr", 0, 0},
-    { "Fork", 42, 0},
-    { "Eject", 7, 0},
-    { "Take", 7, 0},
-    { "Set", 7, 0},
-    { "Incantation", 0, 0},
+    { "Forward", 7, 0, 0},
+    { "Right", 7, 0, 0},
+    { "Left", 7, 0, 0},
+    { "Look", 7, 0, 0},
+    { "Inventory", 1, 0, 0},
+    { "Broadcast", 7, 0, 0},
+    { "Connect_nbr", 0, 0, 0},
+    { "Fork", 42, 0, 0},
+    { "Eject", 7, 0, 0},
+    { "Take", 7, 0, 0},
+    { "Set", 7, 0, 0},
+    { "Incantation", 0, 0, 0},
 };
 
 /**

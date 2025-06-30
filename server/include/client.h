@@ -13,6 +13,15 @@
     #include "list.h"
 
 typedef struct player_s player_t;
+
+typedef enum {
+    GUI_CMD_NONE = 0,
+    GUI_CMD_PMV,
+    GUI_CMD_PFK,
+    GUI_CMD_PEJ
+} gui_command_type_t;
+
+
 typedef enum client_type_e {
     CLIENT_UNDEFINED = 0,
     CLIENT_IA,
@@ -24,6 +33,7 @@ typedef struct queued_command_s {
     char content[CLIENT_BUFFER_SIZE];
     int ticks_remaining;
     int last_tick_checked;
+    gui_command_type_t gui_check;
 } queued_command_t;
 
 typedef struct client_s {
