@@ -22,6 +22,7 @@ debug:
 
 clean:
 	cargo clean
+	rm -rf Cargo.lock
 	rm -f ./zappy_ai ./zappy_ai_debug
 
 fclean: clean
