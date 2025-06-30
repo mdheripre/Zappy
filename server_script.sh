@@ -23,4 +23,3 @@ $SERVER_BINARY \
     -n "${TEAM_ARGS[@]}" \
     -c $CLIENTS \
     -f $FREQ \
-    -d

@@ -303,12 +303,20 @@ impl AiCore {
                     state.broadcast_mut().send_message((msg, elapsed_time));
                 }
                 _ => {
-                    println!("Received Ok but no command was sent.")
+                    println!("received ok for incantion");
+                    *state.incantation_casting_mut() = false;
                 }
             },
-            ServerResponse::Ko => {
-                if let Some(AiCommand::Take(item)) = last_command {
+            ServerResponse::Ko => match last_command {
+                Some(AiCommand::Take(item)) => {
                     state.remove_item_from_map(&item);
+                }
+                Some(AiCommand::Set(item)) => {
+                    println!("Ko received for Set command");
+                }
+                _ => {
+                    println!("received ko for incantion");
+                    *state.incantation_casting_mut() = false;
                 }
             }
             ServerResponse::Look(items) => {
@@ -340,8 +348,12 @@ impl AiCore {
             ServerResponse::Unknown(msg) => {
                 println!("Unknown or invalid command received: {}", msg)
             }
+            ServerResponse::IncantationCast => {
+                *state.incantation_casting_mut() = true;
+            }
             ServerResponse::Incantation(level) => {
                 *state.current_level_mut() = *level;
+                *state.incantation_casting_mut() = false;
             }
         }
         *state.last_command_mut() = None;

@@ -1,6 +1,7 @@
 use crate::broadcast::Message;
 use crate::tile::Tile;
 use crate::{ai_state::AiState, broadcast::MessageType, item::Item, item::required_for_level, packet::Packet, Result};
+use std::process::Stdio;
 use std::{env, sync::Arc};
 use tokio::sync::MutexGuard;
 use tokio::{process::Command, sync::Mutex};
@@ -89,9 +90,9 @@ pub async fn spawn_child_process() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let child = Command::new(exe_path)
         .args(&args)
-        //        .stdin(Stdio::null())
-        //        .stdout(Stdio::null())
-        //        .stderr(Stdio::null())
+               .stdin(Stdio::null())
+               .stdout(Stdio::null())
+               .stderr(Stdio::null())
         .spawn()?;
 
     println!("Spawned child with PID: {:?}", child.id());
@@ -109,6 +110,9 @@ pub async fn spawn_child_process() -> Result<()> {
 pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let mut state = state.lock().await;
 
+    if state.incantation_casting() {
+        return interpret_broadcast(&mut state);
+    }
     if state.last_command().is_some() {
         return None;
     }
@@ -263,7 +267,7 @@ fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
                 }
                 MessageType::Dead => {
                     *state.teammate_nb_mut() -= 1;
-                    if let Some(content) = msg.1.content() {
+                    if let Some(_content) = msg.1.content() {
                         return Some(AiCommand::Broadcast(state.new_message(MessageType::Sbc, Some(state.client_num().to_string()))))
                     }
                 }
@@ -363,11 +367,10 @@ fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     if state.alpha() && state.team_inventory().is_ready() && state.food_ready_nb() >= 6 {
         return match state.previous_command() {
             Some(AiCommand::Broadcast(_)) => {
-                if let Some(command) = try_incantation(state) {
-                    Some(command)
-                } else {
-                    Some(AiCommand::Look)
-                }
+                try_incantation(state)
+            }
+            Some(AiCommand::Incantation) => {
+                Some(AiCommand::Look)
             }
             _ => {
                 let message = state.new_message(MessageType::Gather, None);
@@ -395,10 +398,11 @@ fn drop_item(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 fn try_incantation(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
+    println!("ready_nb and ressources: {}, {}", state.ready_nb(), check_ressources_on_tile(state));
     if state.ready_nb() >= 8 && check_ressources_on_tile(state) {
         Some(AiCommand::Incantation)
     } else {
-        None
+        Some(AiCommand::Look)
     }
 }
 

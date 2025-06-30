@@ -39,6 +39,7 @@ pub enum ServerResponse {
     Inventory(i32),
     Message(i32, String),
     ClientNum(i32),
+    IncantationCast,
     Incantation(i32),
     Unknown(String),
 }
@@ -50,6 +51,7 @@ impl ServerResponse {
             "ok" => ServerResponse::Ok,
             "ko" => ServerResponse::Ko,
             "dead" => ServerResponse::Dead,
+            "Elevation underway" => ServerResponse::IncantationCast,
             s if s.starts_with("[") && s.ends_with("]") && !s.chars().any(|c| c.is_numeric()) => {
                 Self::parse_look_response(s)
             }
@@ -58,7 +60,7 @@ impl ServerResponse {
             }
             s if s.starts_with("CLIENT-") => Self::parse_clientnum_response(s),
             s if s.starts_with("message ") => Self::parse_message_response(s),
-            s if s.starts_with("current level:") => Self::parse_incantation_response(s),
+            s if s.starts_with("Current level:") => Self::parse_incantation_response(s),
             _ => ServerResponse::Unknown(response.to_string()),
         }
     }
@@ -113,7 +115,7 @@ impl ServerResponse {
     }
 
     fn parse_incantation_response(s: &str) -> Self {
-        let regex = match Regex::new(r"^current level:\s+(\d+)$") {
+        let regex = match Regex::new(r"^Current level:\s+(\d+)$") {
             Ok(re) => re,
             Err(_) => return ServerResponse::Unknown(s.to_string()),
         };

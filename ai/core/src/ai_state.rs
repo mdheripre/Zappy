@@ -76,6 +76,7 @@ pub struct AiState {
     food_ready_sent: bool,
     current_level: i32,
     alpha_transferred: bool,
+    incantation_casting: bool,
 }
 
 impl AiState {
@@ -109,6 +110,7 @@ impl AiState {
             food_ready_sent: false,
             alpha_transferred: false,
             current_level: 1,
+            incantation_casting: false,
         }
     }
 
@@ -334,6 +336,14 @@ impl AiState {
 
     pub fn current_level_mut(&mut self) -> &mut i32 {
         &mut self.current_level
+    }
+
+    pub fn incantation_casting(&self) -> bool {
+        self.incantation_casting
+    }
+
+    pub fn incantation_casting_mut(&mut self) -> &mut bool {
+        &mut self.incantation_casting
     }
 
     /// Make the AI move forward in the current direction
