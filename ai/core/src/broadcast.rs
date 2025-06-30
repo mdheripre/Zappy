@@ -140,6 +140,8 @@ impl Broadcast {
             "ITEM" => Ok(MessageType::Item),
             "HERE" => Ok(MessageType::Here),
             "FOOD" => Ok(MessageType::Food),
+            "SBC" => Ok(MessageType::Sbc),
+            "PATAPIM" => Ok(MessageType::Patapim),
             _ => Err(format!("Invalid msg type: {}", type_str)),
         }
     }
