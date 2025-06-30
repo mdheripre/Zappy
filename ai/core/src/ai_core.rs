@@ -311,7 +311,7 @@ impl AiCore {
                 Some(AiCommand::Take(item)) => {
                     state.remove_item_from_map(&item);
                 }
-                Some(AiCommand::Set(item)) => {
+                Some(AiCommand::Set(_item)) => {
                     println!("Ko received for Set command");
                 }
                 _ => {

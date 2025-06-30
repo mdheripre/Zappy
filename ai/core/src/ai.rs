@@ -111,6 +111,9 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
     let mut state = state.lock().await;
 
     if state.incantation_casting() {
+        if !state.alpha() {
+            println!("AAAAAAAAAAAAAA");
+        }
         return interpret_broadcast(&mut state);
     }
     if state.last_command().is_some() {

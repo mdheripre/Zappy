@@ -39,11 +39,11 @@ use tokio::runtime::Runtime;
 #[derive(Parser, Debug)]
 #[command(name = "zappy_ai", disable_help_flag = true)]
 struct ServerInfos {
-    #[arg(short = 'h', long)]
+    #[arg(short = 'h')]
     ip: String,
-    #[arg(short = 'p', long)]
+    #[arg(short = 'p')]
     port: u16,
-    #[arg(short = 'n', long)]
+    #[arg(short = 'n')]
     name: String,
 }
 

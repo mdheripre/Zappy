@@ -76,7 +76,7 @@ pub enum Packet {
 impl fmt::Display for Packet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = match self {
-            Packet::TeamName(name) => format!("{}", name),
+            Packet::TeamName(name) => name.to_string(),
             Packet::Forward => "Forward".to_string(),
             Packet::Right => "Right".to_string(),
             Packet::Left => "Left".to_string(),

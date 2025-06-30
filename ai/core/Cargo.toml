@@ -3,6 +3,12 @@ name = "zappy_ai"
 version = "0.1.0"
 edition = "2021"
 
+[lints.rust]
+unused_imports = "allow"
+unused_variables = "allow"
+dead_code = "allow"
+unused = "allow"
+
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }

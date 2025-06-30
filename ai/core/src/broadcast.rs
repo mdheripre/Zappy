@@ -1,5 +1,4 @@
 use core::fmt;
-use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub enum MessageType {
