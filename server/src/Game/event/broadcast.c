@@ -1,10 +1,10 @@
+ 
 /*
 ** EPITECH PROJECT, 2025
 ** server
 ** File description:
 ** broadcast
 */
-
 #include "game.h"
 #include "server.h"
 #include "utils.h"
@@ -15,7 +15,6 @@
 /*                             EVENT INGAME                                 */
 /*                                                                          */
 /****************************************************************************/
-
 /**
  * @brief Compute toroidal vector from sender to receiver.
  *
@@ -30,7 +29,6 @@ static vector2i_t compute_direction(game_t *game, player_t *receiver,
     player_t *sender)
 {
     vector2i_t v = { sender->x - receiver->x, sender->y - receiver->y };
-
     if (v.x > game->width / 2)
         v.x -= game->width;
     else if (v.x < (game->width * -1) / 2)
@@ -41,7 +39,6 @@ static vector2i_t compute_direction(game_t *game, player_t *receiver,
         v.y += game->height;
     return v;
 }
-
 /**
  * @brief Get angle offset based on player's orientation.
  *
@@ -63,7 +60,6 @@ static float orientation_offset(player_orientation_t orientation)
             return 0.0f;
     }
 }
-
 /**
  * @brief Convert angle to one of the 8 broadcast sectors.
  *
@@ -74,11 +70,9 @@ static int angle_to_sector(float angle)
 {
     static const int sector_table[] = {1, 2, 3, 4, 5, 6, 7, 8};
     int sector = (int)((angle + 22.5f) / 45.0f);
-
     sector = sector % 8;
     return sector_table[sector];
 }
-
 /**
  * @brief Compute broadcast direction from sender to receiver.
  *
@@ -94,7 +88,6 @@ int compute_broadcast_direction(game_t *game, player_t *sender,
 {
     vector2i_t dir;
     float angle = 0.0f;
-
     if (!sender || !receiver || sender == receiver)
         return 0;
     dir = compute_direction(game, receiver, sender);
@@ -112,12 +105,10 @@ int compute_broadcast_direction(game_t *game, player_t *sender,
         angle -= 360.0f;
     return angle_to_sector(angle);
 }
-
 static game_event_t *create_broadcast_event(player_t *player,
     const char *msg, bool to_gui)
 {
     game_event_t *event = malloc(sizeof(game_event_t));
-
     if (!event)
         return NULL;
     memset(event, 0, sizeof(game_event_t));
@@ -127,7 +118,6 @@ static game_event_t *create_broadcast_event(player_t *player,
     event->data.generic_response.response = strdup(msg);
     return event;
 }
-
 /**
  * @brief Send a broadcast message to all players except the sender.
  *
@@ -144,7 +134,6 @@ static void broadcast_to_players(game_t *game, player_t *sender,
     char buf[BUFFER_SIZE] = {0};
     int dir = -1;
     game_event_t *event = NULL;
-
     for (list_node_t *n = game->players->head; n; n = n->next) {
         target = n->data;
         memset(buf, 0, sizeof(buf));
@@ -161,7 +150,6 @@ static void broadcast_to_players(game_t *game, player_t *sender,
     game->server_event_queue->methods->push_back(
         game->server_event_queue, event);
 }
-
 /**
  * @brief Handle the broadcast command from a player.
  *
@@ -177,7 +165,6 @@ void on_broadcast(void *ctx, void *data)
     player_t *sender = event->data.generic_response.client->player;
     const char *msg = event->data.generic_response.response;
     game_event_t *ok = NULL;
-
     if (!game || !event || !sender || !msg)
         return;
     broadcast_to_players(game, sender, msg);

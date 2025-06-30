@@ -39,6 +39,8 @@ pub enum ServerResponse {
     Inventory(i32),
     Message(i32, String),
     ClientNum(i32),
+    IncantationCast,
+    Incantation(i32),
     Unknown(String),
 }
 
@@ -49,6 +51,7 @@ impl ServerResponse {
             "ok" => ServerResponse::Ok,
             "ko" => ServerResponse::Ko,
             "dead" => ServerResponse::Dead,
+            "Elevation underway" => ServerResponse::IncantationCast,
             s if s.starts_with("[") && s.ends_with("]") && !s.chars().any(|c| c.is_numeric()) => {
                 Self::parse_look_response(s)
             }
@@ -57,6 +60,7 @@ impl ServerResponse {
             }
             s if s.starts_with("CLIENT-") => Self::parse_clientnum_response(s),
             s if s.starts_with("message ") => Self::parse_message_response(s),
+            s if s.starts_with("Current level:") => Self::parse_incantation_response(s),
             _ => ServerResponse::Unknown(response.to_string()),
         }
     }
@@ -106,6 +110,28 @@ impl ServerResponse {
 
         match dir.as_str().parse::<i32>() {
             Ok(num) => ServerResponse::Message(num, msg.as_str().to_string()),
+            Err(_) => ServerResponse::Unknown(s.to_string()),
+        }
+    }
+
+    fn parse_incantation_response(s: &str) -> Self {
+        let regex = match Regex::new(r"^Current level:\s+(\d+)$") {
+            Ok(re) => re,
+            Err(_) => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let caps = match regex.captures(s) {
+            Some(caps) => caps,
+            None => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        let level_str = match caps.get(1) {
+            Some(level) => level,
+            None => return ServerResponse::Unknown(s.to_string()),
+        };
+
+        match level_str.as_str().parse::<i32>() {
+            Ok(level) => ServerResponse::Incantation(level),
             Err(_) => ServerResponse::Unknown(s.to_string()),
         }
     }
