@@ -65,12 +65,15 @@ static void log_executing(client_t *client, const char *cmd)
  * @param client Pointer to the client.
  * @param current_tick Current game tick.
  */
-static void update_next_command_tick(client_t *client, int current_tick)
+static void update_next_command_tick(server_t *server, client_t *client,
+    int current_tick)
 {
     queued_command_t *next = client_peek_command(client);
 
     if (next && next->ticks_remaining > 0)
         next->last_tick_checked = current_tick + 1;
+    if (next)
+        maybe_emit_gui_command_event(server, client, next->content);
 }
 
 /**
@@ -84,7 +87,7 @@ static void update_next_command_tick(client_t *client, int current_tick)
  * @param cmd Pointer to the command being executed.
  * @param current_tick Current tick count of the game.
  */
-static void execute_ready_command(command_manager_t *mgr,
+static void execute_ready_command(server_t *server,
     client_t *client, queued_command_t *cmd, int current_tick)
 {
     char built[BUFFER_COMMAND_SIZE] = {0};
@@ -95,9 +98,9 @@ static void execute_ready_command(command_manager_t *mgr,
     build_full_command(built, sizeof(built), client->type, cmd_name);
     id = event_type_from_string(built, EVENT_CMD_NAME,
         sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
-    EMIT(mgr->dispatcher, id, client);
+    EMIT(server->command_manager->dispatcher, id, client);
     client_dequeue_command(client, NULL);
-    update_next_command_tick(client, current_tick);
+    update_next_command_tick(server, client, current_tick);
 }
 
 /**
@@ -110,7 +113,7 @@ static void execute_ready_command(command_manager_t *mgr,
  * @param cmd Pointer to the command.
  * @param current_tick Current game tick.
  */
-static void handle_client_command(command_manager_t *mgr,
+static void handle_client_command(server_t *server,
     client_t *client, queued_command_t *cmd, int current_tick)
 {
     char cmd_name[BUFFER_SIZE] = {0};
@@ -125,7 +128,7 @@ static void handle_client_command(command_manager_t *mgr,
         log_waiting(client, cmd_name, cmd->ticks_remaining);
     else {
         log_executing(client, cmd->content);
-        execute_ready_command(mgr, client, cmd, current_tick);
+        execute_ready_command(server, client, cmd, current_tick);
     }
 }
 
@@ -154,8 +157,8 @@ void process_all(command_manager_t *mgr, server_t *server, int current_tick)
         if (!cmd)
             continue;
         if (cmd->ticks_remaining == 0)
-            execute_ready_command(mgr, client, cmd, current_tick);
+            execute_ready_command(server, client, cmd, current_tick);
         else
-            handle_client_command(mgr, client, cmd, current_tick);
+            handle_client_command(server, client, cmd, current_tick);
     }
 }

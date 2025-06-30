@@ -57,7 +57,7 @@ static void handle_gui_command(server_t *server, client_t *client,
  * @param client Pointer to the client sending the command.
  * @param cmd_name Name of the command to check.
  */
-static void maybe_emit_gui_command_event(server_t *server,
+void maybe_emit_gui_command_event(server_t *server,
     client_t *client, const char *cmd_name)
 {
     for (int i = 0; GUI_COMMAND_EVENTS[i].name; i++) {
@@ -84,7 +84,8 @@ static void handle_command_enqueue(server_t *server, client_t *client,
 
     console_log(LOG_INFO, "handle poll: %s / current tick game %d", clean,
         server->game->tick_counter);
-    maybe_emit_gui_command_event(server, client, cmd_name);
+    if (client->type == CLIENT_IA && client->commands->size == 0)
+        maybe_emit_gui_command_event(server, client, cmd_name);
     if (!client_enqueue_command(client, clean, ticks, server->game)) {
         console_log(LOG_WARNING,
             "Client %d: command queue full, dropped \"%s\"",

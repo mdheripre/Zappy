@@ -86,6 +86,8 @@ void handle_server_poll(server_t *self, struct pollfd *fds);
 void run_server(server_t *self);
 void reject_client(server_t *server, client_t *client, const char *reason);
 int get_command_delay(server_t *self, const char *command);
+void maybe_emit_gui_command_event(server_t *server,
+    client_t *client, const char *cmd_name);
 tick_info_t get_next_tick_info(server_t *self);
 
 /* Event */

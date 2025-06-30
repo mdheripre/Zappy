@@ -26,10 +26,10 @@
  * @param r Pointer to the receiving player.
  * @return Vector from sender to receiver with torus logic.
  */
-static vector2i_t compute_direction(game_t *game, player_t *sender,
-    player_t *r)
+static vector2i_t compute_direction(game_t *game, player_t *receiver,
+    player_t *sender)
 {
-    vector2i_t v = { r->x - sender->x, r->y - sender->y };
+    vector2i_t v = { sender->x - receiver->x, sender->y - receiver->y };
 
     if (v.x > game->width / 2)
         v.x -= game->width;
@@ -51,14 +51,15 @@ static vector2i_t compute_direction(game_t *game, player_t *sender,
 static float orientation_offset(player_orientation_t orientation)
 {
     switch (orientation) {
-        case ORIENTATION_EAST:
-            return -90.0f;
-        case ORIENTATION_SOUTH:
-            return 180.0f;
-        case ORIENTATION_WEST:
+        case ORIENTATION_NORTH:
             return 90.0f;
-        default:
+        case ORIENTATION_EAST:
             return 0.0f;
+        case ORIENTATION_SOUTH:
+            return 270.0f;
+        case ORIENTATION_WEST:
+            return 180.0f;
+        default: return 0.0f;
     }
 }
 
@@ -70,12 +71,10 @@ static float orientation_offset(player_orientation_t orientation)
  */
 static float vector_to_angle(vector2i_t *vector)
 {
-    float angle = atan2f(-vector->y, vector->x) * 180.0f / (float)M_PI;
+    float angle = atan2f(vector->y, vector->x) * 180.0f / (float)M_PI;
 
-    while (angle < 0.0f)
+    if (angle < 0.0f)
         angle += 360.0f;
-    while (angle >= 360.0f)
-        angle -= 360.0f;
     return angle;
 }
 
@@ -87,10 +86,11 @@ static float vector_to_angle(vector2i_t *vector)
  */
 static int angle_to_sector(float angle)
 {
+    static const int sector_table[] = {1,2,3,4,5,6,7,8};
     int sector = (int)((angle + 22.5f) / 45.0f);
 
-    sector = (sector % 8);
-    return (sector == 0) ? 8 : sector;
+    sector = sector % 8;
+    return sector_table[sector];
 }
 
 /**
@@ -104,18 +104,22 @@ static int angle_to_sector(float angle)
  * @return Direction sector (1 to 8).
  */
 int compute_broadcast_direction(game_t *game, player_t *sender,
-    player_t *r)
+    player_t *receiver)
 {
     vector2i_t dir;
     float angle = 0.0f;
 
-    if (!sender || !r || sender == r)
+    if (!sender || !receiver || sender == receiver)
         return 0;
-    dir = compute_direction(game, sender, r);
+    dir = compute_direction(game, receiver, sender);
     if (dir.x == 0 && dir.y == 0)
         return 0;
-    angle = vector_to_angle(&dir);
-    angle += orientation_offset(r->orientation);
+    angle = atan2f(-dir.y, dir.x) * 180.0f / (float)M_PI;
+    if (angle < 0.0f)
+        angle += 360.0f;
+    if (angle >= 360.0f)
+        angle -= 360.0f;
+    angle -= orientation_offset(receiver->orientation);
     if (angle < 0.0f)
         angle += 360.0f;
     if (angle >= 360.0f)
@@ -196,4 +200,53 @@ void on_broadcast(void *ctx, void *data)
         game->server_event_queue->methods->push_back(game->server_event_queue,
             ok);
     free((char *)msg);
+    print_ascii_map(game);
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+// to delete temp for ai
+static char get_orientation_symbol(player_orientation_t orientation)
+{
+    switch (orientation) {
+        case ORIENTATION_NORTH:
+            return '^';
+        case ORIENTATION_EAST:  return '>';
+        case ORIENTATION_SOUTH: return 'v';
+        case ORIENTATION_WEST:  return '<';
+        default: return '?';
+    }
+}
+
+void print_ascii_map(game_t *game)
+{
+    char map[100][100][6] = {{{0}}};
+
+    for (int y = 0; y < game->height; ++y)
+        for (int x = 0; x < game->width; ++x)
+            snprintf(map[y][x], sizeof(map[y][x]), ".");
+
+    for (list_node_t *n = game->players->head; n; n = n->next) {
+        player_t *p = n->data;
+        if (!p || p->x < 0 || p->y < 0 || p->x >= game->width || p->y >= game->height)
+            continue;
+        snprintf(map[p->y][p->x], sizeof(map[p->y][p->x]),
+                 "%d%c", p->id, get_orientation_symbol(p->orientation));
+    }
+
+    printf("    ");
+    for (int x = 0; x < game->width; ++x)
+        printf(" %2d", x);
+    printf("\n    ");
+    for (int x = 0; x < game->width; ++x)
+        printf("----");
+    printf("\n");
+
+    for (int y = 0; y < game->height; ++y) {
+        printf("%2d |", y);
+        for (int x = 0; x < game->width; ++x)
+            printf(" %3s", map[y][x]);
+        printf("\n");
+    }
+}
+///////////////////////////////////////////////////////////////////////////////
