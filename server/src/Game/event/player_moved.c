@@ -23,7 +23,8 @@
  * @param player Pointer to the moved player.
  * @param event Original move event received.
  */
-static void send_player_moved_response(game_t *game, player_t *player)
+static void send_player_moved_response(game_t *game, player_t *player,
+    move_direction_t dir)
 {
     game_event_t *response = malloc(sizeof(game_event_t));
 
@@ -35,6 +36,7 @@ static void send_player_moved_response(game_t *game, player_t *player)
     response->data.player_moved.y = player->y;
     response->data.player_moved.orientation = player->orientation;
     response->data.player_moved.ia_success = true;
+    response->data.player_moved.direction = dir;
     game->server_event_queue->methods->push_back(
         game->server_event_queue, response);
 }
@@ -56,5 +58,6 @@ void on_player_moved(void *ctx, void *data)
     player = event->data.player_moved.player;
     player_move(player, game->width, game->height,
         event->data.player_moved.direction);
-    send_player_moved_response(game, player);
+    send_player_moved_response(game, player,
+        event->data.player_moved.direction);
 }

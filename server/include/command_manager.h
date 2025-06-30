@@ -20,7 +20,8 @@ struct command_manager_methods_s {
     void (*process_identify)(command_manager_t *self, server_t *server);
     void (*process_all)(command_manager_t *self, server_t *server,
         int ticks);
-    void (*process_responses)(command_manager_t *self, game_t *game);
+    void (*process_responses)(command_manager_t *self, game_t *game,
+        server_t *server);
 };
 
 struct command_manager_s {
@@ -35,7 +36,8 @@ void register_all(command_manager_t *self, server_t *server);
 void process_identify(command_manager_t *self, server_t *server);
 void process_all(command_manager_t *self, server_t *server, int ticks);
 void on_command_not_found(dispatcher_t *self, const char *event, void *data);
-void process_responses(command_manager_t *self, game_t *game);
+void process_responses(command_manager_t *self, game_t *game,
+    server_t *server);
 
 /* Handlers */
 void handle_command_forward(void *ctx, void *data);

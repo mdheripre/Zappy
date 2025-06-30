@@ -59,21 +59,35 @@ static void log_executing(client_t *client, const char *cmd)
         client->fd, cmd);
 }
 
+static gui_command_type_t detect_gui_command_type(const char *cmd)
+{
+    if (!cmd)
+        return GUI_CMD_NONE;
+    if (strncmp(cmd, "Forward", 7) == 0)
+        return GUI_CMD_PMV;
+    if (strncmp(cmd, "Fork", 4) == 0)
+        return GUI_CMD_PFK;
+    if (strncmp(cmd, "Eject", 5) == 0)
+        return GUI_CMD_PEJ;
+    return GUI_CMD_NONE;
+}
+
 /**
  * @brief Update the last_tick_checked of the next queued command.
  *
  * @param client Pointer to the client.
  * @param current_tick Current game tick.
  */
-static void update_next_command_tick(server_t *server, client_t *client,
+static void update_next_command_tick(client_t *client,
     int current_tick)
 {
     queued_command_t *next = client_peek_command(client);
 
     if (next && next->ticks_remaining > 0)
         next->last_tick_checked = current_tick + 1;
-    if (next)
-        maybe_emit_gui_command_event(server, client, next->content);
+    if (!next)
+        return;
+    next->gui_check = detect_gui_command_type(next->content);
 }
 
 /**
@@ -100,7 +114,7 @@ static void execute_ready_command(server_t *server,
         sizeof(EVENT_CMD_NAME) / sizeof(EVENT_CMD_NAME[0]));
     EMIT(server->command_manager->dispatcher, id, client);
     client_dequeue_command(client, NULL);
-    update_next_command_tick(server, client, current_tick);
+    update_next_command_tick(client, current_tick);
 }
 
 /**
