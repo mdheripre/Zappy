@@ -67,6 +67,11 @@ typedef struct {
     event_type_t event;
 } gui_command_event_t;
 
+typedef struct {
+    gui_command_type_t type;
+    event_type_t event;
+} gui_event_t;
+
 debug_state_t debug_state(debug_state_t state);
 void console_log(log_level_t level, const char *format, ...);
 void strip_linefeed(char *line);

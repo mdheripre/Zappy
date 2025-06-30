@@ -107,7 +107,7 @@ static bool update_game_if_needed(server_t *self, int ticks)
         self->command_manager, self, self->game->tick_counter);
     self->game->methods->dispatch_events(self->game);
     self->command_manager->methods->process_responses(
-        self->command_manager, self->game);
+        self->command_manager, self->game, self);
     if (self->game->methods->has_finished(self->game)) {
         EMIT(self->command_manager->dispatcher, EVENT_GUI_SEG, NULL);
         return true;

@@ -59,23 +59,9 @@ static float orientation_offset(player_orientation_t orientation)
             return 270.0f;
         case ORIENTATION_WEST:
             return 180.0f;
-        default: return 0.0f;
+        default:
+            return 0.0f;
     }
-}
-
-/**
- * @brief Convert a 2D vector to an angle in degrees.
- *
- * @param vector The input vector.
- * @return Angle in degrees between 0 and 360.
- */
-static float vector_to_angle(vector2i_t *vector)
-{
-    float angle = atan2f(vector->y, vector->x) * 180.0f / (float)M_PI;
-
-    if (angle < 0.0f)
-        angle += 360.0f;
-    return angle;
 }
 
 /**
@@ -86,7 +72,7 @@ static float vector_to_angle(vector2i_t *vector)
  */
 static int angle_to_sector(float angle)
 {
-    static const int sector_table[] = {1,2,3,4,5,6,7,8};
+    static const int sector_table[] = {1, 2, 3, 4, 5, 6, 7, 8};
     int sector = (int)((angle + 22.5f) / 45.0f);
 
     sector = sector % 8;
@@ -200,53 +186,4 @@ void on_broadcast(void *ctx, void *data)
         game->server_event_queue->methods->push_back(game->server_event_queue,
             ok);
     free((char *)msg);
-    print_ascii_map(game);
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-// to delete temp for ai
-static char get_orientation_symbol(player_orientation_t orientation)
-{
-    switch (orientation) {
-        case ORIENTATION_NORTH:
-            return '^';
-        case ORIENTATION_EAST:  return '>';
-        case ORIENTATION_SOUTH: return 'v';
-        case ORIENTATION_WEST:  return '<';
-        default: return '?';
-    }
-}
-
-void print_ascii_map(game_t *game)
-{
-    char map[100][100][6] = {{{0}}};
-
-    for (int y = 0; y < game->height; ++y)
-        for (int x = 0; x < game->width; ++x)
-            snprintf(map[y][x], sizeof(map[y][x]), ".");
-
-    for (list_node_t *n = game->players->head; n; n = n->next) {
-        player_t *p = n->data;
-        if (!p || p->x < 0 || p->y < 0 || p->x >= game->width || p->y >= game->height)
-            continue;
-        snprintf(map[p->y][p->x], sizeof(map[p->y][p->x]),
-                 "%d%c", p->id, get_orientation_symbol(p->orientation));
-    }
-
-    printf("    ");
-    for (int x = 0; x < game->width; ++x)
-        printf(" %2d", x);
-    printf("\n    ");
-    for (int x = 0; x < game->width; ++x)
-        printf("----");
-    printf("\n");
-
-    for (int y = 0; y < game->height; ++y) {
-        printf("%2d |", y);
-        for (int x = 0; x < game->width; ++x)
-            printf(" %3s", map[y][x]);
-        printf("\n");
-    }
-}
-///////////////////////////////////////////////////////////////////////////////
