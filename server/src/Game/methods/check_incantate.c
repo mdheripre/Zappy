@@ -119,7 +119,6 @@ bool check_incantate(game_t *game, incantation_t *inc)
 {
     const incantation_rule_t *rule = NULL;
     tile_t *tile = NULL;
-    incantation_t *other = NULL;
 
     if (!game || !inc || !inc->participants)
         return false;

@@ -23,7 +23,8 @@ $(NAME_AI):
 	$(MAKE) -C $(DIR_AI)
 	@mv $(DIR_AI)/bin/$(NAME_AI) ./
 
-$(NAME_GUI): gui/CMakeLists.txt $(shell find gui/src -name "*.cpp" -o -name "*.hpp")
+$(NAME_GUI): 	gui/CMakeLists.txt \
+				$(shell find gui/src -name "*.cpp" -o -name "*.hpp")
 	@mkdir -p $(DIR_GUI)/build
 	@cd $(DIR_GUI)/build && cmake ..
 	@cmake --build $(DIR_GUI)/build
