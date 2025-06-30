@@ -65,8 +65,8 @@ void team_size_arg(void *ctx, void *data)
         return;
     }
     config->team_size = atoi(parser->argv[parser->index + 1]);
-    if (config->team_size < 1 || config->team_size > 200) {
-        parser->error_msg = "Team size must be between 1 and 200";
+    if (config->team_size < 1 || config->team_size > 1000) {
+        parser->error_msg = "Team size must be between 1 and 1000";
         parser->error = true;
         return;
     }
