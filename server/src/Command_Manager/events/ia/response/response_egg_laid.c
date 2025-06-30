@@ -8,6 +8,7 @@
 #include "game.h"
 #include "server.h"
 #include "player.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -30,7 +31,8 @@ void on_response_egg_laid(void *ctx, void *data)
     game_event_t *event = data;
     player_t *player = event->data.egg.player;
 
-    if (!server || !event || !player || !player->client)
+    if (!server || !event || !player || !player->client ||
+        !is_client_alive(server, player->client))
         return;
     dprintf(player->client->fd, "ok\n");
     server->game->max_players++;

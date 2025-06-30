@@ -8,6 +8,7 @@
 #include "server.h"
 #include "player.h"
 #include "game.h"
+#include "utils.h"
 
 /****************************************************************************/
 /*                                                                          */
@@ -32,7 +33,7 @@ void on_response_inventory(void *ctx, void *data)
     client_t *client = event->data.generic_response.client;
     const char *msg = event->data.generic_response.response;
 
-    if (!server || !client || !msg)
+    if (!server || !client || !is_client_alive(server, client) || !msg)
         return;
     if (!is_client_alive(server, client))
         return;

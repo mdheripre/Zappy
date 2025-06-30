@@ -30,7 +30,8 @@ void on_response_drop(void *ctx, void *data)
     game_event_t *event = data;
     player_t *player = event->data.player_item.player;
 
-    if (!server || !event || !player || !player->client)
+    if (!server || !event || !player || !player->client ||
+        !is_client_alive(server, player->client))
         return;
     dprintf(player->client->fd, event->data.player_item.success ?
         "ok\n" : "ko\n");

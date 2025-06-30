@@ -31,7 +31,7 @@ static void send_incantation_result(server_t *server,
 {
     client_t *client = player->client;
 
-    if (!client)
+    if (!client || !is_client_alive(server, client))
         return;
     client->stuck = false;
     if (event->data.incantation.success) {

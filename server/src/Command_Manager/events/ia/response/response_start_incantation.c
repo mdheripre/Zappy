@@ -40,8 +40,10 @@ static void send_ko_to_first_participant(list_t *participants)
  * Sends "elevation underway" and marks them as stuck.
  *
  * @param participants List of players participating in the incantation.
+ * @param server Pointer to the server instance.
  */
-static void notify_participants_elevation(list_t *participants)
+static void notify_participants_elevation(list_t *participants,
+    server_t *server)
 {
     player_t *player = NULL;
     client_t *client = NULL;
@@ -49,7 +51,7 @@ static void notify_participants_elevation(list_t *participants)
     for (list_node_t *n = participants->head; n; n = n->next) {
         player = n->data;
         client = player->client;
-        if (!client)
+        if (!client || !is_client_alive(server, client))
             continue;
         client->stuck = true;
         dprintf(client->fd, "Elevation underway\n");
@@ -77,6 +79,6 @@ void on_response_start_incantation(void *ctx, void *data)
         send_ko_to_first_participant(participants);
         return;
     }
-    notify_participants_elevation(participants);
+    notify_participants_elevation(participants, server);
     EMIT(server->command_manager->dispatcher, EVENT_GUI_PIC, event);
 }

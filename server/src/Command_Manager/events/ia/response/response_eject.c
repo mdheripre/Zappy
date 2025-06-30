@@ -32,7 +32,8 @@ void on_response_eject(void *ctx, void *data)
     const char *msg = event->data.generic_response.response;
     client_t *client = event->data.generic_response.client;
 
-    if (!server || !event || !client || !msg)
+    if (!server || !event || !client ||
+        !is_client_alive(server, client) || !msg)
         return;
     dprintf(client->fd, "%s", msg);
     if (event->type == EVENT_RESP_PLAYER_OWNER_EJECTED &&

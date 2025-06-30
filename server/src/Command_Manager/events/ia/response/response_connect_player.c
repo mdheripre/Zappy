@@ -34,6 +34,8 @@ void on_response_connect_nbr(void *ctx, void *data)
         || !event->data.generic_response.client)
         return;
     client = event->data.generic_response.client;
+    if (!client || !is_client_alive(server, client))
+        return;
     dprintf(client->fd, "%s", event->data.generic_response.response);
     free((char *)event->data.generic_response.response);
 }
