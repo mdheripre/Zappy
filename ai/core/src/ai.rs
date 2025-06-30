@@ -224,6 +224,7 @@ fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
                         if let Some(content) = msg.1.content() {
                             let parts: Vec<usize> =
                                 content.split(':').map(|x| x.parse().unwrap()).collect();
+                            *state.teammate_nb_mut() = parts[0] as u32;
                             *state.team_inventory_mut().linemate_mut() = parts[1];
                             *state.team_inventory_mut().deraumere_mut() = parts[2];
                             *state.team_inventory_mut().sibur_mut() = parts[3];
