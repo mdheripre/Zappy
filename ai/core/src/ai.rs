@@ -117,7 +117,10 @@ pub async fn ai_decision(state: &Arc<Mutex<AiState>>) -> Option<AiCommand> {
         *state.alpha_mut() = true;
     }
     if is_dying(&mut state) {
-        let msg = state.new_message(MessageType::Dead, None);
+        let mut msg = state.new_message(MessageType::Dead, None);
+        if state.alpha() {
+            msg = state.new_message(MessageType::Dead, Some("SKIBIDI_TOILET".to_string()));
+        }
         return forward_command(&mut state, Some(AiCommand::Broadcast(msg)));
     }
     if state.ready_to_incant() && !state.alpha() && !state.inventory().is_empty() {
@@ -258,7 +261,31 @@ fn interpret_broadcast(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand>
                 MessageType::Food => {
                     *state.food_ready_nb_mut() += 1;
                 }
-                MessageType::Dead => {}
+                MessageType::Dead => {
+                    *state.teammate_nb_mut() -= 1;
+                    if let Some(content) = msg.1.content() {
+                        return Some(AiCommand::Broadcast(state.new_message(MessageType::Sbc, Some(state.client_num().to_string()))))
+                    }
+                }
+                MessageType::Sbc => {
+                    if state.alpha() && !state.alpha_transferred() {
+                        if let Some(content) = msg.1.content() {
+                            if let Ok(client_num) = content.parse::<i32>() {
+                                *state.alpha_transferred_mut() = true;
+                                return Some(AiCommand::Broadcast(state.new_message(MessageType::Patapim, Some(client_num.to_string()))))
+                            }
+                        }
+                    }
+                }
+                MessageType::Patapim => {
+                    if let Some(content) = msg.1.content() {
+                        if let Ok(client_num) = content.parse::<i32>() {
+                            if client_num == state.client_num() {
+                                *state.alpha_mut() = true;
+                            }
+                        }
+                    }
+                }
                 MessageType::Need => {}
             }
         }
@@ -325,7 +352,7 @@ fn broadcast_taken_item(state: &mut MutexGuard<'_, AiState>, item: Item) -> Opti
 }
 
 fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if *state.teammate_nb_mut() <= 7 && state.inventory().food() >= 3 && state.alpha() {
+    if *state.teammate_nb_mut() <= 13 && state.inventory().food() >= 3 && state.alpha() {
         *state.need_inventory_request_mut() = true;
         return Some(AiCommand::Fork);
     }

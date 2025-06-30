@@ -11,6 +11,8 @@ pub enum MessageType {
     Item,
     Here,
     Food,
+    Sbc,
+    Patapim,
 }
 
 impl fmt::Display for MessageType {
@@ -24,6 +26,8 @@ impl fmt::Display for MessageType {
             MessageType::Item => "ITEM".to_string(),
             MessageType::Here => "HERE".to_string(),
             MessageType::Food => "FOOD".to_string(),
+            MessageType::Sbc => "SBC".to_string(),
+            MessageType::Patapim => "PATAPIM".to_string(),
         };
         write!(f, "{}", out)
     }

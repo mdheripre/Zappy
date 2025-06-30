@@ -75,6 +75,7 @@ pub struct AiState {
     food_ready_nb: u32,
     food_ready_sent: bool,
     current_level: i32,
+    alpha_transferred: bool,
 }
 
 impl AiState {
@@ -106,6 +107,7 @@ impl AiState {
             gathering: false,
             food_ready_nb: 0,
             food_ready_sent: false,
+            alpha_transferred: false,
             current_level: 1,
         }
     }
@@ -116,6 +118,14 @@ impl AiState {
 
     pub fn running_mut(&mut self) -> &mut bool {
         &mut self.running
+    }
+    
+    pub fn alpha_transferred(&self) -> bool {
+        self.alpha_transferred
+    }
+    
+    pub fn alpha_transferred_mut(&mut self) -> &mut bool {
+        &mut self.alpha_transferred
     }
     
     pub fn client_num(&self) -> i32 {
