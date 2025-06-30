@@ -350,6 +350,7 @@ impl AiCore {
             }
             ServerResponse::IncantationCast => {
                 *state.incantation_casting_mut() = true;
+                return Ok(())
             }
             ServerResponse::Incantation(level) => {
                 *state.current_level_mut() = *level;
