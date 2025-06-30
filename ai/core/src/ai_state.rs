@@ -74,6 +74,7 @@ pub struct AiState {
     gathering: bool,
     food_ready_nb: u32,
     food_ready_sent: bool,
+    current_level: i32,
 }
 
 impl AiState {
@@ -105,6 +106,7 @@ impl AiState {
             gathering: false,
             food_ready_nb: 0,
             food_ready_sent: false,
+            current_level: 1,
         }
     }
 
@@ -315,6 +317,15 @@ impl AiState {
     pub fn uptime(&self) -> time::Duration {
         self.start_time.elapsed()
     }
+
+    pub fn current_level(&self) -> i32 {
+        self.current_level
+    }
+
+    pub fn current_level_mut(&mut self) -> &mut i32 {
+        &mut self.current_level
+    }
+
     /// Make the AI move forward in the current direction
     pub fn forward(&mut self) {
         match self.direction {
@@ -458,5 +469,14 @@ impl AiState {
             msg_type,
             content,
         )
+    }
+
+    pub fn get_current_tile(&self) -> Option<Tile> {
+        for tile in self.world_map.iter() {
+            if tile.position() == self.position {
+                return Some(tile.clone())
+            }
+        }
+        None
     }
 }

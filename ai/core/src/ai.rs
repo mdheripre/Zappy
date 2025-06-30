@@ -1,8 +1,7 @@
-use crate::ai_direction::Direction;
 use crate::broadcast::Message;
 use crate::tile::Tile;
-use crate::{ai_state::AiState, broadcast::MessageType, item::Item, packet::Packet, Result};
-use std::{env, process::Stdio, sync::Arc};
+use crate::{ai_state::AiState, broadcast::MessageType, item::Item, item::required_for_level, packet::Packet, Result};
+use std::{env, sync::Arc};
 use tokio::sync::MutexGuard;
 use tokio::{process::Command, sync::Mutex};
 
@@ -334,13 +333,13 @@ fn fork_new_ai(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
 }
 
 fn br_gather(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if state.alpha() && state.team_inventory().is_ready() && state.food_ready_nb() >= 6{
+    if state.alpha() && state.team_inventory().is_ready() && state.food_ready_nb() >= 6 {
         return match state.previous_command() {
             Some(AiCommand::Broadcast(_)) => {
                 if let Some(command) = try_incantation(state) {
                     Some(command)
                 } else {
-                    take_item_or_look(state)
+                    Some(AiCommand::Look)
                 }
             }
             _ => {
@@ -368,28 +367,9 @@ fn drop_item(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
     None
 }
 
-fn take_item_or_look(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    match state.previous_command() {
-        Some(AiCommand::Look) => {
-            match state
-                .world_map()
-                .iter()
-                .find(|tile| tile.position() == state.position())
-            {
-                Some(tile) => {
-                    let command = state.chose_best_item(tile.items().keys().cloned().collect());
-                    command
-                }
-                _ => None,
-            }
-        }
-        _ => Some(AiCommand::Look),
-    }
-}
-
 fn try_incantation(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
-    if state.ready_nb() >= 6 {
-        return Some(AiCommand::Incantation)
+    if state.ready_nb() >= 8 && check_ressources_on_tile(state) {
+        Some(AiCommand::Incantation)
     } else {
         None
     }
@@ -402,4 +382,25 @@ fn food_ready(state: &mut MutexGuard<'_, AiState>) -> Option<AiCommand> {
         return Some(AiCommand::Broadcast(msg))
     }
     None
+}
+
+fn check_ressources_on_tile(state: &mut MutexGuard<'_, AiState>) -> bool {
+    if let Some(tile) = state.get_current_tile() {
+        let available_ress = tile.items();
+        let required_ress =  required_for_level(state.current_level() + 1);
+
+        for (required_item, required_amount) in &required_ress {
+            let available_amount = match available_ress.get(required_item) {
+                Some(amount) => *amount,
+                None => 0,
+            };
+
+            if available_amount < *required_amount {
+                return false;
+            }
+        }
+        true
+    } else {
+        false
+    }
 }

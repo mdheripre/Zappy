@@ -1,4 +1,5 @@
 use crate::{CoreError, Result};
+use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
@@ -111,5 +112,66 @@ impl Item {
             Item::Phiras => 6,
             Item::Thystame => 1,
         }
+    }
+
+}
+
+pub fn required_for_level(level: i32) -> HashMap<Item, usize> {
+    match level {
+        2 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 1);
+            requirements
+        }
+        3 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 1);
+            requirements.insert(Item::Deraumere, 1);
+            requirements.insert(Item::Sibur, 1);
+            requirements
+        }
+        4 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 2);
+            requirements.insert(Item::Sibur, 1);
+            requirements.insert(Item::Phiras, 2);
+            requirements
+        }
+        5 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 1);
+            requirements.insert(Item::Deraumere, 2);
+            requirements.insert(Item::Sibur, 1);
+            requirements.insert(Item::Phiras, 1);
+            requirements
+        }
+        6 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 1);
+            requirements.insert(Item::Deraumere, 2);
+            requirements.insert(Item::Sibur, 1);
+            requirements.insert(Item::Mendiane, 3);
+            requirements
+        }
+        7 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 1);
+            requirements.insert(Item::Deraumere, 2);
+            requirements.insert(Item::Sibur, 3);
+            requirements.insert(Item::Mendiane, 0);
+            requirements.insert(Item::Phiras, 1);
+            requirements
+        }
+        8 => {
+            let mut requirements = HashMap::new();
+            requirements.insert(Item::Linemate, 2);
+            requirements.insert(Item::Deraumere, 2);
+            requirements.insert(Item::Sibur, 2);
+            requirements.insert(Item::Mendiane, 2);
+            requirements.insert(Item::Phiras, 2);
+            requirements.insert(Item::Thystame, 1);
+            requirements
+        }
+        _ => HashMap::new(), // Return empty HashMap for invalid levels
     }
 }

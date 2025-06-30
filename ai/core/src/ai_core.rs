@@ -340,6 +340,9 @@ impl AiCore {
             ServerResponse::Unknown(msg) => {
                 println!("Unknown or invalid command received: {}", msg)
             }
+            ServerResponse::Incantation(level) => {
+                *state.current_level_mut() = *level;
+            }
         }
         *state.last_command_mut() = None;
         self.resp_queue
