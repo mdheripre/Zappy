@@ -159,7 +159,16 @@ Our AI employs a multi-phase strategy focused on efficient resource collection, 
 
 ## 🚀 How to Launch the Project
 
-### 1. Build everything
+### 1. Dependencies
+
+```
+cargo
+make
+c
+c++
+```
+
+### 2. Build everything
 
 From the root of the project:
 
@@ -173,7 +182,7 @@ This will generate the following executables at the root:
 - `./zappy_gui`
 - `./zappy_ai`
 
-### 2. Available commands
+### 1. Available commands
 
 #### 🔌 Server — `./zappy_server`
 
