@@ -20,7 +20,6 @@ bool is_client_alive(server_t *server, client_t *client)
 {
     if (!server || !client || !server->clients)
         return false;
-
     for (list_node_t *node = server->clients->head; node; node = node->next) {
         if (node->data == client)
             return true;

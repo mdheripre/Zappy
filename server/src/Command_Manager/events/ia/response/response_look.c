@@ -14,7 +14,7 @@
 /*                                                                          */
 /*                        RESPONSE COMMAND                                  */
 /*                                                                          */
-/*****************************************!is_client_alive(server, client)***********************************/
+/****************************************************************************/
 
 /**
  * @brief Handles the response for the "look" command from an AI client.
