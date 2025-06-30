@@ -30,14 +30,13 @@ void on_command_not_found(dispatcher_t *self, const char *event, void *data)
     (void)self;
     if (!event || !client)
         return;
-    if (strncmp(event, "command_ia_", 11) == 0) {
+    if (client->type == CLIENT_GUI) {
         console_log(LOG_WARNING,
             "Unknown command \"%s\" from client fd=%d", event, client->fd);
-        write(client->fd, "ko\n", 3);
-    }
-    if (strncmp(event, "command_gui_", 12) == 0) {
+        write(client->fd, "suc\n", 4);
+    } else {
         console_log(LOG_WARNING,
             "Unknown command \"%s\" from gui", event);
-        write(client->fd, "suc\n", 4);
+        write(client->fd, "ko\n", 3);
     }
 }
