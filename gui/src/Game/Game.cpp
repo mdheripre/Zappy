@@ -80,12 +80,9 @@ void game::Game::gameLoop()
         _ui->updateTimeUnit(_gm.time_unit, acc);
         lastTime = currentTime;
         try {
-            if (!errorCaught) {
-                std::string message;
-                while (_incoming->tryPop(message)) {
-                    manageCommand(message);
-                }
-            }
+            std::string message;
+            while (_incoming->tryPop(message))
+                manageCommand(message);
             _renderer->poll();
             _renderer->update(dt * static_cast<float>(_gm.time_unit));
             _renderer->updateUI(dt);
