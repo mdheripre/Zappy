@@ -52,7 +52,7 @@ static void notify_participants_elevation(list_t *participants)
         if (!client)
             continue;
         client->stuck = true;
-        dprintf(client->fd, "elevation underway\n");
+        dprintf(client->fd, "Elevation underway\n");
     }
 }
 
