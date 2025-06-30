@@ -35,7 +35,7 @@ static void send_incantation_result(server_t *server,
         return;
     client->stuck = false;
     if (event->data.incantation.success) {
-        dprintf(client->fd, "current level: %d\n", player->level);
+        dprintf(client->fd, "Current level: %d\n", player->level);
         EMIT(server->command_manager->dispatcher, EVENT_GUI_PLV, &player->id);
     } else {
         dprintf(client->fd, "ko\n");
