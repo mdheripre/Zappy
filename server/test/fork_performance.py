@@ -88,7 +88,7 @@ def run_latency_test(f_value):
         errors_within_margin = sum(1 for r, e in results if abs(r - e) <= margin)
         success_ratio = (errors_within_margin / len(results)) * 100
 
-        print(f"{n_clients} clients: latence mesurée = {avg_latency:.3f}s, attendue = {avg_expected:.3f}s, écart = {diff:.3f}s, succès = {success_ratio:.1f}%")
+        print(f"{n_clients} clients: latence mesurée = {avg_latency:.3f}s, attendue = {avg_expected:.3f}s, écart = {diff:.3f}s")
 
         x_clients.append(n_clients)
         y_diff.append(diff * 1000)
