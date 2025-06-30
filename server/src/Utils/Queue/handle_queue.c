@@ -41,10 +41,10 @@ bool client_enqueue_command(client_t *client, const char *cmd, int ticks,
     strncpy(entry->content, cmd, CLIENT_BUFFER_SIZE - 1);
     entry->content[CLIENT_BUFFER_SIZE - 1] = '\0';
     entry->ticks_remaining = ticks;
+    entry->gui_check = GUI_CMD_NONE;
     entry->last_tick_checked = (ticks > 0) ? game->tick_counter + 1 :
         game->tick_counter;
-    console_log(LOG_SUCCESS,
-        "Command \"%s\" received, receive at tick %d,\n"
+    console_log(LOG_SUCCESS, "Command \"%s\" received, receive at tick %d,\n"
         "  start decrementing at tick %d", entry->content, game->tick_counter,
         entry->last_tick_checked);
     client->commands->methods->push_back(client->commands, entry);
