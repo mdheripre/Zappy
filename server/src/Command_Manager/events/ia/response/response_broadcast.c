@@ -34,6 +34,8 @@ void on_response_broadcast(void *ctx, void *data)
         || !event->data.generic_response.response)
         return;
     client = event->data.generic_response.client;
+    if (!is_client_alive(server, client))
+        return;
     dprintf(client->fd, "%s", event->data.generic_response.response);
     free((char *)event->data.generic_response.response);
 }

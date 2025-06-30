@@ -77,6 +77,7 @@ static list_t *gather_incantation_participants(game_t *game,
         p = node->data;
         if (!p || p == starter || !p->is_alive)
             continue;
+        printf("x %d -< %d | y %d  %d | level %d %d\n",p->x , starter->x ,p->y , starter->y, p->level ,starter->level);
         if (p->x == starter->x && p->y == starter->y &&
             p->level == starter->level)
             participants->methods->push_back(participants, p);
@@ -122,18 +123,27 @@ static incantation_t *create_incantation(game_t *game, player_t *starter)
     list_t *participants = NULL;
     incantation_t *inc = NULL;
 
-    if (!game || !starter || starter->level < 1 || starter->level > 7)
+    if (!game || !starter || starter->level < 1 || starter->level > 7) {
+        printf("premieri\n");
         return NULL;
+    }
     rule = &INCANTATION_RULES[starter->level - 1];
     participants = gather_incantation_participants(game, starter, rule);
+    if (!participants)
+        printf("pas de part\n");
+    if ( participants->size < rule->players) {
+        printf("participants size %d %d\n", participants->size, rule->players);
+    }
     if (!participants || participants->size < rule->players) {
         if (participants)
             participants->methods->destroy(participants);
+        printf("duexiem\n");
         return NULL;
     }
     inc = alloc_incantation(starter, starter->level + 1, participants);
     if (!inc) {
         participants->methods->destroy(participants);
+        printf("troisieme\n");
         return NULL;
     }
     return inc;
@@ -154,16 +164,22 @@ void on_start_incantation(void *ctx, void *data)
     player_t *starter = event->data.generic_response.client->player;
     incantation_t *inc = NULL;
 
-    if (!game || !starter)
+    if (!game || !starter) {
+        printf("game ou start\n");
         return;
+    }
     inc = create_incantation(game, starter);
-    if (!inc)
+    if (!inc) {
+        printf("inc\n");
         return;
+    }
     if (!check_incantate(game, inc)) {
+        printf("probléme incantation\n");
         send_incantation_response(game, starter, inc, false);
         free(inc);
         return;
     }
+    printf("réussi start incantation\n");
     game->incantations->methods->push_back(game->incantations, inc);
     send_incantation_response(game, starter, inc, true);
 }

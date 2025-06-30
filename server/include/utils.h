@@ -89,4 +89,5 @@ bool extract_command_arguments(const char *line, char *out, size_t out_size);
 bool get_next_arg(char *line, char *arg, int arg_size);
 team_info_t *find_team(game_t *game, const char *team_name);
 void add_tile_update_event(game_t *game, int x, int y);
+bool is_client_alive(server_t *server, client_t *client);
 #endif /* !UTILS_H_ */

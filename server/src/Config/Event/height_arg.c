@@ -68,7 +68,7 @@ void height_arg(void *ctx, void *data)
         return;
     }
     config->height = atoi(parser->argv[parser->index + 1]);
-    if (config->height < 10 || config->height > 42) {
+    if (config->height < 1 || config->height > 42) {
         parser->error_msg = "Height must be between 10 and 42";
         parser->error = true;
         return;

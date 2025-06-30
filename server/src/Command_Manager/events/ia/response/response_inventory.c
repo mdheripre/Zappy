@@ -34,6 +34,8 @@ void on_response_inventory(void *ctx, void *data)
 
     if (!server || !client || !msg)
         return;
+    if (!is_client_alive(server, client))
+        return;
     dprintf(client->fd, "%s", msg);
     free((char *)event->data.generic_response.response);
 }

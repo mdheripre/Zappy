@@ -14,7 +14,7 @@
 /*                                                                          */
 /*                        RESPONSE COMMAND                                  */
 /*                                                                          */
-/****************************************************************************/
+/*****************************************!is_client_alive(server, client)***********************************/
 
 /**
  * @brief Handles the response for the "look" command from an AI client.
@@ -34,7 +34,7 @@ void on_response_look(void *ctx, void *data)
     if (!server || !event || !event->data.generic_response.response)
         return;
     client = event->data.generic_response.client;
-    if (!client)
+    if (!client || !is_client_alive(server, client))
         return;
     dprintf(client->fd, "%s", event->data.generic_response.response);
     free((char *)event->data.generic_response.response);

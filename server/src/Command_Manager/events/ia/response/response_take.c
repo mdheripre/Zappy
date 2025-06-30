@@ -34,6 +34,8 @@ void on_response_take(void *ctx, void *data)
 
     if (!server || !player || !client)
         return;
+    if (!is_client_alive(server, client))
+        return;
     dprintf(client->fd, "%s", event->data.player_item.success ? "ok\n" :
         "ko\n");
     if (event->data.player_item.success) {

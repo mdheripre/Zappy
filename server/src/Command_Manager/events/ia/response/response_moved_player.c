@@ -16,15 +16,18 @@
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Handles the response after a player movement event.
- *
- * Sends "ok" to the client if the movement was successful, otherwise sends
- * "ko". Also emits a GUI update event on successful movement.
- *
- * @param ctx Pointer to the server context.
- * @param data Pointer to the game event data.
- */
+bool is_client_alive(server_t *server, client_t *client)
+{
+    if (!server || !client || !server->clients)
+        return false;
+
+    for (list_node_t *node = server->clients->head; node; node = node->next) {
+        if (node->data == client)
+            return true;
+    }
+    return false;
+}
+
 void on_response_player_moved(void *ctx, void *data)
 {
     server_t *server = ctx;
@@ -33,6 +36,8 @@ void on_response_player_moved(void *ctx, void *data)
     client_t *client = player ? player->client : NULL;
 
     if (!server || !player || !client)
+        return;
+    if (!is_client_alive(server, client))
         return;
     if (event->data.player_moved.ia_success) {
         dprintf(client->fd, "ok\n");

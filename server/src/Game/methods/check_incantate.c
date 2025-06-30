@@ -123,11 +123,6 @@ bool check_incantate(game_t *game, incantation_t *inc)
 
     if (!game || !inc || !inc->participants)
         return false;
-    for (list_node_t *n = game->incantations->head; n; n = n->next) {
-        other = n->data;
-        if (other && other != inc && other->x == inc->x && other->y == inc->y)
-            return false;
-    }
     if (inc->target_level < 2 || inc->target_level > 8)
         return false;
     rule = &INCANTATION_RULES[inc->target_level - 2];
