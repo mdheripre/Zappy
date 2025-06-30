@@ -40,4 +40,5 @@ void remove_client(server_t *self, client_t *client)
     if (self->gui == client)
         self->gui = NULL;
     self->clients->methods->remove(self->clients, client);
+    client = NULL;
 }
