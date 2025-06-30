@@ -56,13 +56,17 @@ static void consume_resources(game_t *game, incantation_t *inc)
 static bool process_incantation(game_t *game, incantation_t *inc,
     game_event_t *event)
 {
-    if (!game || !event)
+    player_t *starter;
+
+    if (!game || !event || !event->data.incantation.participants)
         return false;
     inc->x = event->data.incantation.x;
     inc->y = event->data.incantation.y;
     inc->participants = event->data.incantation.participants;
-    inc->target_level = ((player_t *)
-        event->data.incantation.participants->head->data)->level + 1;
+    starter = event->data.incantation.participants->head->data;
+    if (!starter)
+        return false;
+    inc->target_level = starter->level + 1;
     return check_incantate(game, inc);
 }
 
@@ -149,13 +153,18 @@ void on_end_incantation(void *ctx, void *data)
     bool success;
     game_event_t *response = NULL;
 
+    if (!game || !event)
+        return;
     success = process_incantation(game, &inc, event);
+    if (!inc.participants)
+        return;
     response = create_incantation_response(&inc, success);
-    if (success && inc.participants) {
+    if (!response)
+        return;
+    if (success) {
         consume_resources(game, &inc);
         update_participants_level(game, inc.participants);
     }
-    if (response)
-        game->server_event_queue->methods->push_back(game->server_event_queue,
-            response);
+    game->server_event_queue->methods->push_back(
+        game->server_event_queue, response);
 }

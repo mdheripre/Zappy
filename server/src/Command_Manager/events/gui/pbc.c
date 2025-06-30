@@ -31,7 +31,8 @@ void handle_gui_pbc(void *ctx, void *data)
     client_t *gui = server ? server->gui : NULL;
     char *msg = event ? (char *)event->data.generic_response.response : NULL;
 
-    if (!server || !event || !msg || !event->data.generic_response.client ||
+    if (!server || !event || !msg || !event->data.generic_response.client
+        || !is_client_alive(server, event->data.generic_response.client) ||
         !event->data.generic_response.client->player || !gui) {
         free(msg);
         return;
