@@ -103,7 +103,7 @@ impl Item {
     /// - `i32` - The number of items needed.
     pub fn needed(&self) -> i32 {
         match self {
-            Item::Food => 25,
+            Item::Food => 30,
             Item::Linemate => 9,
             Item::Deraumere => 8,
             Item::Sibur => 10,

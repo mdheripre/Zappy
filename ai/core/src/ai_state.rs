@@ -72,6 +72,8 @@ pub struct AiState {
     ready_to_incant: bool,
     ready_nb: u32,
     gathering: bool,
+    food_ready_nb: u32,
+    food_ready_sent: bool,
 }
 
 impl AiState {
@@ -101,6 +103,8 @@ impl AiState {
             ready_to_incant: false,
             ready_nb: 0,
             gathering: false,
+            food_ready_nb: 0,
+            food_ready_sent: false,
         }
     }
 
@@ -111,7 +115,7 @@ impl AiState {
     pub fn running_mut(&mut self) -> &mut bool {
         &mut self.running
     }
-
+    
     pub fn client_num(&self) -> i32 {
         self.client_num
     }
@@ -292,6 +296,22 @@ impl AiState {
         &mut self.ready_nb
     }
 
+    pub fn food_ready_nb(&self) -> u32 {
+        return self.food_ready_nb;
+    }
+
+    pub fn food_ready_nb_mut(&mut self) -> &mut u32 {
+        &mut self.food_ready_nb
+    }
+
+    pub fn food_ready_sent(&self) -> bool {
+        self.food_ready_sent
+    }
+
+    pub fn food_ready_sent_mut(&mut self) -> &mut bool {
+        &mut self.food_ready_sent
+    }
+
     pub fn uptime(&self) -> time::Duration {
         self.start_time.elapsed()
     }
@@ -374,11 +394,16 @@ impl AiState {
     /// # Arguments
     /// - `item` (`&Item`) - Item to remove from the map.
     pub fn remove_item_from_map(&mut self, item: &Item) {
+        let mut vec: Vec<Item> = vec![];
         for tile in &mut self.world_map {
             if tile.position() == self.position {
                 tile.take(item.clone());
                 *tile.nb_items_mut() -= 1;
+                vec = tile.items().keys().cloned().collect();
             }
+        }
+        if !vec.is_empty() && self.chose_best_item(vec).is_none() {
+            self.destination = None;
         }
         if let Some(dest) = self.destination.clone() {
             for tile in &self.world_map {
