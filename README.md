@@ -129,7 +129,33 @@ A REMPLIR CHARLES
 
 ### 🤖 `ai/` — The Rust AI Client
 
-A REMPLIR ENZO
+Our AI system employs a hierarchical structure where one AI instance assumes the role of the Alpha AI. This design facilitates coordinated actions and efficient resource management across the team.
+
+#### The Alpha AI
+
+The Alpha AI is central to our strategy. Its primary responsibilities include:
+- Communication Hub: It communicates crucial information to other AI clients, especially when a new AI connects to the game [Query].
+- Team Expansion: The Alpha AI is responsible for initiating player reproduction by using the fork command, leading to the production of an egg and adding a new slot for the team. Once an egg is laid, the Alpha AI can resume other activities. This operation authorizes a new client to connect to the team.
+
+#### Communication and Security
+
+Communication between AI clients is facilitated through the server via the Broadcast command. All players can hear broadcasts and perceive the direction from which the sound originates, but they do not know the sender. To ensure the integrity of messages exchanged within the team, our AI system incorporates a unique ID mechanism to detect and filter out fake messages. This is crucial for maintaining trust and coordination among team members.
+
+#### Strategic Approach
+
+Our AI employs a multi-phase strategy focused on efficient resource collection, continuous team expansion, and synchronized elevation rituals.
+
+// Initial Phase: Resource Gathering and Expansion
+
+- Alpha's Role: Initially, the Alpha AI prioritizes collecting essential resources while simultaneously using the fork command to create new AI instances.
+
+- New AI's Role: Once new AI players connect and hatch from eggs, their primary focus is also on collecting resources and food to ensure their survival.
+
+// Late Game: Coordinated Elevation
+
+- Elevation Prerequisite Check: Once the collective inventory of the AI team indicates they have sufficient food and resources (stones) to reach the maximum elevation level (level 8) according to the ritual requirements, the Alpha AI initiates the final phase.
+
+- Gathering and Incantation: The Alpha AI will instruct other AIs to gather on a specific tile to perform the elevation ritual. Once all the AIs are gathered, they start the ritual.
 
 ## 🚀 How to Launch the Project
 
